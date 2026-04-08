@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # aidl sync.sh — Bidirectional sync between aidl repo and VSCode user config
 # Usage: ./scripts/sync.sh <subcommand> [options]
-#   push [--yes]         — sync user-sync/ files to VSCode config
-#   pull [--yes]         — copy untracked VSCode files into user-sync/
+#   push [--yes]         — sync user/sync/ files to VSCode config
+#   pull [--yes]         — copy untracked VSCode files into user/sync/
 #   add <name|url> [--yes] — install asset from registry or URL
 #   list                 — list registry assets grouped by type
 #   status               — show synced, new, and orphaned files
@@ -41,7 +41,7 @@ normalize_path() {
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT="$(normalize_path "$( cd "$SCRIPT_DIR/.." && pwd )")"
-USER_SYNC="$REPO_ROOT/user-sync"
+USER_SYNC="$REPO_ROOT/user/sync"
 MANIFEST="$REPO_ROOT/.sync-manifest.json"
 CACHE_DIR="$REPO_ROOT/.aidl-cache"
 
@@ -206,14 +206,14 @@ refresh_registry_cache() {
 }
 
 # ---------------------------------------------------------------------------
-# push — sync user-sync/ files to VSCode config
+# push — sync user/sync/ files to VSCode config
 # ---------------------------------------------------------------------------
 cmd_push() {
   local yes=false
   [[ "${1:-}" == "--yes" ]] && yes=true
 
   ensure_manifest
-  info "Pushing user-sync/ → VSCode config at: $VSCODE_USER"
+  info "Pushing user/sync/ → VSCode config at: $VSCODE_USER"
 
   local linked=0 skipped=0
   local strategy="symlink" action="Linked" summary="linked"
@@ -265,14 +265,13 @@ cmd_push() {
   echo ""
   info "Push complete: ${linked} ${summary}, ${skipped} skipped."
 
-  local agents_path="$USER_SYNC/agents"
   local notice_shown
   notice_shown="$(manifest_get agent_notice_shown)"
 
   if [[ "$notice_shown" != "true" ]]; then
     echo ""
     warn "ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:"
-    warn "  \"chat.agentFilesLocations\": [\"${agents_path}\"]"
+    warn "  \"chat.agentFilesLocations\": [\"${USER_SYNC}/agents\"]"
 
     local tmp
     tmp="$(mktemp)"
@@ -289,7 +288,7 @@ PYEOF
 }
 
 # ---------------------------------------------------------------------------
-# pull — copy untracked VSCode files into user-sync/
+# pull — copy untracked VSCode files into user/sync/
 # ---------------------------------------------------------------------------
 cmd_pull() {
   local yes=false
@@ -318,7 +317,7 @@ cmd_pull() {
         if diff -q "$file" "$dest" >/dev/null 2>&1; then
           continue
         else
-          warn "SKIP $rel — content differs from repo copy (delete user-sync copy first if you want to import the VSCode version)"
+          warn "SKIP $rel — content differs from repo copy (delete user/sync copy first if you want to import the VSCode version)"
           continue
         fi
       fi
@@ -369,7 +368,7 @@ cmd_pull() {
     mkdir -p "$(dirname "$dest")"
     cp "$file" "$dest"
     add_to_manifest "$dest" "$file" "copy"
-    info "  Imported: $rel → user-sync/$rel"
+    info "  Imported: $rel → user/sync/$rel"
     (( imported++ )) || true
   done
 
@@ -525,13 +524,13 @@ PYEOF
   local dest="$USER_SYNC/$target_subdir/$name"
 
   if [[ -e "$dest" ]]; then
-    warn "Asset '$name' already exists at user-sync/$target_subdir/$name — skipping."
+    warn "Asset '$name' already exists at user/sync/$target_subdir/$name — skipping."
     info "Delete the existing folder if you want to reinstall."
     exit 0
   fi
 
   cp -r "$full_asset_path" "$dest"
-  info "Added: $name → user-sync/$target_subdir/$name (from $REGISTRY_URL)"
+  info "Added: $name → user/sync/$target_subdir/$name (from $REGISTRY_URL)"
   info "Run ./scripts/sync.sh push to sync to VSCode."
 }
 
@@ -598,7 +597,7 @@ _add_from_url() {
   cp -r "$tmp_dir/repo" "$dest"
   rm -rf "$tmp_dir"
 
-  info "Added: $asset_name → user-sync/$target_subdir/$asset_name (from $url)"
+  info "Added: $asset_name → user/sync/$target_subdir/$asset_name (from $url)"
   info "Run ./scripts/sync.sh push to sync to VSCode."
 }
 
@@ -637,7 +636,7 @@ for entry in synced:
     normalized_src = normalize(src)
     normalized_user_sync = normalize(user_sync).rstrip('/')
     if normalized_src.startswith(normalized_user_sync + '/'):
-      rel = display_src[len(display_user_sync) + 1:]
+        rel = display_src[len(display_user_sync) + 1:]
     else:
         rel = src
     print(f"  [{status}] {rel}")
@@ -750,8 +749,8 @@ case "$subcmd" in
     echo "Usage: ./scripts/sync.sh <subcommand> [options]"
     echo ""
     echo "Subcommands:"
-    echo "  push [--yes]         Sync user-sync/ files to VSCode user config"
-    echo "  pull [--yes]         Copy untracked VSCode files into user-sync/"
+    echo "  push [--yes]         Sync user/sync/ files to VSCode user config"
+    echo "  pull [--yes]         Copy untracked VSCode files into user/sync/"
     echo "  add <name|url> [--yes]  Install asset from registry or URL"
     echo "  list                 List registry assets grouped by type"
     echo "  status               Show synced, new, and orphaned files"

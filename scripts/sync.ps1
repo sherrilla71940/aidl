@@ -1,7 +1,7 @@
 # aidl sync.ps1 — Bidirectional sync between aidl repo and VSCode user config (Windows)
 # Usage: .\scripts\sync.ps1 <subcommand> [options]
-#   push [--yes]             Copy user-sync/ files to VSCode config
-#   pull [--yes]             Copy untracked VSCode files into user-sync/
+#   push [--yes]             Copy user/sync/ files to VSCode config
+#   pull [--yes]             Copy untracked VSCode files into user/sync/
 #   add <name|url> [--yes]   Install asset from registry or URL
 #   list                     List registry assets grouped by type
 #   status                   Show synced, new, and orphaned files
@@ -23,7 +23,7 @@ $ErrorActionPreference = "Stop"
 # ---------------------------------------------------------------------------
 $ScriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot    = Split-Path -Parent $ScriptDir
-$UserSync    = Join-Path $RepoRoot "user-sync"
+$UserSync    = Join-Path $RepoRoot "user\sync"
 $Manifest    = Join-Path $RepoRoot ".sync-manifest.json"
 $CacheDir    = Join-Path $RepoRoot ".aidl-cache"
 $VSCodeUser  = Join-Path $env:APPDATA "Code\User"
@@ -117,12 +117,12 @@ function Refresh-RegistryCache {
 }
 
 # ---------------------------------------------------------------------------
-# push — copy user-sync/ files to VSCode config
+# push — copy user/sync/ files to VSCode config
 # ---------------------------------------------------------------------------
 function Invoke-Push {
     param([bool]$YesFlag = $false)
     Ensure-Manifest
-    Write-Info "Pushing user-sync/ → VSCode config at: $VSCodeUser"
+    Write-Info "Pushing user/sync/ → VSCode config at: $VSCodeUser"
 
     $linked = 0
     $skipped = 0
@@ -132,6 +132,7 @@ function Invoke-Push {
 
     foreach ($file in $files) {
         $rel = $file.FullName.Substring($UserSync.Length + 1)
+
         $parts = $rel -split [regex]::Escape([IO.Path]::DirectorySeparatorChar)
         $subdir = $parts[0]
         $target = $null
@@ -178,17 +179,16 @@ function Invoke-Push {
     # Agent discovery notice
     $data = Read-Manifest
     if (-not $data.agent_notice_shown) {
-        $agentsPath = Join-Path $UserSync "agents"
         Write-Host ""
         Write-Warn "ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:"
-        Write-Warn "  `"chat.agentFilesLocations`": [`"$agentsPath`"]"
+        Write-Warn "  `"chat.agentFilesLocations`": [`"$(Join-Path $UserSync 'agents')`"]"
         $data.agent_notice_shown = $true
         Write-Manifest $data
     }
 }
 
 # ---------------------------------------------------------------------------
-# pull — copy untracked VSCode files into user-sync/
+# pull — copy untracked VSCode files into user/sync/
 # ---------------------------------------------------------------------------
 function Invoke-Pull {
     param([bool]$YesFlag = $false)
@@ -212,7 +212,7 @@ function Invoke-Pull {
                 if ($srcHash -eq $dstHash) {
                     return  # identical, skip silently
                 } else {
-                    Write-Warn "SKIP $rel — content differs from repo copy (delete user-sync copy first if you want to import the VSCode version)"
+                    Write-Warn "SKIP $rel — content differs from repo copy (delete user/sync copy first if you want to import the VSCode version)"
                     return
                 }
             }
@@ -265,7 +265,7 @@ function Invoke-Pull {
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $dest) | Out-Null
         Copy-Item -Path $file -Destination $dest -Force
         Add-ToManifest -Source $dest -Target $file -Strategy "copy"
-        Write-Info "  Imported: $rel → user-sync\$rel"
+        Write-Info "  Imported: $rel → user\sync\$rel"
         $imported++
     }
 
@@ -386,14 +386,14 @@ function Add-FromRegistry {
 
     $dest = Join-Path $UserSync "$targetSubdir\$Name"
     if (Test-Path $dest) {
-        Write-Warn "Asset '$Name' already exists at user-sync\$targetSubdir\$Name — skipping."
+        Write-Warn "Asset '$Name' already exists at user\sync\$targetSubdir\$Name — skipping."
         Write-Info "Delete the existing folder if you want to reinstall."
         return
     }
 
     $src = Join-Path $RegistryCache $matchedPath
     Copy-Item -Path $src -Destination $dest -Recurse -Force
-    Write-Info "Added: $Name → user-sync\$targetSubdir\$Name (from $RegistryUrl)"
+    Write-Info "Added: $Name → user\sync\$targetSubdir\$Name (from $RegistryUrl)"
     Write-Info "Run .\scripts\sync.ps1 push to sync to VSCode."
 }
 
@@ -457,7 +457,7 @@ function Add-FromUrl {
     Copy-Item -Path "$tmpDir\repo" -Destination $dest -Recurse -Force
     Remove-Item -Recurse -Force $tmpDir
 
-    Write-Info "Added: $assetName → user-sync\$targetSubdir\$assetName (from $Url)"
+    Write-Info "Added: $assetName → user\sync\$targetSubdir\$assetName (from $Url)"
     Write-Info "Run .\scripts\sync.ps1 push to sync to VSCode."
 }
 
@@ -478,16 +478,20 @@ function Invoke-Status {
         $srcOk = Test-Path $entry.source
         $tgtOk = Test-Path $entry.target
         $status = if ($srcOk -and $tgtOk) { "OK" } else { "ORPHANED" }
-        $rel = $entry.source -replace [regex]::Escape($UserSync + "\"), ""
+        if ($entry.source.StartsWith($UserSync, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $rel = $entry.source.Substring($UserSync.Length + 1)
+        } else {
+            $rel = $entry.source
+        }
         Write-Host "  [$status] $rel"
     }
 
     Write-Host ""
 
-    # New files in user-sync/ not in manifest
+    # New files in user/sync/ not in manifest
     $manifestTargets = @($synced | ForEach-Object { $_.source })
-    $newFiles = Get-ChildItem -Path $UserSync -Recurse -File |
-        Where-Object { $_.Name -ne ".gitkeep" -and $manifestTargets -notcontains $_.FullName }
+    $newFiles = @(Get-ChildItem -Path $UserSync -Recurse -File |
+        Where-Object { $_.Name -ne ".gitkeep" -and $manifestTargets -notcontains $_.FullName })
 
     if ($newFiles.Count -gt 0) {
         Write-Host "New (not yet synced to VSCode):"
@@ -543,8 +547,8 @@ switch ($Subcommand.ToLower()) {
         Write-Host "Usage: .\scripts\sync.ps1 <subcommand> [options]"
         Write-Host ""
         Write-Host "Subcommands:"
-        Write-Host "  push [--yes]             Copy user-sync/ files to VSCode user config"
-        Write-Host "  pull [--yes]             Copy untracked VSCode files into user-sync/"
+        Write-Host "  push [--yes]             Copy user/sync/ files to VSCode user config"
+        Write-Host "  pull [--yes]             Copy untracked VSCode files into user/sync/"
         Write-Host "  add <name|url> [--yes]   Install asset from registry or URL"
         Write-Host "  list                     List registry assets grouped by type"
         Write-Host "  status                   Show synced, new, and orphaned files"
