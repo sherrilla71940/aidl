@@ -1,0 +1,30 @@
+---
+description: Show which files are synced, which are new (not yet pushed), and which are orphaned.
+mode: agent
+---
+
+Run the following command to check sync status:
+
+```bash
+./scripts/sync.sh status
+```
+
+Or on Windows:
+
+```powershell
+.\scripts\sync.ps1 status
+```
+
+The output groups your assets into three states:
+
+- **`[OK]`** — File is tracked in the manifest and exists at both source (`user-sync/`) and target (VSCode user config).
+- **`[ORPHANED]`** — File is in the manifest but one end is missing. Run `./scripts/sync.sh clean` to remove orphaned entries.
+- **`[NEW]`** — File exists in `user-sync/` but has not been synced to VSCode yet. Run `/aidl-push` to link it.
+
+Use status to verify your library is fully synced, especially after adding new assets or pulling config from a new machine.
+
+To clean up orphaned entries:
+
+```bash
+./scripts/sync.sh clean
+```

@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: Lint sync.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: Run shellcheck
+        run: shellcheck scripts/sync.sh
+
+  psscriptanalyzer:
+    name: Lint sync.ps1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path scripts/sync.ps1 -Severity Error,Warning
+          if ($results) {
+            $results | Format-Table -AutoSize
+            exit 1
+          }
+
+  validate-bundled-agents:
+    name: Validate bundled agent frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check agent frontmatter
+        run: |
+          set -euo pipefail
+          failed=0
+          for f in user-sync/agents/*.agent.md; do
+            echo "Checking $f ..."
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^description:"; then
+              echo "FAIL: $f is missing 'description' in frontmatter"
+              failed=1
+            fi
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^tags:"; then
+              echo "FAIL: $f is missing 'tags' in frontmatter"
+              failed=1
+            fi
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^type:"; then
+              echo "FAIL: $f is missing 'type' in frontmatter"
+              failed=1
+            fi
+          done
+          exit $failed
+
+  validate-slash-commands:
+    name: Validate slash command frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check prompt frontmatter
+        run: |
+          set -euo pipefail
+          failed=0
+          for f in .github/prompts/*.prompt.md; do
+            echo "Checking $f ..."
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^description:"; then
+              echo "FAIL: $f is missing 'description' in frontmatter"
+              failed=1
+            fi
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^mode: agent"; then
+              echo "FAIL: $f is missing 'mode: agent' in frontmatter"
+              failed=1
+            fi
+          done
+          exit $failed
+
+  validate-skill-frontmatter:
+    name: Validate aidl-author skill frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check SKILL.md frontmatter
+        run: |
+          set -euo pipefail
+          skill_file="user-sync/skills/aidl-author/SKILL.md"
+          failed=0
+
+          if ! awk '/^---/{n++; next} n==1' "$skill_file" | grep -q "^name:"; then
+            echo "FAIL: $skill_file is missing 'name' in frontmatter"
+            failed=1
+          fi
+          if ! awk '/^---/{n++; next} n==1' "$skill_file" | grep -q "^description:"; then
+            echo "FAIL: $skill_file is missing 'description' in frontmatter"
+            failed=1
+          fi
+
+          # Verify name matches parent directory
+          skill_name=$(awk '/^---/{n++; next} n==1' "$skill_file" | grep "^name:" | cut -d: -f2 | tr -d ' ')
+          parent_dir=$(basename "$(dirname "$skill_file")")
+          if [[ "$skill_name" != "$parent_dir" ]]; then
+            echo "FAIL: name '$skill_name' does not match parent directory '$parent_dir'"
+            failed=1
+          fi
+
+          exit $failed
