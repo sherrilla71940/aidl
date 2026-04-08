@@ -1,54 +1,62 @@
-# aidl — Your AI dev config, versioned and synced.
+# aidl — version your Copilot setup
 
-**Git for your Copilot setup. Version control your prompts, skills, and agents — sync bidirectionally, install from the community.**
+`aidl` turns your VS Code Copilot assets into a normal Git repo.
 
-<!-- REQUIRED before launch: demo GIF showing sync.sh pull + push workflow (or add debug + push). See Step 0 in build prompt. Do not publish without this. -->
+It gives you one place to keep the prompts, skills, instructions, and bundled agents you want available across machines.
 
-## ⚡ What this does
+## What it syncs
 
-```bash
-# In the terminal:
-./scripts/sync.sh pull     # capture your existing VSCode config → repo
-./scripts/sync.sh push     # restore everything on a new machine
-./scripts/sync.sh add debug  # install a skill from the community registry
-```
+There are two sides:
 
-```
-# Or in Copilot Chat (when aidl repo is open):
-/aidl-pull
-/aidl-push
-/aidl-add
-/aidl-help    ← shows live status and all commands
-```
+- Your local VS Code user config
+- This repo's `user-sync/` folder
 
-## 🚀 Try it now
+`pull` copies your existing local VS Code prompts, skills, and instructions into `user-sync/` so you can commit them.
+
+`push` copies or links the repo's `user-sync/` files back into VS Code on the current machine.
+
+`add` installs a community asset into `user-sync/` from [github/awesome-copilot](https://github.com/github/awesome-copilot) or a URL.
+
+## Quick start
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/aidl
 cd aidl
-# Import your existing Copilot prompts/skills/agents
+
+# Import your current machine's VS Code prompts/skills/instructions into the repo
 ./scripts/sync.sh pull
-# Commit and push to your fork, then on a new machine:
+
+# Save that config to your fork
 git add user-sync/ && git commit -m "add my ai config" && git push
+
+# On a new machine, clone your fork and restore it into VS Code
+./scripts/sync.sh push
 ```
 
-Clone your fork on a new machine and run `./scripts/sync.sh push`. Done.
+On Windows, you can run the same workflow with `./scripts/sync.sh` in Git Bash or `./scripts/sync.ps1` in PowerShell.
 
-## What comes bundled
+After that, your repo becomes the portable copy of your Copilot setup.
 
-Two agents ship pre-committed in `user-sync/agents/` — available immediately after your first `push`.
+## Commands
 
-| Name | Type | What it does |
-|------|------|--------------|
-| [aidl](user-sync/agents/aidl.agent.md) | agent | Chat interface for your Copilot library |
-| [explorer](user-sync/agents/explorer.agent.md) | agent | Codebase exploration and architecture summary |
+```bash
+./scripts/sync.sh pull       # VS Code -> repo
+./scripts/sync.sh push       # repo -> VS Code
+./scripts/sync.sh add debug  # install from registry or URL into user-sync/
+./scripts/sync.sh list       # browse community assets
+./scripts/sync.sh status     # show synced, new, and orphaned files
+```
 
-Browse community skills, agents, and prompts from [github/awesome-copilot](https://github.com/github/awesome-copilot): `./scripts/sync.sh list`
+When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-push`, `/aidl-add`, and `/aidl-help`.
 
-## Why not just Settings Sync?
+## Bundled here
 
-VS Code Settings Sync doesn't cover `prompts/`, `skills/`, or `agents/` — those directories are outside its scope entirely. `aidl` fills that gap: git history, any-machine restore, and one-command install from [github/awesome-copilot](https://github.com/github/awesome-copilot) or any URL.
+This repo already includes two agents in `user-sync/agents/`: [aidl](user-sync/agents/aidl.agent.md) and [explorer](user-sync/agents/explorer.agent.md).
+
+## Why this exists
+
+VS Code Settings Sync does not cover `prompts/`, `skills/`, or `agents/`. `aidl` fills that gap with Git history, machine-to-machine restore, and one-command installs.
 
 ## Contributing
 
-Want to share a skill, agent, or prompt? Contribute to the registry — that's where community assets live: [github/awesome-copilot](https://github.com/github/awesome-copilot).
+Community prompts, skills, and agents belong in [github/awesome-copilot](https://github.com/github/awesome-copilot). PRs here should focus on the sync scripts, bundled agents, or docs.
