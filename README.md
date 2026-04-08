@@ -1,15 +1,15 @@
 # aidl — version your Copilot setup
 
-`aidl` turns your VS Code Copilot assets into a normal Git repo.
+`aidl` lets you version, sync, restore, and extend your VS Code Copilot setup with Git.
 
-It gives you one place to keep your personal Copilot assets available across machines, while this repo's own workspace defaults live under `.github/`.
+Keep your personal Copilot assets consistent across machines, install community assets from registries like [github/awesome-copilot](https://github.com/github/awesome-copilot), and keep repo-specific workspace defaults under `.github/`.
 
-## What it syncs
+## User areas
 
 There are two user areas:
 
-- `user/sync/` — your personal synced prompts, skills, instructions, and optional agents
-- `user/local/` — your personal local-only prompts, instructions, and templates
+- `user/sync/` — your personal prompts, skills, instructions, and optional agents synced with VS Code
+- `user/local/` — your personal local-only prompts, instructions, and templates you don't want synced with VS Code
 
 `pull` copies your existing local VS Code prompts, skills, and instructions into `user/sync/` so you can commit them.
 
@@ -19,48 +19,50 @@ There are two user areas:
 
 ## Quick start
 
-macOS/Linux or Windows Git Bash:
+Pick your shell's sync script once: `<sync-script>` = `./scripts/sync.sh` for macOS/Linux or Windows Git Bash, and `.\scripts\sync.ps1` for Windows PowerShell.
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/aidl
 cd aidl
 
 # Import your current machine's VS Code prompts/skills/instructions into the repo
-./scripts/sync.sh pull
+<sync-script> pull
 
 # Save that config to your fork
 git add user/sync/ && git commit -m "add my ai config" && git push
 
 # On a new machine, clone your fork and restore it into VS Code
-./scripts/sync.sh push
-```
-
-Windows PowerShell:
-
-```powershell
-git clone https://github.com/YOUR_USERNAME/aidl
-cd aidl
-
-.\scripts\sync.ps1 pull
-git add user/sync/; git commit -m "add my ai config"; git push
-.\scripts\sync.ps1 push
+<sync-script> push
 ```
 
 After that, your repo becomes the portable copy of your Copilot setup.
 
 ## Commands
 
+Choose your shell's sync script, then use the same subcommands with it:
+
 ```bash
-./scripts/sync.sh pull       # VS Code -> repo
-./scripts/sync.sh push       # repo -> VS Code
-./scripts/sync.sh add debug  # install from registry or URL into user/sync/
-./scripts/sync.sh list       # browse community assets
-./scripts/sync.sh status     # show synced, new, and orphaned files
+<sync-script> pull       # VS Code -> repo
+<sync-script> push       # repo -> VS Code
+<sync-script> add debug  # install from the default registry into user/sync/
+<sync-script> list       # browse community assets
+<sync-script> status     # show synced, new, and orphaned files
+<sync-script> clean      # remove orphaned synced files
 ```
 
-PowerShell equivalents: `.\scripts\sync.ps1 pull`, `.\scripts\sync.ps1 push`, `.\scripts\sync.ps1 add debug`, `.\scripts\sync.ps1 list`, `.\scripts\sync.ps1 status`.
+Registry behavior:
 
-When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-push`, `/aidl-add`, and `/aidl-help`.
+By default, `add` installs from [github/awesome-copilot](https://github.com/github/awesome-copilot). To install from a different community registry, set `AIDL_REGISTRY` for that command.
+
+```bash
+# default: installs from github/awesome-copilot
+<sync-script> add debug
+
+# override the registry, then install the same way
+AIDL_REGISTRY=https://github.com/someone/community-copilot <sync-script> add debug
+```
+
+When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-push`, `/aidl-add`, `/aidl-list`, `/aidl-status`, and `/aidl-help`. There is no `/aidl-clean` slash command.
 
 ## Workspace defaults
 
