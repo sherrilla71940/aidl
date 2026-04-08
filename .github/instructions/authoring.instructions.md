@@ -1,20 +1,20 @@
 ---
-applyTo: "user-sync/**"
-description: Frontmatter requirements, naming conventions, and content standards for Copilot assets in user-sync/.
+applyTo: "user/sync/**"
+description: Frontmatter requirements, naming conventions, and content standards for Copilot assets in user/sync/.
 ---
 
-# Authoring guide for user-sync/ assets
+# Authoring guide for user/sync/ assets
 
-This file auto-applies whenever you are editing or creating files under `user-sync/`. Follow these conventions to ensure your assets work correctly after sync.
+This file auto-applies whenever you are editing or creating files under `user/sync/`. Follow these conventions to ensure your assets work correctly after sync.
 
 ## Asset types
 
 | Type | File pattern | Location |
 |------|-------------|----------|
-| `prompt` | `kebab-case.prompt.md` | `user-sync/prompts/` |
-| `skill` | `SKILL.md` (folder name = skill name) | `user-sync/skills/<name>/SKILL.md` |
-| `agent` | `kebab-case.agent.md` | `user-sync/agents/` |
-| `instruction` | `kebab-case.instructions.md` | `user-sync/instructions/` |
+| `prompt` | `kebab-case.prompt.md` | `user/sync/prompts/` |
+| `skill` | `SKILL.md` (folder name = skill name) | `user/sync/skills/<name>/SKILL.md` |
+| `agent` | `kebab-case.agent.md` | `user/sync/agents/` |
+| `instruction` | `kebab-case.instructions.md` | `user/sync/instructions/` |
 
 ## Required frontmatter by type
 
@@ -71,7 +71,7 @@ description: One sentence describing what these instructions enforce.
 
 - Forgetting `mode: agent` in prompt frontmatter — slash command won't work correctly
 - `name:` field in SKILL.md doesn't match parent folder — CI will fail
-- Placing files in `user-local/` then wondering why they don't appear in VSCode — `user-local/` is never synced
+- Placing files in `user/local/` then wondering why they don't appear in VSCode — `user/local/` is never synced
 - Not running `./scripts/sync.sh push` after adding a new file — the link to VSCode doesn't happen automatically
 
 ## Validation

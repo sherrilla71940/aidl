@@ -17,9 +17,9 @@ Or on Windows:
 
 The output groups your assets into three states:
 
-- **`[OK]`** — File is tracked in the manifest and exists at both source (`user-sync/`) and target (VSCode user config).
+- **`[OK]`** — File is tracked in the manifest and exists at both source (`user/sync/`) and target (VSCode user config).
 - **`[ORPHANED]`** — File is in the manifest but one end is missing. Run `./scripts/sync.sh clean` to remove orphaned entries.
-- **`[NEW]`** — File exists in `user-sync/` but has not been synced to VSCode yet. Run `/aidl-push` to link it.
+- **`[NEW]`** — File exists in `user/sync/` but has not been synced to VSCode yet. Run `/aidl-push` to link it.
 
 Use status to verify your library is fully synced, especially after adding new assets or pulling config from a new machine.
 

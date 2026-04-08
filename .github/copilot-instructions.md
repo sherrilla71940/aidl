@@ -1,5 +1,5 @@
-- This is the aidl repo: sync scripts, bundled agents, and the Copilot UX layer.
-- Files under `user-sync/` must have valid YAML frontmatter — see `authoring.instructions.md` for field requirements.
+- This is the aidl repo: sync scripts, workspace agents/skills, and the Copilot UX layer.
+- Files under `user/sync/` must have valid YAML frontmatter — see `authoring.instructions.md` for field requirements.
 - `sync.sh` and `sync.ps1` must stay functionally equivalent. Edit both when changing sync behavior.
 - Do not expand the README beyond 80 lines. It is intentionally concise.
 - Do not add features or subcommands beyond what is specced.

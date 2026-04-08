@@ -2,20 +2,20 @@
 
 `aidl` turns your VS Code Copilot assets into a normal Git repo.
 
-It gives you one place to keep the prompts, skills, instructions, and bundled agents you want available across machines.
+It gives you one place to keep your personal Copilot assets available across machines, while this repo's own workspace defaults live under `.github/`.
 
 ## What it syncs
 
-There are two sides:
+There are two user areas:
 
-- Your local VS Code user config
-- This repo's `user-sync/` folder
+- `user/sync/` — your personal synced prompts, skills, instructions, and optional agents
+- `user/local/` — your personal local-only prompts, instructions, and templates
 
-`pull` copies your existing local VS Code prompts, skills, and instructions into `user-sync/` so you can commit them.
+`pull` copies your existing local VS Code prompts, skills, and instructions into `user/sync/` so you can commit them.
 
-`push` copies or links the repo's `user-sync/` files back into VS Code on the current machine.
+`push` copies or links `user/sync/` back into VS Code on the current machine.
 
-`add` installs a community asset into `user-sync/` from [github/awesome-copilot](https://github.com/github/awesome-copilot) or a URL.
+`add` installs a community asset into `user/sync/` from [github/awesome-copilot](https://github.com/github/awesome-copilot) or a URL.
 
 ## Quick start
 
@@ -27,13 +27,25 @@ cd aidl
 ./scripts/sync.sh pull
 
 # Save that config to your fork
-git add user-sync/ && git commit -m "add my ai config" && git push
+git add user/sync/ && git commit -m "add my ai config" && git push
 
 # On a new machine, clone your fork and restore it into VS Code
 ./scripts/sync.sh push
 ```
 
-On Windows, you can run the same workflow with `./scripts/sync.sh` in Git Bash or `./scripts/sync.ps1` in PowerShell.
+On Windows:
+
+```bash
+# Git Bash
+./scripts/sync.sh pull
+./scripts/sync.sh push
+```
+
+```powershell
+# PowerShell
+.\scripts\sync.ps1 pull
+.\scripts\sync.ps1 push
+```
 
 After that, your repo becomes the portable copy of your Copilot setup.
 
@@ -42,21 +54,19 @@ After that, your repo becomes the portable copy of your Copilot setup.
 ```bash
 ./scripts/sync.sh pull       # VS Code -> repo
 ./scripts/sync.sh push       # repo -> VS Code
-./scripts/sync.sh add debug  # install from registry or URL into user-sync/
+./scripts/sync.sh add debug  # install from registry or URL into user/sync/
 ./scripts/sync.sh list       # browse community assets
 ./scripts/sync.sh status     # show synced, new, and orphaned files
 ```
 
+PowerShell equivalents: `.\scripts\sync.ps1 pull`, `.\scripts\sync.ps1 push`, `.\scripts\sync.ps1 add debug`, `.\scripts\sync.ps1 list`, `.\scripts\sync.ps1 status`.
+
 When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-push`, `/aidl-add`, and `/aidl-help`.
 
-## Bundled here
+## Workspace defaults
 
-This repo already includes two agents in `user-sync/agents/`: [aidl](user-sync/agents/aidl.agent.md) and [explorer](user-sync/agents/explorer.agent.md).
-
-## Why this exists
-
-VS Code Settings Sync does not cover `prompts/`, `skills/`, or `agents/`. `aidl` fills that gap with Git history, machine-to-machine restore, and one-command installs.
+This repo's own workspace-native assets live in `.github/`, including [.github/agents/aidl.agent.md](.github/agents/aidl.agent.md), [.github/agents/explorer.agent.md](.github/agents/explorer.agent.md), and [.github/skills/aidl-author/SKILL.md](.github/skills/aidl-author/SKILL.md).
 
 ## Contributing
 
-Community prompts, skills, and agents belong in [github/awesome-copilot](https://github.com/github/awesome-copilot). PRs here should focus on the sync scripts, bundled agents, or docs.
+Community prompts, skills, and agents belong in [github/awesome-copilot](https://github.com/github/awesome-copilot). PRs here should focus on the sync scripts, `.github/` workspace assets, or docs.

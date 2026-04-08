@@ -1,5 +1,5 @@
 ---
-description: Sync user-sync/ files to your VSCode user config (push repo → VSCode).
+description: Sync user/sync/ files to your VSCode user config (push repo → VSCode).
 mode: agent
 ---
 
@@ -16,10 +16,10 @@ Or on Windows:
 ```
 
 This will:
-- Symlink (macOS/Linux) or copy (Windows) all files from `user-sync/prompts/`, `user-sync/skills/`, and `user-sync/instructions/` into your VSCode user config directory.
+- Symlink (macOS/Linux) or copy (Windows) all files from `user/sync/prompts/`, `user/sync/skills/`, and `user/sync/instructions/` into your VSCode user config directory.
 - Skip any files that already exist at the target and were not created by aidl (prints a warning).
-- Print `ACTION REQUIRED` if `chat.agentFilesLocations` needs to be added to your VSCode `settings.json` for agent discovery.
+- Print `ACTION REQUIRED` if `chat.agentFilesLocations` needs to be added to your VSCode `settings.json` for personal agent discovery.
 
-Run this after adding any new asset to `user-sync/`, or on a fresh machine after cloning your fork.
+Run this after adding any new asset to `user/sync/`, or on a fresh machine after cloning your fork.
 
 To skip confirmation prompts (e.g., in a script), use `--yes`.

@@ -1,5 +1,5 @@
 ---
-description: Install an asset from the community registry (or any URL) into user-sync/.
+description: Install an asset from the community registry (or any URL) into user/sync/.
 mode: agent
 ---
 
@@ -26,7 +26,7 @@ If you haven't provided an asset name, run `/aidl-list` first to see what's avai
 
 The script will:
 1. Show you the registry URL and asset path before downloading (trust prompt).
-2. Install the asset into the appropriate `user-sync/` subfolder.
+2. Install the asset into the appropriate `user/sync/` subfolder.
 3. Remind you to run `push` (or `/aidl-push`) to sync it to VSCode.
 
 To use a different registry for this session:

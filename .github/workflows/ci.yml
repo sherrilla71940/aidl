@@ -32,8 +32,8 @@ jobs:
             exit 1
           }
 
-  validate-bundled-agents:
-    name: Validate bundled agent frontmatter
+  validate-workspace-agents:
+    name: Validate workspace agent frontmatter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           failed=0
-          for f in user-sync/agents/*.agent.md; do
+          for f in .github/agents/*.agent.md; do
             echo "Checking $f ..."
             if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^description:"; then
               echo "FAIL: $f is missing 'description' in frontmatter"
@@ -88,7 +88,7 @@ jobs:
       - name: Check SKILL.md frontmatter
         run: |
           set -euo pipefail
-          skill_file="user-sync/skills/aidl-author/SKILL.md"
+          skill_file=".github/skills/aidl-author/SKILL.md"
           failed=0
 
           if ! awk '/^---/{n++; next} n==1' "$skill_file" | grep -q "^name:"; then
