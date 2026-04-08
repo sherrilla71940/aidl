@@ -19,6 +19,8 @@ There are two user areas:
 
 ## Quick start
 
+macOS/Linux or Windows Git Bash:
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/aidl
 cd aidl
@@ -33,17 +35,14 @@ git add user/sync/ && git commit -m "add my ai config" && git push
 ./scripts/sync.sh push
 ```
 
-On Windows:
-
-```bash
-# Git Bash
-./scripts/sync.sh pull
-./scripts/sync.sh push
-```
+Windows PowerShell:
 
 ```powershell
-# PowerShell
+git clone https://github.com/YOUR_USERNAME/aidl
+cd aidl
+
 .\scripts\sync.ps1 pull
+git add user/sync/; git commit -m "add my ai config"; git push
 .\scripts\sync.ps1 push
 ```
 
