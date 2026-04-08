@@ -2,7 +2,7 @@
 
 `aidl` lets you version, sync, restore, and extend your VS Code Copilot setup with Git.
 
-Keep your personal Copilot assets consistent across machines, install community assets from registries like [github/awesome-copilot](https://github.com/github/awesome-copilot), and keep repo-specific workspace defaults under `.github/`.
+Keep your personal Copilot assets consistent across machines and install community assets from registries like [github/awesome-copilot](https://github.com/github/awesome-copilot).
 
 ## User areas
 
@@ -66,7 +66,7 @@ When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-pus
 
 ## Workspace defaults
 
-This repo's own workspace-native assets live in `.github/`, including [.github/agents/aidl.agent.md](.github/agents/aidl.agent.md), [.github/agents/explorer.agent.md](.github/agents/explorer.agent.md), and [.github/skills/aidl-author/SKILL.md](.github/skills/aidl-author/SKILL.md).
+This repo also ships its own workspace-native defaults under `.github/` so `aidl` works well as a project out of the box. That includes [.github/agents/aidl.agent.md](.github/agents/aidl.agent.md), [.github/agents/explorer.agent.md](.github/agents/explorer.agent.md), and [.github/skills/aidl-author/SKILL.md](.github/skills/aidl-author/SKILL.md).
 
 ## Contributing
 
