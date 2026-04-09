@@ -6,7 +6,7 @@ English | **繁體中文**
 
 Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、instructions、hooks 和私人筆記 — 全部用 git 管理，隨時可攜。
 
-一個人用，讓你的 AI 工作方式在不同機器間保持一致。團隊共用，統一大家使用 AI 的方式。
+一個人用，讓你的 AI 工作方式在不同機器間保持一致。或者 fork 成團隊 repo — 把共用的 skills、agents 和 instructions 放進 `sync/`，隊友 clone 後執行 `push` 就能拿到同樣的設定。
 
 ## 目錄結構
 
@@ -68,10 +68,6 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 | 說明與即時狀態 | — | `/cam-help` |
 | 自然語言介面 | — | `@copilot-asset-manager` |
 | 搜尋社群資源 | — | `@scout` |
-
-## 團隊使用
-
-Fork 這個 repo 作為團隊共用的 AI 設定。把團隊通用的 skills、agents 和 instructions 放進 `sync/`。團隊成員 clone fork 後執行 `push` 即可把共用設定同步到自己的 VS Code。
 
 ## Workspace 預設資源
 

@@ -4,7 +4,7 @@
 
 Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — all versioned and portable.
 
-Use it alone to keep your AI working style portable across machines. Fork it as a shared repo to standardize how your team uses AI.
+Use it alone to keep your AI working style portable across machines. Or fork it as a team repo — populate `sync/` with shared skills, agents, and instructions, and teammates clone + `push` to get the same setup.
 
 ## How it's organized
 
@@ -66,10 +66,6 @@ Chat commands require this repo open in VS Code.
 | Help & live status | — | `/cam-help` |
 | Plain-English interface | — | `@copilot-asset-manager` |
 | Find community assets | — | `@scout` |
-
-## Team use
-
-Fork this repo as your team's shared AI config. Populate `sync/` with team-wide skills, agents, and instructions. Team members clone the fork and run `push` to get the shared setup into their VS Code.
 
 ## Workspace defaults
 
