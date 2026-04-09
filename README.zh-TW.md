@@ -75,4 +75,4 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 
 ## 貢獻
 
-PR 請專注於同步腳本、`.github/` workspace 資源或文件。詳見 `CONTRIBUTING.md`。
+PR 請專注於同步腳本、`.github/` workspace 資源或文件。詳見 `CONTRIBUTING.zh-TW.md`。
