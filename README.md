@@ -1,6 +1,6 @@
-# copilot-asset-manager — Manage your Copilot assets in a git repo
+# copilot-asset-manager — Git-backed Copilot assets with bidirectional VS Code sync
 
-Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — versioned in git and synced to VS Code.
+Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — all versioned and portable.
 
 Use it alone to keep your AI working style portable across machines. Fork it as a shared repo to standardize how your team uses AI.
 
