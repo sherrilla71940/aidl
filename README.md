@@ -55,25 +55,17 @@ After that, your repo is the portable home of your AI setup.
 
 ## Commands
 
-**Terminal** (`<sync-script>` = `./scripts/sync.sh` or `.\scripts\sync.ps1`):
+`<sync-script>` = `./scripts/sync.sh` (macOS/Linux/Git Bash) or `.\scripts\sync.ps1` (PowerShell). Chat commands require this repo open in VS Code.
 
-```bash
-<sync-script> pull [--yes]   # VS Code → sync/
-<sync-script> push [--yes]   # sync/ → VS Code
-<sync-script> status         # show what's synced, new, or orphaned
-<sync-script> clean          # remove orphaned entries
-```
-
-**Copilot Chat** (when this repo is open):
-
-| Command | What it does |
-|---------|--------------|
-| `/cam-pull` | Import untracked VS Code files into `sync/` |
-| `/cam-push` | Sync `sync/` files to VS Code |
-| `/cam-status` | Show sync state |
-| `/cam-help` | Show all commands and live status |
-| `@copilot-asset-manager` | Plain-English interface for any sync operation |
-| `@scout` | Research existing community prompts and skills |
+| Action | Terminal | Copilot Chat |
+|--------|----------|--------------|
+| Import VS Code → `sync/` | `<sync-script> pull [--yes]` | `/cam-pull` |
+| Restore `sync/` → VS Code | `<sync-script> push [--yes]` | `/cam-push` |
+| Show sync state | `<sync-script> status` | `/cam-status` |
+| Remove orphaned entries | `<sync-script> clean` | — |
+| Help & live status | — | `/cam-help` |
+| Plain-English interface | — | `@copilot-asset-manager` |
+| Find community assets | — | `@scout` |
 
 ## Team use
 
