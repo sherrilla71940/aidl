@@ -80,32 +80,23 @@ jobs:
           done
           exit $failed
 
-  validate-skill-frontmatter:
-    name: Validate aidl-author skill frontmatter
+  no-personal-content:
+    name: Ensure no personal config in PR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check SKILL.md frontmatter
+        with:
+          fetch-depth: 0
+      - name: Check for sync/ or local/ changes
         run: |
           set -euo pipefail
-          skill_file=".github/skills/aidl-author/SKILL.md"
-          failed=0
-
-          if ! awk '/^---/{n++; next} n==1' "$skill_file" | grep -q "^name:"; then
-            echo "FAIL: $skill_file is missing 'name' in frontmatter"
-            failed=1
+          # List files changed between PR branch and main
+          changed=$(git diff --name-only origin/main...HEAD | grep -E '^(sync|local)/' | grep -v '\.gitkeep$' || true)
+          if [[ -n "$changed" ]]; then
+            echo "FAIL: PR includes changes to sync/ or local/ (personal config):"
+            echo "$changed"
+            echo ""
+            echo "PRs to upstream must only touch scripts/, .github/, or docs/."
+            echo "Keep personal config in your own fork — do not PR it upstream."
+            exit 1
           fi
-          if ! awk '/^---/{n++; next} n==1' "$skill_file" | grep -q "^description:"; then
-            echo "FAIL: $skill_file is missing 'description' in frontmatter"
-            failed=1
-          fi
-
-          # Verify name matches parent directory
-          skill_name=$(awk '/^---/{n++; next} n==1' "$skill_file" | grep "^name:" | cut -d: -f2 | tr -d ' ')
-          parent_dir=$(basename "$(dirname "$skill_file")")
-          if [[ "$skill_name" != "$parent_dir" ]]; then
-            echo "FAIL: name '$skill_name' does not match parent directory '$parent_dir'"
-            failed=1
-          fi
-
-          exit $failed

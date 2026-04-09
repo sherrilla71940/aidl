@@ -13,5 +13,6 @@
 - [ ] `scripts/sync.ps1` updated to match if `sync.sh` changed
 - [ ] Workspace asset frontmatter valid (description, tags, type present)
 - [ ] README remains under 80 lines
+- [ ] No changes to `sync/` or `local/` (personal config stays in your fork)
 
-> Note: New skills, agents, or prompts belong in the registry repo, not here.
+> PRs that include `sync/` or `local/` changes will be rejected by CI.

@@ -1,73 +1,88 @@
-# aidl — version your Copilot setup
+# copilot-asset-manager — Manage your Copilot assets in a git repo
 
-`aidl` lets you version, sync, restore, and extend your VS Code Copilot setup with Git.
+Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — versioned in git and synced to VS Code.
 
-Keep your personal Copilot assets consistent across machines and install community assets from registries like [github/awesome-copilot](https://github.com/github/awesome-copilot).
+Use it alone to keep your AI working style portable across machines. Fork it as a shared repo to standardize how your team uses AI.
 
-## User areas
+## How it's organized
 
-There are two user areas:
+| Area | What lives here | Synced to VS Code? |
+|------|-----------------|--------------------|
+| `.github/` | Project agents, skills, and prompts | No — workspace only |
+| `sync/` | Your prompts, skills, agents, instructions, and hooks | Yes |
+| `local/` | Private guides, notes, anything you want | No |
 
-- `user/sync/` — your personal prompts, skills, instructions, and optional agents synced with VS Code
-- `user/local/` — your personal local-only prompts, instructions, and templates you don't want synced with VS Code
+Both `sync/` and `local/` are yours. The difference is that files under `sync/` in the right subdirectories (`prompts/`, `skills/`, `instructions/`, `hooks/`, `agents/`) get synced to VS Code. `local/` is never synced — use it for personal notes, team guides, draft prompts, reference docs, or anything else.
 
-`pull` copies your existing local VS Code prompts, skills, and instructions into `user/sync/` so you can commit them.
+You can nest folders inside `sync/` for organization — they sync fine:
 
-`push` copies or links `user/sync/` back into VS Code on the current machine.
-
-`add` installs a community asset into `user/sync/` from [github/awesome-copilot](https://github.com/github/awesome-copilot) or a URL.
+```
+sync/
+  prompts/
+    code-review/
+      review-pr.prompt.md
+      review-security.prompt.md
+    writing/
+      summarize.prompt.md
+  skills/
+    debug/
+      SKILL.md
+  hooks/
+    pre-commit-check.md
+```
 
 ## Quick start
 
-Pick your shell's sync script once: `<sync-script>` = `./scripts/sync.sh` for macOS/Linux or Windows Git Bash, and `.\scripts\sync.ps1` for Windows PowerShell.
+Pick your shell's sync script: `<sync-script>` = `./scripts/sync.sh` (macOS/Linux/Git Bash) or `.\scripts\sync.ps1` (Windows PowerShell).
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/aidl
-cd aidl
+git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
+cd copilot-asset-manager
 
-# Import your current machine's VS Code prompts/skills/instructions into the repo
+# Import your existing VS Code prompts/skills/instructions into sync/
 <sync-script> pull
 
-# Save that config to your fork
-git add user/sync/ && git commit -m "add my ai config" && git push
+# Commit so your fork is your source of truth
+git add sync/ && git commit -m "add my ai config" && git push
 
-# On a new machine, clone your fork and restore it into VS Code
+# On any new machine: clone your fork and restore
 <sync-script> push
 ```
 
-After that, your repo becomes the portable copy of your Copilot setup.
+Or use Copilot Chat when this repo is open: `/cam-pull` to import, `/cam-push` to restore.
+
+After that, your repo is the portable home of your AI setup.
 
 ## Commands
 
-Choose your shell's sync script, then use the same subcommands with it:
+**Terminal** (`<sync-script>` = `./scripts/sync.sh` or `.\scripts\sync.ps1`):
 
 ```bash
-<sync-script> pull       # VS Code -> repo
-<sync-script> push       # repo -> VS Code
-<sync-script> add debug  # install from the default registry into user/sync/
-<sync-script> list       # browse community assets
-<sync-script> status     # show synced, new, and orphaned files
-<sync-script> clean      # remove orphaned synced files
+<sync-script> pull [--yes]   # VS Code → sync/
+<sync-script> push [--yes]   # sync/ → VS Code
+<sync-script> status         # show what's synced, new, or orphaned
+<sync-script> clean          # remove orphaned entries
 ```
 
-Registry behavior:
+**Copilot Chat** (when this repo is open):
 
-By default, `add` installs from [github/awesome-copilot](https://github.com/github/awesome-copilot). To install from a different community registry, set `AIDL_REGISTRY` for that command.
+| Command | What it does |
+|---------|--------------|
+| `/cam-pull` | Import untracked VS Code files into `sync/` |
+| `/cam-push` | Sync `sync/` files to VS Code |
+| `/cam-status` | Show sync state |
+| `/cam-help` | Show all commands and live status |
+| `@copilot-asset-manager` | Plain-English interface for any sync operation |
+| `@scout` | Research existing community prompts and skills |
 
-```bash
-# default: installs from github/awesome-copilot
-<sync-script> add debug
+## Team use
 
-# override the registry, then install the same way
-AIDL_REGISTRY=https://github.com/someone/community-copilot <sync-script> add debug
-```
-
-When the repo is open in Copilot Chat, you can also use `/aidl-pull`, `/aidl-push`, `/aidl-add`, `/aidl-list`, `/aidl-status`, and `/aidl-help`. There is no `/aidl-clean` slash command.
+Fork this repo as your team's shared AI config. Populate `sync/` with team-wide skills, agents, and instructions. Team members clone the fork and run `push` to get the shared setup into their VS Code.
 
 ## Workspace defaults
 
-This repo also ships its own workspace-native defaults under `.github/` so `aidl` works well as a project out of the box. That includes [.github/agents/aidl.agent.md](.github/agents/aidl.agent.md), [.github/agents/explorer.agent.md](.github/agents/explorer.agent.md), and [.github/skills/aidl-author/SKILL.md](.github/skills/aidl-author/SKILL.md).
+This repo ships its own workspace-native assets under `.github/` — the `@copilot-asset-manager` and `@scout` agents and the slash command prompts. These apply within this repo only and don't affect `sync/` or `local/`.
 
 ## Contributing
 
-Community prompts, skills, and agents belong in [github/awesome-copilot](https://github.com/github/awesome-copilot). PRs here should focus on the sync scripts, `.github/` workspace assets, or docs.
+PRs should focus on sync scripts, `.github/` workspace assets, or docs. See `CONTRIBUTING.md`.

@@ -1,1 +1,0 @@
-this is a test prompt file. It should be ignored by the sync scripts and not show up in the VSCode user config. It is only used for testing the sync scripts' ability to ignore files that don't have valid YAML frontmatter.

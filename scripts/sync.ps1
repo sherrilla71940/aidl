@@ -1,17 +1,14 @@
-# aidl sync.ps1 — Bidirectional sync between aidl repo and VSCode user config (Windows)
+# copilot-asset-manager sync.ps1 — Bidirectional sync between copilot-asset-manager repo and VSCode user config (Windows)
 # Usage: .\scripts\sync.ps1 <subcommand> [options]
-#   push [--yes]             Copy user/sync/ files to VSCode config
-#   pull [--yes]             Copy untracked VSCode files into user/sync/
-#   add <name|url> [--yes]   Install asset from registry or URL
-#   list                     List registry assets grouped by type
-#   status                   Show synced, new, and orphaned files
-#   clean                    Remove orphaned manifest entries
+#   push [--yes]   Copy sync/ files to VSCode config
+#   pull [--yes]   Copy untracked VSCode files into sync/
+#   status         Show synced, new, and orphaned files
+#   clean          Remove orphaned manifest entries
 
 [CmdletBinding()]
 param(
     [Parameter(Position=0)][string]$Subcommand = "",
     [Parameter(Position=1)][string]$Arg1 = "",
-    [Parameter(Position=2)][string]$Arg2 = "",
     [switch]$Yes
 )
 
@@ -23,14 +20,9 @@ $ErrorActionPreference = "Stop"
 # ---------------------------------------------------------------------------
 $ScriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot    = Split-Path -Parent $ScriptDir
-$UserSync    = Join-Path $RepoRoot "user\sync"
+$UserSync    = Join-Path $RepoRoot "sync"
 $Manifest    = Join-Path $RepoRoot ".sync-manifest.json"
-$CacheDir    = Join-Path $RepoRoot ".aidl-cache"
 $VSCodeUser  = Join-Path $env:APPDATA "Code\User"
-
-$RegistryUrl   = if ($env:AIDL_REGISTRY) { $env:AIDL_REGISTRY } else { "https://github.com/github/awesome-copilot" }
-$CacheTTLHours = if ($env:AIDL_CACHE_TTL) { [int]$env:AIDL_CACHE_TTL } else { 24 }
-$RegistryCache = Join-Path $CacheDir "registry"
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -85,44 +77,12 @@ function Remove-FromManifest {
 }
 
 # ---------------------------------------------------------------------------
-# Registry cache
-# ---------------------------------------------------------------------------
-function Refresh-RegistryCache {
-    New-Item -ItemType Directory -Force -Path $CacheDir | Out-Null
-
-    if (Test-Path (Join-Path $RegistryCache ".git")) {
-        $fetchHead = Join-Path $RegistryCache ".git\FETCH_HEAD"
-        if (Test-Path $fetchHead) {
-            $age = (Get-Date) - (Get-Item $fetchHead).LastWriteTime
-            if ($age.TotalHours -lt $CacheTTLHours) {
-                return
-            }
-        }
-        Write-Info "Refreshing registry cache..."
-        try {
-            git -C $RegistryCache fetch --depth 1 origin HEAD 2>$null
-            git -C $RegistryCache reset --hard FETCH_HEAD 2>$null
-        } catch {
-            Write-Warn "Could not refresh registry cache — using stale cache."
-        }
-    } else {
-        Write-Info "Fetching registry from $RegistryUrl ..."
-        try {
-            git clone --depth 1 $RegistryUrl $RegistryCache 2>$null
-        } catch {
-            Write-Err "Could not reach registry at $RegistryUrl. Check your internet connection."
-            exit 1
-        }
-    }
-}
-
-# ---------------------------------------------------------------------------
-# push — copy user/sync/ files to VSCode config
+# push — copy sync/ files to VSCode config
 # ---------------------------------------------------------------------------
 function Invoke-Push {
     param([bool]$YesFlag = $false)
     Ensure-Manifest
-    Write-Info "Pushing user/sync/ → VSCode config at: $VSCodeUser"
+    Write-Info "Pushing sync/ → VSCode config at: $VSCodeUser"
 
     $linked = 0
     $skipped = 0
@@ -150,6 +110,9 @@ function Invoke-Push {
             "instructions" {
                 $target = Join-Path $VSCodeUser $rel
             }
+            "hooks" {
+                $target = Join-Path $VSCodeUser $rel
+            }
             default { continue }
         }
 
@@ -161,7 +124,7 @@ function Invoke-Push {
             if ((Is-InManifest $target) -eq $true) {
                 Remove-Item -Path $target -Force
             } else {
-                Write-Warn "SKIP $rel — exists at target but not created by aidl (delete the target file first if you want to overwrite)"
+                Write-Warn "SKIP $rel — exists at target but not created by copilot-asset-manager (delete the target file first if you want to overwrite)"
                 $skipped++
                 continue
             }
@@ -188,7 +151,7 @@ function Invoke-Push {
 }
 
 # ---------------------------------------------------------------------------
-# pull — copy untracked VSCode files into user/sync/
+# pull — copy untracked VS Code files into sync/
 # ---------------------------------------------------------------------------
 function Invoke-Pull {
     param([bool]$YesFlag = $false)
@@ -197,7 +160,7 @@ function Invoke-Pull {
 
     $candidates = @()
 
-    foreach ($subdir in @("prompts","skills","instructions")) {
+    foreach ($subdir in @("prompts","skills","instructions","hooks")) {
         $srcDir = Join-Path $VSCodeUser $subdir
         if (-not (Test-Path $srcDir)) { continue }
 
@@ -211,10 +174,38 @@ function Invoke-Pull {
                 $dstHash = (Get-FileHash -Path $dest -Algorithm MD5).Hash
                 if ($srcHash -eq $dstHash) {
                     return  # identical, skip silently
-                } else {
-                    Write-Warn "SKIP $rel — content differs from repo copy (delete user/sync copy first if you want to import the VSCode version)"
+                }
+
+                if ($YesFlag) {
+                    Write-Warn "SKIP $rel — content differs (repo copy kept; use pull without --yes to resolve interactively)"
                     return
                 }
+
+                Write-Host ""
+                Write-Warn "CONFLICT: $rel"
+                $repoLines = Get-Content $dest
+                $vsLines   = Get-Content $file
+                $diff = Compare-Object $repoLines $vsLines -PassThru | ForEach-Object {
+                    $side = if ($_.SideIndicator -eq '<=') { '- ' } else { '+ ' }
+                    "$side$_"
+                }
+                $diff | Select-Object -First 20 | ForEach-Object { Write-Host "  $_" }
+                if ($diff.Count -gt 20) { Write-Host "  ... ($($diff.Count - 20) more lines)" }
+                Write-Host ""
+                $choice = Read-Host "  Keep repo version (k), use VS Code version (v), skip (s)? [k/v/s]"
+                switch ($choice.ToLower()) {
+                    'v' {
+                        Copy-Item -Path $file -Destination $dest -Force
+                        Write-Info "  Updated: $rel (VS Code version accepted)"
+                    }
+                    'k' {
+                        Write-Info "  Kept: $rel (repo version kept)"
+                    }
+                    default {
+                        Write-Info "  Skipped: $rel"
+                    }
+                }
+                return
             }
             $script:candidates += $file
         }
@@ -265,7 +256,7 @@ function Invoke-Pull {
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $dest) | Out-Null
         Copy-Item -Path $file -Destination $dest -Force
         Add-ToManifest -Source $dest -Target $file -Strategy "copy"
-        Write-Info "  Imported: $rel → user\sync\$rel"
+        Write-Info "  Imported: $rel → sync\$rel"
         $imported++
     }
 
@@ -274,200 +265,12 @@ function Invoke-Pull {
 }
 
 # ---------------------------------------------------------------------------
-# list — list registry assets grouped by type
-# ---------------------------------------------------------------------------
-function Invoke-List {
-    Refresh-RegistryCache
-
-    $registryJson = Join-Path $RegistryCache "registry.json"
-
-    if (Test-Path $registryJson) {
-        $assets = Get-Content -Raw $registryJson | ConvertFrom-Json
-        $grouped = @{}
-        foreach ($a in $assets) {
-            $t = $a.type.Substring(0,1).ToUpper() + $a.type.Substring(1) + "s"
-            if (-not $grouped.ContainsKey($t)) { $grouped[$t] = @() }
-            $grouped[$t] += $a
-        }
-        foreach ($group in ($grouped.Keys | Sort-Object)) {
-            Write-Host ""
-            Write-Host $group
-            foreach ($item in $grouped[$group]) {
-                Write-Host ("  {0,-20} {1}" -f $item.name, $item.description)
-            }
-        }
-    } else {
-        Write-Warn "No registry.json found — scanning directory structure..."
-        foreach ($typeDir in @("skills","agents","prompts")) {
-            $dir = Join-Path $RegistryCache $typeDir
-            if (-not (Test-Path $dir)) { continue }
-            Write-Host ""
-            Write-Host ($typeDir.Substring(0,1).ToUpper() + $typeDir.Substring(1))
-            Get-ChildItem -Path $dir -Directory | ForEach-Object {
-                Write-Host "  $($_.Name)"
-            }
-        }
-    }
-
-    Write-Host ""
-    Write-Info "Run .\scripts\sync.ps1 add <name> to install any asset."
-}
-
-# ---------------------------------------------------------------------------
-# add — install asset from registry or URL
-# ---------------------------------------------------------------------------
-function Invoke-Add {
-    param([string]$AssetArg, [bool]$YesFlag = $false)
-
-    if ([string]::IsNullOrWhiteSpace($AssetArg)) {
-        Write-Err "Usage: .\scripts\sync.ps1 add <name|url>"
-        exit 1
-    }
-
-    if ($AssetArg -match '^https?://') {
-        Add-FromUrl -Url $AssetArg -YesFlag $YesFlag
-    } else {
-        Add-FromRegistry -Name $AssetArg -YesFlag $YesFlag
-    }
-}
-
-function Add-FromRegistry {
-    param([string]$Name, [bool]$YesFlag)
-    Refresh-RegistryCache
-
-    $matchedPath = ""
-    $matchedType = ""
-    $registryJson = Join-Path $RegistryCache "registry.json"
-
-    if (Test-Path $registryJson) {
-        $assets = Get-Content -Raw $registryJson | ConvertFrom-Json
-        $match = $assets | Where-Object { $_.name -eq $Name } | Select-Object -First 1
-        if ($match) {
-            $matchedPath = $match.path
-            $matchedType = $match.type
-        }
-    }
-
-    if ([string]::IsNullOrEmpty($matchedPath)) {
-        foreach ($typeDir in @("skills","agents","prompts")) {
-            $candidate = Join-Path $RegistryCache "$typeDir\$Name"
-            if (Test-Path $candidate) {
-                $matchedPath = "$typeDir\$Name"
-                $matchedType = $typeDir.TrimEnd('s')
-                break
-            }
-        }
-    }
-
-    if ([string]::IsNullOrEmpty($matchedPath)) {
-        Write-Warn "Asset '$Name' not found in registry."
-        Write-Host ""
-        Write-Host "Available assets:"
-        Invoke-List
-        exit 1
-    }
-
-    if (-not $YesFlag) {
-        Write-Host ""
-        Write-Warn "About to install from registry:"
-        Write-Host "  Registry: $RegistryUrl"
-        Write-Host "  Asset:    $matchedPath"
-        $answer = Read-Host "Proceed? [y/N]"
-        if ($answer -notmatch '^[yY]$') { Write-Info "Aborted."; return }
-    }
-
-    $targetSubdir = switch ($matchedType) {
-        "skill"       { "skills" }
-        "agent"       { "agents" }
-        "prompt"      { "prompts" }
-        "instruction" { "instructions" }
-        default       { "skills" }
-    }
-
-    $dest = Join-Path $UserSync "$targetSubdir\$Name"
-    if (Test-Path $dest) {
-        Write-Warn "Asset '$Name' already exists at user\sync\$targetSubdir\$Name — skipping."
-        Write-Info "Delete the existing folder if you want to reinstall."
-        return
-    }
-
-    $src = Join-Path $RegistryCache $matchedPath
-    Copy-Item -Path $src -Destination $dest -Recurse -Force
-    Write-Info "Added: $Name → user\sync\$targetSubdir\$Name (from $RegistryUrl)"
-    Write-Info "Run .\scripts\sync.ps1 push to sync to VSCode."
-}
-
-function Add-FromUrl {
-    param([string]$Url, [bool]$YesFlag)
-
-    if (-not $YesFlag) {
-        Write-Host ""
-        Write-Warn "About to clone from:"
-        Write-Host "  URL: $Url"
-        Write-Host "This will download and install assets from an external source."
-        $answer = Read-Host "Proceed? [y/N]"
-        if ($answer -notmatch '^[yY]$') { Write-Info "Aborted."; return }
-    }
-
-    $tmpDir = Join-Path $CacheDir "tmp\$$"
-    New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
-
-    Write-Info "Cloning $Url ..."
-    try {
-        git clone --depth 1 $Url "$tmpDir\repo" 2>$null
-    } catch {
-        Write-Err "Could not clone $Url. Check the URL and your internet connection."
-        Remove-Item -Recurse -Force $tmpDir
-        exit 1
-    }
-
-    # Validate
-    $validFile = Get-ChildItem -Path "$tmpDir\repo" -Recurse -Filter "*.md" |
-        Where-Object { (Get-Content $_.FullName -Raw) -match "description:" -and (Get-Content $_.FullName -Raw) -match "type:" } |
-        Select-Object -First 1
-
-    if ($null -eq $validFile) {
-        Write-Err "No valid asset files found in $Url (must have frontmatter with 'description' and 'type')."
-        Remove-Item -Recurse -Force $tmpDir
-        exit 1
-    }
-
-    $content = Get-Content $validFile.FullName -Raw
-    $assetType = if ($content -match "(?m)^type:\s*(\S+)") { $matches[1] } else { "skill" }
-
-    $targetSubdir = switch ($assetType) {
-        "skill"       { "skills" }
-        "agent"       { "agents" }
-        "prompt"      { "prompts" }
-        "instruction" { "instructions" }
-        default       { "skills" }
-    }
-
-    $assetName = [IO.Path]::GetFileNameWithoutExtension($Url.TrimEnd('/').Split('/')[-1])
-    $dest = Join-Path $UserSync "$targetSubdir\$assetName"
-
-    if (Test-Path $dest) {
-        if (-not $YesFlag) {
-            $ow = Read-Host "Asset '$assetName' already exists. Overwrite? [y/N]"
-            if ($ow -notmatch '^[yY]$') { Write-Info "Aborted."; Remove-Item -Recurse -Force $tmpDir; return }
-        }
-        Remove-Item -Recurse -Force $dest
-    }
-
-    Copy-Item -Path "$tmpDir\repo" -Destination $dest -Recurse -Force
-    Remove-Item -Recurse -Force $tmpDir
-
-    Write-Info "Added: $assetName → user\sync\$targetSubdir\$assetName (from $Url)"
-    Write-Info "Run .\scripts\sync.ps1 push to sync to VSCode."
-}
-
-# ---------------------------------------------------------------------------
 # status — show synced, new, and orphaned
 # ---------------------------------------------------------------------------
 function Invoke-Status {
     Ensure-Manifest
     Write-Host ""
-    Write-Info "=== aidl sync status ==="
+    Write-Info "=== copilot-asset-manager sync status ==="
     Write-Host ""
 
     $data = Read-Manifest
@@ -488,7 +291,7 @@ function Invoke-Status {
 
     Write-Host ""
 
-    # New files in user/sync/ not in manifest
+    # New files in sync/ not in manifest
     $manifestTargets = @($synced | ForEach-Object { $_.source })
     $newFiles = @(Get-ChildItem -Path $UserSync -Recurse -File |
         Where-Object { $_.Name -ne ".gitkeep" -and $manifestTargets -notcontains $_.FullName })
@@ -531,29 +334,20 @@ function Invoke-Clean {
 # ---------------------------------------------------------------------------
 # Main dispatch
 # ---------------------------------------------------------------------------
-$yesFlag = $Yes.IsPresent -or ($Arg1 -eq "--yes") -or ($Arg2 -eq "--yes")
+$yesFlag = $Yes.IsPresent -or ($Arg1 -eq "--yes")
 
 switch ($Subcommand.ToLower()) {
     "push"   { Invoke-Push   -YesFlag $yesFlag }
     "pull"   { Invoke-Pull   -YesFlag $yesFlag }
-    "add"    {
-        $assetArg = if ($Arg1 -ne "--yes") { $Arg1 } else { "" }
-        Invoke-Add -AssetArg $assetArg -YesFlag $yesFlag
-    }
-    "list"   { Invoke-List }
     "status" { Invoke-Status }
     "clean"  { Invoke-Clean }
     default  {
         Write-Host "Usage: .\scripts\sync.ps1 <subcommand> [options]"
         Write-Host ""
         Write-Host "Subcommands:"
-        Write-Host "  push [--yes]             Copy user/sync/ files to VSCode user config"
-        Write-Host "  pull [--yes]             Copy untracked VSCode files into user/sync/"
-        Write-Host "  add <name|url> [--yes]   Install asset from registry or URL"
-        Write-Host "  list                     List registry assets grouped by type"
-        Write-Host "  status                   Show synced, new, and orphaned files"
-        Write-Host "  clean                    Remove orphaned manifest entries"
-        Write-Host ""
-        Write-Host "Registry: $RegistryUrl"
+        Write-Host "  push [--yes]   Copy sync/ files to VSCode user config"
+        Write-Host "  pull [--yes]   Copy untracked VSCode files into sync/"
+        Write-Host "  status         Show synced, new, and orphaned files"
+        Write-Host "  clean          Remove orphaned manifest entries"
     }
 }
