@@ -14,24 +14,7 @@ Use it alone to keep your AI working style portable across machines. Or fork it 
 | `sync/` | Your prompts, skills, agents, instructions, and hooks | Yes |
 | `local/` | Private guides, notes, anything you want | No |
 
-Both `sync/` and `local/` are yours. The difference is that files under `sync/` in the right subdirectories (`prompts/`, `skills/`, `instructions/`, `hooks/`, `agents/`) get synced to VS Code. `local/` is never synced — use it for personal notes, team guides, draft prompts, reference docs, or anything else.
-
-You can nest folders inside `sync/` for organization — they sync fine:
-
-```
-sync/
-  prompts/
-    code-review/
-      review-pr.prompt.md
-      review-security.prompt.md
-    writing/
-      summarize.prompt.md
-  skills/
-    debug/
-      SKILL.md
-  hooks/
-    pre-commit-check.md
-```
+Both `sync/` and `local/` are yours. The difference is that files under `sync/` in the right subdirectories (`prompts/`, `skills/`, `instructions/`, `hooks/`, `agents/`) get synced to VS Code. `local/` is never synced — use it for personal notes, team guides, draft prompts, reference docs, or anything else. You can nest folders inside `sync/` for organization — they sync fine.
 
 ## Quick start
 
@@ -39,6 +22,7 @@ sync/
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
+cam config lang en       # optional: set language (en or zh-TW)
 
 # Import your existing VS Code prompts/skills/instructions into sync/
 cam pull
@@ -65,12 +49,12 @@ Chat commands require this repo open in VS Code.
 | Help & live status | — | `/cam-help` |
 | Plain-English interface | — | `@copilot-asset-manager` |
 | Find community assets | — | `@scout` |
-| Set CLI language | `cam config lang [en\|zh-TW]` | — |
+| Set language | `cam config lang [en\|zh-TW]` | — |
 | Translate assets (en ↔ zh-TW) | — | Invoke the `translate` skill |
 
 ## Language support
 
-The CLI supports English and Traditional Chinese (zh-TW). Set your preference:
+English and Traditional Chinese (zh-TW) are supported across the CLI and Copilot Chat agents. Set your preference:
 
 ```bash
 cam config lang zh-TW   # switch to Chinese
@@ -78,7 +62,7 @@ cam config lang en      # switch back to English
 cam config show         # show current language
 ```
 
-All terminal output will use your chosen language. The translate skill (`.github/skills/translate/`) can convert asset files between languages while preserving frontmatter and structure.
+After `cam push`, the synced instruction `cam-language.instructions.md` tells Copilot to respond in your chosen language in every workspace — not just this repo. The translate skill (`.github/skills/translate/`) can convert asset files between languages while preserving frontmatter and structure.
 
 ## Workspace defaults
 

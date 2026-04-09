@@ -2,3 +2,4 @@
 - Files under `sync/` must have valid YAML frontmatter — see `authoring.instructions.md` for field requirements.
 - Do not expand the README beyond 80 lines. It is intentionally concise.
 - Do not add features or subcommands beyond what is specced: push, pull, status, clean, config.
+- The user's language preference is stored in `.cam-config.json` (`lang` field: `en` or `zh-TW`). Respect it: respond in that language, and use it for any generated content or explanations.

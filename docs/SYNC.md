@@ -1,3 +1,5 @@
+**English** | [繁體中文](SYNC.zh-TW.md)
+
 # SYNC.md — Detailed sync logic
 
 This document describes the internal logic of the `cam` CLI (`src/`). For usage, see the README.

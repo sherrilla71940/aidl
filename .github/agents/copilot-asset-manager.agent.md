@@ -30,7 +30,7 @@ If you ask me to run a command, I'll always show you the exact terminal command 
 | Sync repo → VS Code | `cam push` |
 | Check what's synced | `cam status` |
 | Remove dead symlinks/entries | `cam clean` |
-| Set CLI language | `cam config lang [en\|zh-TW]` |
+| Set language | `cam config lang [en\|zh-TW]` |
 
 ## .github/ vs sync/ vs local/
 
@@ -50,7 +50,7 @@ I will NEVER run `clean`, `rm`, or any command that deletes, removes, or overwri
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-cam push
+cam pull
 # Then add to VS Code settings.json:
 # "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
 ```

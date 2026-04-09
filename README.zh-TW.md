@@ -16,24 +16,7 @@ Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、in
 | `sync/` | 你的 prompts、skills、agents、instructions 和 hooks | 是 |
 | `local/` | 私人筆記、指南，任何你想放的東西 | 否 |
 
-`sync/` 和 `local/` 都是你的。差別在於 `sync/` 下對應子目錄（`prompts/`、`skills/`、`instructions/`、`hooks/`、`agents/`）的檔案會同步到 VS Code。`local/` 不會被同步 — 拿來放個人筆記、團隊指南、草稿 prompts、參考文件等等都可以。
-
-`sync/` 裡面可以用子資料夾分類整理，同步沒問題：
-
-```
-sync/
-  prompts/
-    code-review/
-      review-pr.prompt.md
-      review-security.prompt.md
-    writing/
-      summarize.prompt.md
-  skills/
-    debug/
-      SKILL.md
-  hooks/
-    pre-commit-check.md
-```
+`sync/` 和 `local/` 都是你的。差別在於 `sync/` 下對應子目錄（`prompts/`、`skills/`、`instructions/`、`hooks/`、`agents/`）的檔案會同步到 VS Code。`local/` 不會被同步 — 拿來放個人筆記、團隊指南、草稿 prompts、參考文件等等都可以。`sync/` 裡面可以用子資料夾分類整理，同步沒問題。
 
 ## 快速開始
 
@@ -41,6 +24,7 @@ sync/
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
+cam config lang zh-TW    # 可選：設定語言（en 或 zh-TW）
 
 # 把現有的 VS Code prompts/skills/instructions 匯入 sync/
 cam pull
@@ -67,12 +51,12 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 | 說明與即時狀態 | — | `/cam-help` |
 | 自然語言介面 | — | `@copilot-asset-manager` |
 | 搜尋社群資源 | — | `@scout` |
-| 設定 CLI 語言 | `cam config lang [en\|zh-TW]` | — |
+| 設定語言 | `cam config lang [en\|zh-TW]` | — |
 | 翻譯資源檔（en ↔ zh-TW） | — | 使用 `translate` skill |
 
 ## 語言支援
 
-CLI 支援英文和繁體中文（zh-TW）。設定你的偏好：
+支援英文和繁體中文（zh-TW），涵蓋 CLI 與 Copilot Chat agents。設定你的偏好：
 
 ```bash
 cam config lang zh-TW   # 切換為中文
@@ -80,7 +64,7 @@ cam config lang en      # 切回英文
 cam config show         # 顯示目前語言
 ```
 
-所有終端機輸出都會使用你選的語言。翻譯 skill（`.github/skills/translate/`）可以在兩種語言之間轉換資源檔，同時保留 frontmatter 和結構。
+執行 `cam push` 後，同步的指令檔 `cam-language.instructions.md` 會讓 Copilot 在所有 workspace 中使用你選的語言回應，不限於此 repo。翻譯 skill（`.github/skills/translate/`）可以在兩種語言之間轉換資源檔，同時保留 frontmatter 和結構。
 
 ## Workspace 預設資源
 
