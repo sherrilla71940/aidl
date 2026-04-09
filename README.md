@@ -66,6 +66,20 @@ Chat commands require this repo open in VS Code.
 | Help & live status | — | `/cam-help` |
 | Plain-English interface | — | `@copilot-asset-manager` |
 | Find community assets | — | `@scout` |
+| Set CLI language | `cam config lang [en\|zh-TW]` | — |
+| Translate assets (en ↔ zh-TW) | — | Invoke the `translate` skill |
+
+## Language support
+
+The CLI supports English and Traditional Chinese (zh-TW). Set your preference:
+
+```bash
+cam config lang zh-TW   # switch to Chinese
+cam config lang en      # switch back to English
+cam config show         # show current language
+```
+
+All terminal output will use your chosen language. The translate skill (`.github/skills/translate/`) can convert asset files between languages while preserving frontmatter and structure.
 
 ## Workspace defaults
 

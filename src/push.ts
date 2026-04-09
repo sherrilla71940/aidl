@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { isWindows, getVscodeUserDir, findRepoRoot, mapToTarget } from './paths.js';
 import { readManifest, writeManifest, hasTarget, addEntry } from './manifest.js';
 import { walk, shouldSkip, pathExists } from './util.js';
+import { t } from './i18n/index.js';
 
 export async function push(options: { yes: boolean }): Promise<void> {
   const repoRoot = findRepoRoot();
@@ -13,9 +14,9 @@ export async function push(options: { yes: boolean }): Promise<void> {
   const manifest = readManifest(manifestPath);
 
   const strategy: 'symlink' | 'copy' = isWindows ? 'copy' : 'symlink';
-  const actionLabel = isWindows ? 'Copied' : 'Linked';
+  const strategyLabel = isWindows ? 'copied' : 'linked';
 
-  console.log(chalk.green(`Pushing sync/ → ${vscodeDir}`));
+  console.log(chalk.green(t().pushHeading(vscodeDir)));
 
   const files = await walk(syncDir);
   let linked = 0;
@@ -34,7 +35,7 @@ export async function push(options: { yes: boolean }): Promise<void> {
       if (hasTarget(manifest, target)) {
         unlinkSync(target);
       } else {
-        console.log(chalk.yellow(`SKIP ${rel} — exists at target but not managed by cam`));
+        console.log(chalk.yellow(t().pushSkipNotManaged(rel)));
         skipped++;
         continue;
       }
@@ -53,17 +54,18 @@ export async function push(options: { yes: boolean }): Promise<void> {
       timestamp: new Date().toISOString(),
     });
 
-    console.log(chalk.green(`  ${actionLabel}: ${rel} → ${target}`));
+    const actionMsg = isWindows ? t().pushCopied(rel, target) : t().pushLinked(rel, target);
+    console.log(chalk.green(actionMsg));
     linked++;
   }
 
   console.log('');
-  console.log(chalk.green(`Push complete: ${linked} ${isWindows ? 'copied' : 'linked'}, ${skipped} skipped.`));
+  console.log(chalk.green(t().pushComplete(linked, strategyLabel, skipped)));
 
   if (!manifest.agent_notice_shown) {
     console.log('');
-    console.log(chalk.yellow('ACTION REQUIRED: Add to your VS Code settings.json:'));
-    console.log(chalk.yellow(`  "chat.agentFilesLocations": ["${syncDir.replace(/\\/g, '/')}/agents"]`));
+    console.log(chalk.yellow(t().pushAgentNotice));
+    console.log(chalk.yellow(t().pushAgentSetting(syncDir.replace(/\\/g, '/'))));
     manifest.agent_notice_shown = true;
   }
 

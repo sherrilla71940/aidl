@@ -68,6 +68,20 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 | 說明與即時狀態 | — | `/cam-help` |
 | 自然語言介面 | — | `@copilot-asset-manager` |
 | 搜尋社群資源 | — | `@scout` |
+| 設定 CLI 語言 | `cam config lang [en\|zh-TW]` | — |
+| 翻譯資源檔（en ↔ zh-TW） | — | 使用 `translate` skill |
+
+## 語言支援
+
+CLI 支援英文和繁體中文（zh-TW）。設定你的偏好：
+
+```bash
+cam config lang zh-TW   # 切換為中文
+cam config lang en      # 切回英文
+cam config show         # 顯示目前語言
+```
+
+所有終端機輸出都會使用你選的語言。翻譯 skill（`.github/skills/translate/`）可以在兩種語言之間轉換資源檔，同時保留 frontmatter 和結構。
 
 ## Workspace 預設資源
 

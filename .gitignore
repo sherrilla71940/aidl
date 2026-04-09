@@ -1,3 +1,4 @@
 .sync-manifest.json
+.cam-config.json
 node_modules/
 dist/

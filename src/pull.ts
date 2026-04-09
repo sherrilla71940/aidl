@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { getVscodeUserDir, findRepoRoot, normalizePath } from './paths.js';
 import { readManifest, writeManifest, addEntry } from './manifest.js';
 import { walk, shouldSkip, ask } from './util.js';
+import { t } from './i18n/index.js';
 
 const PULL_SUBDIRS = ['prompts', 'skills', 'instructions', 'hooks'];
 
@@ -31,7 +32,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
   const vscodeDir = getVscodeUserDir();
   const manifest = readManifest(manifestPath);
 
-  console.log(chalk.green('Scanning VS Code config for untracked files...'));
+  console.log(chalk.green(t().pullScanning));
 
   const candidates: string[] = [];
 
@@ -51,23 +52,23 @@ export async function pull(options: { yes: boolean }): Promise<void> {
         if (filesMatch(file, dest)) continue;
 
         if (options.yes) {
-          console.log(chalk.yellow(`SKIP ${rel} — content differs (repo copy kept)`));
+          console.log(chalk.yellow(t().pullSkipDiffers(rel)));
           continue;
         }
 
         console.log('');
-        console.log(chalk.yellow(`CONFLICT: ${rel}`));
-        const choice = await ask('  Keep repo version (k), use VS Code version (v), skip (s)? [k/v/s] ');
+        console.log(chalk.yellow(t().pullConflict(rel)));
+        const choice = await ask(t().pullConflictPrompt);
         switch (choice.toLowerCase()) {
           case 'v':
             copyFileSync(file, dest);
-            console.log(chalk.green(`  Updated: ${rel} (VS Code version accepted)`));
+            console.log(chalk.green(t().pullUpdated(rel)));
             break;
           case 'k':
-            console.log(chalk.green(`  Kept: ${rel} (repo version kept)`));
+            console.log(chalk.green(t().pullKept(rel)));
             break;
           default:
-            console.log(`  Skipped: ${rel}`);
+            console.log(t().pullSkipped(rel));
         }
         continue;
       }
@@ -77,12 +78,12 @@ export async function pull(options: { yes: boolean }): Promise<void> {
   }
 
   if (candidates.length === 0) {
-    console.log(chalk.green('Nothing new to import.'));
+    console.log(chalk.green(t().pullNothingNew));
     return;
   }
 
   console.log('');
-  console.log(chalk.green(`Found ${candidates.length} untracked file(s):`));
+  console.log(chalk.green(t().pullFound(candidates.length)));
   candidates.forEach((f, i) => {
     console.log(`  ${i + 1}. ${relative(vscodeDir, f).replace(/\\/g, '/')}`);
   });
@@ -93,7 +94,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
     toImport = candidates;
   } else {
     console.log('');
-    const answer = await ask('Import all? [y/N] or enter numbers (e.g. 1 3): ');
+    const answer = await ask(t().pullImportPrompt);
     if (/^[yY]$/.test(answer)) {
       toImport = candidates;
     } else if (/^[\d\s]+$/.test(answer)) {
@@ -103,7 +104,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
         .filter(n => n >= 1 && n <= candidates.length)
         .map(n => candidates[n - 1]);
     } else {
-      console.log(chalk.green('Nothing imported.'));
+      console.log(chalk.green(t().pullNothingImported));
       return;
     }
   }
@@ -122,11 +123,11 @@ export async function pull(options: { yes: boolean }): Promise<void> {
       timestamp: new Date().toISOString(),
     });
 
-    console.log(chalk.green(`  Imported: ${rel} → sync/${rel}`));
+    console.log(chalk.green(t().pullImported(rel)));
     imported++;
   }
 
   writeManifest(manifestPath, manifest);
   console.log('');
-  console.log(chalk.green(`Pull complete: ${imported} imported.`));
+  console.log(chalk.green(t().pullComplete(imported)));
 }

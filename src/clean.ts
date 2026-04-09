@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { findRepoRoot } from './paths.js';
 import { readManifest, writeManifest } from './manifest.js';
 import { pathExists } from './util.js';
+import { t } from './i18n/index.js';
 
 export async function clean(): Promise<void> {
   const repoRoot = findRepoRoot();
@@ -11,12 +12,12 @@ export async function clean(): Promise<void> {
   const manifest = readManifest(manifestPath);
   let removed = 0;
 
-  console.log(chalk.green('Cleaning orphaned entries...'));
+  console.log(chalk.green(t().cleanHeading));
 
   manifest.synced = manifest.synced.filter(entry => {
     if (existsSync(entry.source)) return true;
 
-    console.log(chalk.yellow(`  Removing orphaned: ${entry.target}`));
+    console.log(chalk.yellow(t().cleanRemoving(entry.target)));
     if (pathExists(entry.target)) {
       try {
         unlinkSync(entry.target);
@@ -27,5 +28,5 @@ export async function clean(): Promise<void> {
   });
 
   writeManifest(manifestPath, manifest);
-  console.log(chalk.green(`Clean complete: ${removed} orphaned ${removed === 1 ? 'entry' : 'entries'} removed.`));
+  console.log(chalk.green(t().cleanComplete(removed)));
 }

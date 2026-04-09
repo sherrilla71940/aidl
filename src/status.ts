@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { getVscodeUserDir, findRepoRoot, normalizePath } from './paths.js';
 import { readManifest, hasSource } from './manifest.js';
 import { walk, shouldSkip, pathExists } from './util.js';
+import { t } from './i18n/index.js';
 
 export async function status(): Promise<void> {
   const repoRoot = findRepoRoot();
@@ -12,10 +13,10 @@ export async function status(): Promise<void> {
   const manifest = readManifest(manifestPath);
 
   console.log('');
-  console.log(chalk.green('=== copilot-asset-manager sync status ==='));
+  console.log(chalk.green(t().statusHeading));
   console.log('');
 
-  console.log(`Synced (${manifest.synced.length}):`);
+  console.log(t().statusSynced(manifest.synced.length));
   for (const entry of manifest.synced) {
     const srcExists = existsSync(entry.source);
     const tgtExists = pathExists(entry.target);
@@ -41,11 +42,11 @@ export async function status(): Promise<void> {
   }
 
   if (newFiles.length > 0) {
-    console.log('New (not yet synced to VS Code):');
+    console.log(t().statusNew);
     for (const f of newFiles) {
       console.log(`  [NEW] ${f}`);
     }
     console.log('');
-    console.log(chalk.green('Run cam push to sync new files.'));
+    console.log(chalk.green(t().statusRunPush));
   }
 }
