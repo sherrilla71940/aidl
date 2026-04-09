@@ -3,14 +3,13 @@
 <!-- One paragraph: what does this fix or add? -->
 
 ## Type of change
-- [ ] Bug fix in sync scripts
+- [ ] Bug fix or improvement to the CLI (`src/`)
 - [ ] Workspace agent or skill update
 - [ ] Documentation fix
 - [ ] CI update
 
 ## Checklist
-- [ ] `shellcheck scripts/sync.sh` passes locally
-- [ ] `scripts/sync.ps1` updated to match if `sync.sh` changed
+- [ ] `npm run build` passes locally
 - [ ] Workspace asset frontmatter valid (description, tags, type present)
 - [ ] README remains under 80 lines
 - [ ] No changes to `sync/` or `local/` (personal config stays in your fork)

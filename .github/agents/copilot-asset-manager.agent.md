@@ -26,10 +26,11 @@ If you ask me to run a command, I'll always show you the exact terminal command 
 
 | Task | Command |
 |------|---------|
-| Capture VS Code config into repo | `./scripts/sync.sh pull` |
-| Sync repo → VS Code | `./scripts/sync.sh push` |
-| Check what's synced | `./scripts/sync.sh status` |
-| Remove dead symlinks/entries | `./scripts/sync.sh clean` |
+| Capture VS Code config into repo | `cam pull` |
+| Sync repo → VS Code | `cam push` |
+| Check what's synced | `cam status` |
+| Remove dead symlinks/entries | `cam clean` |
+| Set CLI language | `cam config lang [en\|zh-TW]` |
 
 ## .github/ vs sync/ vs local/
 
@@ -37,7 +38,7 @@ If you ask me to run a command, I'll always show you the exact terminal command 
 
 **sync/** — Your assets, synced bidirectionally with your VS Code user config. This is where your prompts, skills, instructions, and optional personal agents live.
 
-**local/** — Private files: guides, notes, anything you want. No prescribed structure. Never touched by the sync scripts and never pushed to VS Code.
+**local/** — Private files: guides, notes, anything you want. No prescribed structure. Never touched by cam and never pushed to VS Code.
 
 ## Safety constraint
 
@@ -48,7 +49,8 @@ I will NEVER run `clean`, `rm`, or any command that deletes, removes, or overwri
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
-./scripts/sync.sh push
+npm install
+cam push
 # Then add to VS Code settings.json:
 # "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
 ```

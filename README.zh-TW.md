@@ -37,20 +37,19 @@ sync/
 
 ## 快速開始
 
-選你的 shell 對應的同步腳本：`<sync-script>` = `./scripts/sync.sh`（macOS/Linux/Git Bash）或 `.\scripts\sync.ps1`（Windows PowerShell）。
-
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
+npm install
 
 # 把現有的 VS Code prompts/skills/instructions 匯入 sync/
-<sync-script> pull
+cam pull
 
 # commit 讓你的 fork 成為唯一的真實來源
 git add sync/ && git commit -m "add my ai config" && git push
 
 # 在任何新機器上：clone 你的 fork 然後還原
-<sync-script> push
+cam push
 ```
 
 完成後，這個 repo 就是你 AI 設定的可攜式家園。
@@ -61,10 +60,10 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 
 | 動作 | 終端機 | Copilot Chat |
 |------|--------|--------------|
-| 匯入 VS Code → `sync/` | `<sync-script> pull [--yes]` | `/cam-pull` |
-| 還原 `sync/` → VS Code | `<sync-script> push [--yes]` | `/cam-push` |
-| 顯示同步狀態 | `<sync-script> status` | `/cam-status` |
-| 移除孤立項目 | `<sync-script> clean` | — |
+| 匯入 VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
+| 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
+| 顯示同步狀態 | `cam status` | `/cam-status` |
+| 移除孤立項目 | `cam clean` | — |
 | 說明與即時狀態 | — | `/cam-help` |
 | 自然語言介面 | — | `@copilot-asset-manager` |
 | 搜尋社群資源 | — | `@scout` |
@@ -89,4 +88,4 @@ cam config show         # 顯示目前語言
 
 ## 貢獻
 
-PR 請專注於同步腳本、`.github/` workspace 資源或文件。詳見 `CONTRIBUTING.zh-TW.md`。
+PR 請專注於 CLI（`src/`）、`.github/` workspace 資源或文件。詳見 `CONTRIBUTING.zh-TW.md`。

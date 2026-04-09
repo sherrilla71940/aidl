@@ -35,20 +35,19 @@ sync/
 
 ## Quick start
 
-Pick your shell's sync script: `<sync-script>` = `./scripts/sync.sh` (macOS/Linux/Git Bash) or `.\scripts\sync.ps1` (Windows PowerShell).
-
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
+npm install
 
 # Import your existing VS Code prompts/skills/instructions into sync/
-<sync-script> pull
+cam pull
 
 # Commit so your fork is your source of truth
 git add sync/ && git commit -m "add my ai config" && git push
 
 # On any new machine: clone your fork and restore
-<sync-script> push
+cam push
 ```
 
 After that, your repo is the portable home of your AI setup.
@@ -59,10 +58,10 @@ Chat commands require this repo open in VS Code.
 
 | Action | Terminal | Copilot Chat |
 |--------|----------|--------------|
-| Import VS Code → `sync/` | `<sync-script> pull [--yes]` | `/cam-pull` |
-| Restore `sync/` → VS Code | `<sync-script> push [--yes]` | `/cam-push` |
-| Show sync state | `<sync-script> status` | `/cam-status` |
-| Remove orphaned entries | `<sync-script> clean` | — |
+| Import VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
+| Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
+| Show sync state | `cam status` | `/cam-status` |
+| Remove orphaned entries | `cam clean` | — |
 | Help & live status | — | `/cam-help` |
 | Plain-English interface | — | `@copilot-asset-manager` |
 | Find community assets | — | `@scout` |
@@ -87,4 +86,4 @@ This repo ships its own workspace-native assets under `.github/` — the `@copil
 
 ## Contributing
 
-PRs should focus on sync scripts, `.github/` workspace assets, or docs. See `CONTRIBUTING.md`.
+PRs should focus on the CLI (`src/`), `.github/` workspace assets, or docs. See `CONTRIBUTING.md`.

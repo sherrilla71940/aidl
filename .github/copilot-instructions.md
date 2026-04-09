@@ -1,5 +1,4 @@
-- This is the copilot-asset-manager repo: sync scripts, workspace agents/skills, and the Copilot UX layer.
+- This is the copilot-asset-manager repo: TypeScript CLI, workspace agents/skills, and the Copilot UX layer.
 - Files under `sync/` must have valid YAML frontmatter — see `authoring.instructions.md` for field requirements.
-- `sync.sh` and `sync.ps1` must stay functionally equivalent. Edit both when changing sync behavior.
 - Do not expand the README beyond 80 lines. It is intentionally concise.
-- Do not add features or subcommands beyond what is specced: push, pull, status, clean.
+- Do not add features or subcommands beyond what is specced: push, pull, status, clean, config.

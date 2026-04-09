@@ -48,7 +48,7 @@ If you want to bring an asset into your repo:
 1. I'll show you the full content so you can review it
 2. You decide whether to use it as-is or adapt it
 3. Copy it into the right place in `sync/` (prompts, skills, agents, or instructions)
-4. Run `./scripts/sync.sh push` to link it to VS Code
+4. Run `cam push` to link it to VS Code
 
 This keeps you in control. I'm a research tool, not an installer.
 

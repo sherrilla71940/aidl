@@ -1,6 +1,6 @@
 # SYNC.md — Detailed sync logic
 
-This document describes the internal logic of `scripts/sync.sh` and `scripts/sync.ps1`. For usage, see the README.
+This document describes the internal logic of the `cam` CLI (`src/`). For usage, see the README.
 
 ## Overview
 
@@ -37,7 +37,7 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 1. Create parent directories as needed.
 
-1. `sync.sh` — Create symlinks. `sync.ps1` — Copy files (Windows symlinks require admin elevation).
+1. Symlink (macOS/Linux) or copy (Windows) the file to the target.
 
 1. Write each synced file to `.sync-manifest.json`.
 
@@ -88,15 +88,8 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## clean — remove stale entries
 
-`sync.sh`:
-
-- On macOS/Linux: find dead symlinks in VSCode user config dirs, remove them, and remove their manifest entries.
-- On Windows Git Bash: find manifest entries whose source no longer exists, remove the copied target if present, and remove the entry from the manifest.
-
-`sync.ps1`:
-
 - Find manifest entries whose source no longer exists.
-- Remove the corresponding copied file at target if present.
+- Remove the corresponding target file (symlink or copy) if present.
 - Remove the entry from the manifest.
 
 ---

@@ -21,8 +21,8 @@ Nested folders within these directories are supported and sync correctly.
 
 ## After creating or editing an asset
 
-1. Run `./scripts/sync.sh push` (or `/cam-push` in Chat) — files are NOT auto-synced to VS Code
-2. Run `./scripts/sync.sh status` (or `/cam-status`) to verify the file was picked up
+1. Run `cam push` (or `/cam-push` in Chat) — files are NOT auto-synced to VS Code
+2. Run `cam status` (or `/cam-status`) to verify the file was picked up
 3. `local/` is never synced — if an asset doesn't appear in VS Code, check it's in `sync/`, not `local/`
 
 ## Content quality

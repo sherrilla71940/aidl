@@ -5,32 +5,16 @@ on:
     branches: [main]
 
 jobs:
-  shellcheck:
-    name: Lint sync.sh
+  build:
+    name: Build CLI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install shellcheck
-        run: sudo apt-get install -y shellcheck
-      - name: Run shellcheck
-        run: shellcheck scripts/sync.sh
-
-  psscriptanalyzer:
-    name: Lint sync.ps1
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install PSScriptAnalyzer
-        shell: pwsh
-        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
-      - name: Run PSScriptAnalyzer
-        shell: pwsh
-        run: |
-          $results = Invoke-ScriptAnalyzer -Path scripts/sync.ps1 -Severity Error,Warning
-          if ($results) {
-            $results | Format-Table -AutoSize
-            exit 1
-          }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
 
   validate-workspace-agents:
     name: Validate workspace agent frontmatter
@@ -96,7 +80,7 @@ jobs:
             echo "FAIL: PR includes changes to sync/ or local/ (personal config):"
             echo "$changed"
             echo ""
-            echo "PRs to upstream must only touch scripts/, .github/, or docs/."
+            echo "PRs to upstream must only touch src/, .github/, or docs/."
             echo "Keep personal config in your own fork — do not PR it upstream."
             exit 1
           fi

@@ -6,13 +6,7 @@ mode: agent
 Run the following command to push your copilot-asset-manager library to VS Code:
 
 ```bash
-./scripts/sync.sh push
-```
-
-Or on Windows:
-
-```powershell
-.\scripts\sync.ps1 push
+cam push
 ```
 
 This will:

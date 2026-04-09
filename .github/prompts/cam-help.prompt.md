@@ -3,7 +3,7 @@ description: Show live sync status and list all copilot-asset-manager slash comm
 agent: agent
 ---
 
-Run `./scripts/sync.sh status` and display the output, then list all available copilot-asset-manager commands:
+Run `cam status` and display the output, then list all available copilot-asset-manager commands:
 
 | Command | What it does |
 |---------|--------------|

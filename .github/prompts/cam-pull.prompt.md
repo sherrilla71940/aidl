@@ -6,13 +6,7 @@ mode: agent
 Run the following command to import your existing VS Code config into the copilot-asset-manager repo:
 
 ```bash
-./scripts/sync.sh pull
-```
-
-Or on Windows:
-
-```powershell
-.\scripts\sync.ps1 pull
+cam pull
 ```
 
 This will:
@@ -24,7 +18,7 @@ This will:
 To import all without prompting (e.g., in CI or first-time setup):
 
 ```bash
-./scripts/sync.sh pull --yes
+cam pull --yes
 ```
 
 After importing, commit the new files in `sync/` and push to your fork.

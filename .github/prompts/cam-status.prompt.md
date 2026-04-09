@@ -6,19 +6,13 @@ mode: agent
 Run the following command to check sync status:
 
 ```bash
-./scripts/sync.sh status
-```
-
-Or on Windows:
-
-```powershell
-.\scripts\sync.ps1 status
+cam status
 ```
 
 The output groups your assets into three states:
 
 - **`[OK]`** — File is tracked in the manifest and exists at both source (`sync/`) and target (VS Code user config).
-- **`[ORPHANED]`** — File is in the manifest but one end is missing. Run `./scripts/sync.sh clean` to remove orphaned entries.
+- **`[ORPHANED]`** — File is in the manifest but one end is missing. Run `cam clean` to remove orphaned entries.
 - **`[NEW]`** — File exists in `sync/` but has not been synced to VS Code yet. Run `/cam-push` to link it.
 
 Use status to verify your library is fully synced, especially after adding new assets or pulling config from a new machine.
@@ -26,5 +20,5 @@ Use status to verify your library is fully synced, especially after adding new a
 To clean up orphaned entries:
 
 ```bash
-./scripts/sync.sh clean
+cam clean
 ```
