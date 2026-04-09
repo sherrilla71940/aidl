@@ -49,13 +49,11 @@ git add sync/ && git commit -m "add my ai config" && git push
 <sync-script> push
 ```
 
-Or use Copilot Chat when this repo is open: `/cam-pull` to import, `/cam-push` to restore.
-
 After that, your repo is the portable home of your AI setup.
 
 ## Commands
 
-`<sync-script>` = `./scripts/sync.sh` (macOS/Linux/Git Bash) or `.\scripts\sync.ps1` (PowerShell). Chat commands require this repo open in VS Code.
+Chat commands require this repo open in VS Code.
 
 | Action | Terminal | Copilot Chat |
 |--------|----------|--------------|
