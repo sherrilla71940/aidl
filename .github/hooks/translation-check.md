@@ -9,7 +9,7 @@ Before committing, check if any staged `.md` files in the repo root or `docs/` a
 
 ## Steps
 
-1. List all staged `.md` files in the repo root and `docs/` (exclude files already named `*.zh-TW.md`, `TODO.md`, and `LICENSE`)
+1. List all staged `.md` files in the repo root and `docs/` (exclude files already named `*.zh-TW.md`, `docs/TODO.md`, and `LICENSE`)
 2. For each file, check if `NAME.zh-TW.md` exists in the same directory
 3. If the counterpart is missing, warn: "⚠ NAME.zh-TW.md does not exist. Translate before committing?"
 4. If the counterpart exists but the source file has uncommitted changes and the counterpart does not, warn: "⚠ NAME.zh-TW.md may be stale. Update the translation?"

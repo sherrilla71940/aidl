@@ -72,4 +72,4 @@ cam config show         # 顯示目前語言
 
 ## 貢獻
 
-PR 請專注於 CLI（`src/`）、`.github/` workspace 資源或文件。詳見 `CONTRIBUTING.zh-TW.md`。
+PR 請專注於 CLI（`src/`）、`.github/` workspace 資源或文件。詳見 [`CONTRIBUTING.zh-TW.md`](docs/CONTRIBUTING.zh-TW.md)。

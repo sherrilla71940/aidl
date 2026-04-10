@@ -102,7 +102,7 @@ jobs:
           for f in *.md docs/*.md; do
             [[ -f "$f" ]] || continue
             [[ "$f" == *.zh-TW.md ]] && continue
-            [[ "$f" == TODO.md ]] && continue
+            [[ "$f" == docs/TODO.md ]] && continue
             [[ "$f" == LICENSE ]] && continue
             sources+=("$f")
           done

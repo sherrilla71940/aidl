@@ -70,4 +70,4 @@ This repo ships its own workspace-native assets under `.github/` — the `@copil
 
 ## Contributing
 
-PRs should focus on the CLI (`src/`), `.github/` workspace assets, or docs. See `CONTRIBUTING.md`.
+PRs should focus on the CLI (`src/`), `.github/` workspace assets, or docs. See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
