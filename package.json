@@ -1,7 +1,7 @@
 {
   "name": "copilot-asset-manager",
   "version": "0.1.0",
-  "description": "Git-backed Copilot assets with bidirectional VS Code sync",
+  "description": "Git-backed Copilot assets with optional bidirectional VS Code sync",
   "type": "module",
   "bin": {
     "cam": "dist/cli.js"

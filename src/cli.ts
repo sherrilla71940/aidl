@@ -16,7 +16,7 @@ const program = new Command();
 
 program
   .name('cam')
-  .description('Git-backed Copilot assets with bidirectional VS Code sync')
+  .description('Git-backed Copilot assets with optional bidirectional VS Code sync')
   .version('0.1.0');
 
 program

@@ -1,6 +1,6 @@
 **English** | [繁體中文](README.zh-TW.md)
 
-# copilot-asset-manager — Git-backed Copilot assets with bidirectional VS Code sync
+# copilot-asset-manager — Git-backed Copilot assets with optional bidirectional VS Code sync
 
 Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — all versioned and portable.
 
