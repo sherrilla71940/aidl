@@ -17,6 +17,18 @@ Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的
 
 支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，push 不會建立 symlink 或複製。
 
+`sync/` 對應到你的 VS Code 使用者設定目錄，不會同步 workspace-level 的 `.vscode/` 設定。
+
+## VS Code Settings Sync 的重疊範圍
+
+VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Keyboard Shortcuts、User Snippets、User Tasks、UI State、Extensions 和 Profiles。它不會同步 VS Code 使用者設定目錄下的任意檔案，例如 `prompts/`、`instructions/`、`skills/`、`hooks/` 或 `agents/`。
+
+所以兩者的重疊其實很有限：
+
+- Settings Sync 已經能在不同機器之間帶著你的編輯器偏好走。
+- `copilot-asset-manager` 處理的是 Settings Sync 不會管理、而且可用 git 追蹤的 Copilot 資源檔。
+- 即使開啟 Settings Sync，這個 repo 仍然適合拿來做版本紀錄、審查、團隊分享，以及選擇性 push/pull。
+
 ---
 
 ## push — repo → VS Code

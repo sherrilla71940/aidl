@@ -15,6 +15,18 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
 
 Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` only imports into `sync/`. `push` only syncs `sync/`. `local/` is never synced to VSCode.\n\nSupported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push.
 
+`sync/` maps to your VS Code user config directory. It does not sync workspace-level `.vscode/` settings.
+
+## VS Code Settings Sync overlap
+
+VS Code's built-in Settings Sync already handles user-level Settings, Keyboard Shortcuts, User Snippets, User Tasks, UI State, Extensions, and Profiles. It does not sync arbitrary files under the VS Code user config directory such as `prompts/`, `instructions/`, `skills/`, `hooks/`, or `agents/`.
+
+That means the overlap is limited:
+
+- Settings Sync can already move your normal editor preferences between machines.
+- `copilot-asset-manager` covers git-tracked Copilot asset files that Settings Sync does not manage.
+- This repo remains useful for version history, review, team sharing, and selective push/pull even if Settings Sync is enabled.
+
 ---
 
 ## push — repo → VSCode

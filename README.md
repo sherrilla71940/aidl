@@ -41,9 +41,11 @@ After that, your repo is the portable home of your AI setup.
 ## Commands
 
 Chat commands require this repo open in VS Code.
+`sync/` maps to your VS Code user config directory — it does not sync workspace-level `.vscode/` settings.
 
 | Action | Terminal | Copilot Chat |
 |--------|----------|--------------|
+| Initialize language + sync mode | `cam init` | — |
 | Import VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | Show sync state | `cam status` | `/cam-status` |

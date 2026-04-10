@@ -43,9 +43,11 @@ cam push
 ## 指令
 
 Chat 指令需要在 VS Code 中開啟此 repo。
+`sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。
 
 | 動作 | 終端機 | Copilot Chat |
 |------|--------|--------------|
+| 初始化語言與同步模式 | `cam init` | — |
 | 匯入 VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | 顯示同步狀態 | `cam status` | `/cam-status` |

@@ -22,16 +22,16 @@ When repo content is added or updated (README, CONTRIBUTING, guides), the zh-TW 
 
 Users may want this repo for organizing only (no VS Code sync), or pull-only, or push-only.
 
-- [ ] Add `cam init` command — prompts for sync direction: push-only, pull-only, both, neither
-- [ ] Store preference in `.cam-config.json` (e.g., `"syncMode": "both"`)
-- [ ] `cam push` / `cam pull` respect the setting; skip with a message if disabled
-- [ ] `cam init` also prompts for language preference (currently done via `cam config lang`)
-- [ ] Investigate: does VS Code Settings Sync already handle user-level prompts/instructions? If so, document the overlap
-- [ ] Note: current sync is VS Code **user-level** config only, not workspace-level `.vscode/`
+ [x] Add `cam init` command — prompts for sync direction: push-only, pull-only, both, neither
+ [x] Store preference in `.cam-config.json` (e.g., `"syncMode": "both"`)
+ [x] `cam push` / `cam pull` respect the setting; skip with a message if disabled
+ [x] `cam init` also prompts for language preference (currently done via `cam config lang`)
+ [x] Investigate: does VS Code Settings Sync already handle user-level prompts/instructions? If so, document the overlap
+ [x] Note: current sync is VS Code **user-level** config only, not workspace-level `.vscode/`
 
 ## 4. Clarify `sync/` naming in docs
 
-Renaming `sync/` to `vscode-user-sync/` is more accurate but touches 30+ files (source, docs, agents, prompts, CI, i18n). Not worth the churn.
+ [x] Add a one-liner to README and SYNC.md: "`sync/` maps to your VS Code user config directory — it does not sync workspace-level settings"
 
 - [ ] Add a one-liner to README and SYNC.md: "`sync/` maps to your VS Code user config directory — it does not sync workspace-level settings"
 - [ ] Revisit only if users report confusion
