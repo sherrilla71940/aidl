@@ -59,3 +59,15 @@ The `no-personal-content` CI check only runs on the upstream `copilot-asset-mana
 - No `sync/` or `local/` changes — CI will reject them automatically
 
 See the PR template for the full checklist.
+
+## Translation parity
+
+All `.md` files in the repo root and `docs/` must have a `.zh-TW.md` counterpart. Three layers enforce this:
+
+| Layer | What it does |
+|-------|--------------|
+| **Instruction** (`.github/instructions/translation-check.instructions.md`) | Agents warn when editing `.md` files without a zh-TW counterpart |
+| **Hook** (`.github/hooks/translation-check.md`) | Copilot pre-commit hook warns before committing and offers to translate |
+| **CI** (`.github/workflows/ci.yml` → `translation-parity`) | Fails the PR if a zh-TW file is missing or stale |
+
+To translate a file, use the `translate` skill in Copilot Chat or (coming soon) `cam translate <file>` in the terminal.
