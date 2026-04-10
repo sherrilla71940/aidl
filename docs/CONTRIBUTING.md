@@ -1,3 +1,5 @@
+**English** | [繁體中文](CONTRIBUTING.zh-TW.md)
+
 # Contributing to copilot-asset-manager
 
 ## How the fork model works

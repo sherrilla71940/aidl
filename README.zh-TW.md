@@ -1,4 +1,4 @@
-English | **繁體中文**
+[English](README.md) | **繁體中文**
 
 > 這是 README.md 的翻譯版本。英文版為主要版本。
 

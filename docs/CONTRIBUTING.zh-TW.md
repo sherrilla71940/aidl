@@ -1,3 +1,5 @@
+[English](CONTRIBUTING.md) | **繁體中文**
+
 # 貢獻 copilot-asset-manager
 
 ## Fork 模式如何運作
