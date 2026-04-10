@@ -1,21 +1,15 @@
 ---
 description: View or change your copilot-asset-manager language setting.
+argument-hint: "show | lang en | lang zh-TW"
 agent: agent
 ---
 
-To see your current language:
+The user wants to view or change the repo language setting.
 
-```bash
-cam config show
-```
+Use any extra slash-command input after `/cam-config`:
+- `show` runs `cam config show`
+- `lang en` runs `cam config lang en`
+- `lang zh-TW` runs `cam config lang zh-TW`
+- If no input is given, default to `cam config show`
 
-To switch languages:
-
-```bash
-cam config lang en       # English
-cam config lang zh-TW    # Traditional Chinese (繁體中文)
-```
-
-Supported languages: `en` and `zh-TW`. This setting controls the CLI output language and is stored in `.cam-config.json`.
-
-After changing language, run `/cam-push` to sync the `cam-language.instructions.md` file to VS Code — this tells Copilot to respond in your chosen language across all workspaces, not just this repo.
+After changing language, mention that `/cam-push` syncs the `cam-language.instructions.md` file to VS Code.

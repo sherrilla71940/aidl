@@ -1,19 +1,16 @@
 ---
 description: Sync sync/ files to your VS Code user config (push repo → VS Code).
+argument-hint: "[all]"
 agent: agent
 ---
 
-Run the following command to push your copilot-asset-manager library to VS Code:
+The user wants to push `sync/` into their VS Code user config.
 
-```bash
-cam push
-```
+Use any extra slash-command input after `/cam-push`:
+- `all` or `yes` means skip confirmation prompts, which maps to `--yes`.
 
-This will:
-- Symlink (macOS/Linux) or copy (Windows) all files from `sync/prompts/`, `sync/skills/`, and `sync/instructions/` into your VS Code user config directory.
-- Skip any files that already exist at the target and were not created by copilot-asset-manager (prints a warning).
-- Print `ACTION REQUIRED` if `chat.agentFilesLocations` needs to be added to your VS Code `settings.json` for personal agent discovery.
+Examples:
+- `/cam-push` → `cam push`
+- `/cam-push all` → `cam push --yes`
 
-Run this after adding any new asset to `sync/`, or on a fresh machine after cloning your fork.
-
-To skip confirmation prompts (e.g., in a script), use `--yes`.
+Run the matching terminal command and summarize any follow-up, especially `chat.agentFilesLocations` setup when relevant.

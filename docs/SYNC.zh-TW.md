@@ -13,7 +13,7 @@
   - `local/` — 以 git 追蹤的私人檔案，不會同步到 VS Code
 - **VS Code 使用者設定** （Linux: `~/.config/Code/User/`、macOS: `~/Library/Application Support/Code/User/`、Windows: `%APPDATA%\Code\User\`）
 
-Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `local/`，需要時也可指定匯入到 `sync/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
+Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `sync/`，需要時也可指定匯入到 `local/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
 支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，不會由 push 建立 symlink/複製，也不會由 pull 匯入。
 
@@ -78,7 +78,7 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VS Code → repo
 
-指令語法：`cam pull [local|sync] [--yes]`（預設為 `local`）。
+指令語法：`cam pull [sync|local] [--yes]`（預設為 `sync`）。
 
 1. 掃描 VS Code 設定中的 `prompts/`、`skills/`、`instructions/`、`hooks/` 目錄。**不掃描 `agents/`** — 個人 agent 檔案透過 `chat.agentFilesLocations` 直接從 `sync/agents/` 讀取。
 

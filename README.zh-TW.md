@@ -3,23 +3,21 @@
 [English](README.md) | **繁體中文**
 
 > 這是 README.md 的翻譯版本。英文版為主要版本。
-把這個 repo 當成你個人 Copilot workflow library 的 Git 版：prompts、skills、agents、instructions、hooks 和私人筆記都放在這裡。你可以自己用，也可以 fork 成團隊 repo 來共享 `sync/`。
-
-`cam push` 會把 `sync/` 同步到 VS Code。`cam pull` 會把 VS Code 的檔案匯入到 `local/` 或 `sync/`；如果你要雙向同步，就用 `cam pull sync` + `cam push`，讓 VS Code 使用者層級有一份，repo 這邊也有一份可用 Git 追蹤的副本。
+把這個 repo 當成你個人 Copilot workflow library 的 Git 版：prompts、skills、agents、instructions、hooks 和私人筆記都放在這裡。你可以自己用，也可以 fork 成團隊 repo 來共享 `sync/`。`sync/` 是和 VS Code 連動的區域：`cam push` 會把它送到 VS Code，`cam pull` 預設也會把 VS Code 的檔案匯回這裡。想保留成只存在 repo 的副本時，再用 `local/`。
 
 ## 目錄結構
 
-| 目錄 | 內容 | 會同步到 VS Code？ |
+| 目錄 | 內容 | 會和 VS Code 同步？ |
 | ---- | ---- | --------------------- |
 | `.github/` | 專案的 agents、skills 和 prompts | 否 — 僅限 workspace |
-| `sync/` | 你的 prompts、skills、agents、instructions 和 hooks | 是 |
+| `sync/` | 你的 prompts、skills、agents、instructions 和 hooks | 是 — 可推送也可匯入 |
 | `local/` | 私人筆記、指南，任何你想放的東西 | 否 |
 
-`sync/` 和 `local/` 都是你的。差別在於 `sync/` 下對應子目錄（`prompts/`、`skills/`、`instructions/`、`hooks/`、`agents/`）的檔案會同步到 VS Code。`local/` 不會被同步 — 拿來放個人筆記、團隊指南、草稿 prompts、參考文件等等都可以。`sync/` 裡面可以用子資料夾分類整理，同步沒問題。
+`sync/` 和 `local/` 都是你的。`sync/` 用來放你想在 repo 和 VS Code 之間來回同步的資源；`local/` 用來放只想留在 repo 的筆記、草稿和參考文件。兩邊都可以自由再分資料夾。
 
 ## 快速開始
 
-先決條件：Node.js 18+ 和 npm。
+先決條件：Node.js 18+ 和 npm。以下請在終端機執行：
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
@@ -28,27 +26,27 @@ npm install
 npm link                 # 在這台機器上建立 `cam` 連結
 cam init                 # 設定語言與同步模式（直接按 Enter 可保留預設值）
 
-# 把現有的 VS Code prompts/skills/instructions/hooks 匯入 sync/
-cam pull sync
+# 預設把現有的 VS Code prompts/skills/instructions/hooks 匯入 sync/
+cam pull                # 如果只想留在 repo，改用 `cam pull local`
 
 # commit 讓你的 fork 成為唯一的真實來源
-git add sync/ && git commit -m "add my ai config" && git push
+git add . && git commit -m "add my ai config" && git push
 
 # 在任何新機器上：clone 你的 fork 然後還原
 cam push                 # 第一次 push 可能會提示設定 sync/agents 的 chat.agentFilesLocations
 ```
 
-完成後，這個 repo 就是你 AI 設定的可攜式家園。
+如果你是在 Copilot Chat 中操作，請用 `/cam-pull` 和 `/cam-push` 取代終端機指令。完成後，這個 repo 就是你 AI 設定的可攜式家園。
 
 ## 指令
 
-Chat 指令需要在 VS Code 中開啟此 repo。
-`sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。終端機指令必須在 repo 目錄內執行。
+Chat 指令需要在 VS Code 中開啟此 repo。終端機指令可以在 repo 內任一位置執行。`sync/` 對應到你的 VS Code 使用者設定目錄，不包含 workspace-level 的 `.vscode/` 設定。
+Slash command 可以直接附帶輸入，例如 `/cam-pull local all`、`/cam-config lang zh-TW` 或 `/cam-translate README.md`。以 pull 來說，目的地和是否跳過提示是分開的：`cam pull` 預設匯入到 `sync/`，`local` 會改變目的地，`all` 則對應到 `--yes`。
 
 | 動作 | 終端機 | Copilot Chat |
 | ------ | -------- | -------------- |
 | 初始化語言與同步模式 | `cam init` | — |
-| 匯入 VS Code → repo | `cam pull [local|sync] [--yes]` | `/cam-pull` |
+| 匯入 VS Code → repo | `cam pull [sync/local] [--yes]` | `/cam-pull` |
 | 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | 顯示同步狀態 | `cam status` | `/cam-status` |
 | 移除孤立項目 | `cam clean` | `/cam-clean` |
@@ -74,7 +72,8 @@ cam config show         # 顯示目前語言
 
 此 repo 在 `.github/` 下附帶了 workspace 專用資源 — `@copilot-asset-manager` 和 `@scout` agents 以及斜線指令 prompts。這些只在此 repo 中生效，不會影響 `sync/` 或 `local/`。
 
-`cam pull [local|sync]` 預設會匯入到 `local/`，而且不會從 VS Code 匯入 agents。個人的 agents 請放在 `sync/agents/`，再依照 `cam push` 第一次顯示的 `chat.agentFilesLocations` 提示完成設定。
+`cam pull` 預設會匯入到 `sync/`，而且不會從 VS Code 匯入 agents。個人的 agents 請放在 `sync/agents/`，再依照 `cam push` 第一次顯示的 `chat.agentFilesLocations` 提示完成設定。
 
 ## 貢獻
+
 PR 請專注於 CLI（`src/`）、`.github/` workspace 資源或文件。詳見 [`CONTRIBUTING.zh-TW.md`](docs/CONTRIBUTING.zh-TW.md)。

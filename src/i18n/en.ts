@@ -131,5 +131,5 @@ export const en: Locale = {
     `${command} is disabled (syncMode: ${mode}). Run cam init to change it, or cam config show to inspect the current setting.`,
 
   // paths
-  notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from the repo root.',
+  notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from anywhere inside the repo.',
 } satisfies Locale;

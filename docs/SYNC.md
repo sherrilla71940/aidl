@@ -13,7 +13,7 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
   - `local/` — git-tracked private files, never synced to VS Code
 - **VSCode user config** (`~/.config/Code/User/` on Linux, `~/Library/Application Support/Code/User/` on macOS, `%APPDATA%\Code\User\` on Windows)
 
-Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `local/` by default, or `sync/` when requested. `push` only syncs `sync/`. `local/` is never synced to VSCode.
+Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `sync/` by default, or `local/` when requested. `push` only syncs `sync/`. `local/` is never synced to VSCode.
 
 Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push or imported by pull.
 
@@ -78,7 +78,7 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VSCode → repo
 
-Command syntax: `cam pull [local|sync] [--yes]` (`local` is the default).
+Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
 
 1. Scan VSCode config `prompts/`, `skills/`, `instructions/`, `hooks/` directories. **Do NOT scan `agents/`** — personal agent files are sourced directly from `sync/agents/` via `chat.agentFilesLocations`.
 

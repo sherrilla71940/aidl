@@ -1,11 +1,12 @@
 ---
 description: Translate a Markdown file between English and Traditional Chinese (zh-TW) using the translate skill.
+argument-hint: "<file>"
 agent: agent
 ---
 
 The user wants to translate a file. Follow these steps:
 
-1. Ask which file to translate if not already specified.
+1. Use any extra slash-command input after `/cam-translate` as the file path. Ask only if the file was not specified.
 2. Run `cam translate <file>` to detect the language direction and target path.
 3. Read the source file content.
 4. Use the `translate` skill (`.github/skills/translate/SKILL.md`) to produce the translation — preserve all YAML frontmatter structure, code blocks, and technical terms.

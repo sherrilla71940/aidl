@@ -1,32 +1,20 @@
 ---
-description: Capture untracked VS Code prompts, skills, and instructions into local/ by default or sync/ when requested.
+description: Capture untracked VS Code prompts, skills, and instructions into sync/ by default or local/ when requested.
+argument-hint: "[sync|local] [all]"
 agent: agent
 ---
 
-Run one of the following commands to import your existing VS Code config into the copilot-asset-manager repo:
+The user wants to import VS Code assets into this repo.
 
-```bash
-cam pull
-```
+Use any extra slash-command input after `/cam-pull`:
+- `sync` or `local` selects the destination. Default to `sync`.
+- `all` or `yes` means import all without prompting, which maps to `--yes`.
+- Destination and `--yes` are independent: destination chooses `sync` or `local`, while `--yes` only skips prompts.
 
-This uses the default target, `local/`.
+Examples:
+- `/cam-pull` → `cam pull`
+- `/cam-pull local` → `cam pull local`
+- `/cam-pull all` → `cam pull --yes`
+- `/cam-pull local all` → `cam pull local --yes`
 
-To import directly into `sync/` instead:
-
-```bash
-cam pull sync
-```
-
-This will:
-- Scan your VS Code user config (`prompts/`, `skills/`, `instructions/`, `hooks/`) for files not yet tracked in the selected destination.
-- Show you the candidates and ask which ones to import (or import all with `y`).
-- Skip files whose content already matches a copy in that destination (no duplicates).
-- Print a warning and skip any file that differs from an existing destination copy — rerun without `--yes` to resolve conflicts interactively.
-
-To import all without prompting (e.g., in CI or first-time setup):
-
-```bash
-cam pull [local|sync] --yes
-```
-
-After importing into `sync/`, commit the new files and push to your fork.
+Run the matching terminal command, summarize what was imported, and mention when a commit or `/cam-push` is the natural next step.

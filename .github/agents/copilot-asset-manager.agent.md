@@ -35,7 +35,7 @@ If a Markdown translation is missing or stale, I should prefer the translate wor
 | Task | Command |
 |------|---------|
 | Initialize language + sync mode | `cam init` |
-| Capture VS Code config into repo | `cam pull [local\|sync]` |
+| Capture VS Code config into repo | `cam pull [sync\|local]` |
 | Sync repo → VS Code | `cam push` |
 | Check what's synced | `cam status` |
 | Remove dead symlinks/entries | `cam clean` |
@@ -69,7 +69,7 @@ I will NEVER run `clean`, `rm`, or any command that deletes, removes, or overwri
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-cam pull sync
+cam pull
 # Then add to VS Code settings.json:
 # "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
 ```

@@ -24,7 +24,7 @@ export function findRepoRoot(from: string = process.cwd()): string {
     }
     const parent = dirname(dir);
     if (parent === dir) {
-      console.error('Not inside a copilot-asset-manager repo. Terminal commands must be run from inside the repo directory.');
+      console.error('Not inside a copilot-asset-manager repo. Run cam from anywhere inside the repo.');
       process.exit(1);
     }
     dir = parent;

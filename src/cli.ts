@@ -36,8 +36,8 @@ program
 
 program
   .command('pull')
-  .description('Import untracked VS Code files into local/ or sync/ (default: local/)')
-  .argument('[destination]', 'Import destination: local or sync', parsePullDestination, 'local')
+  .description('Import untracked VS Code files into sync/ or local/ (default: sync/)')
+  .argument('[destination]', 'Import destination: sync or local', parsePullDestination, 'sync')
   .option('--yes', 'Import all without prompting')
   .action((destination: PullDestination, opts) => pull({ yes: opts.yes ?? false, destination }));
 

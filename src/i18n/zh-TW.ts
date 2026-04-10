@@ -70,5 +70,5 @@ export const zhTW: Locale = {
   syncModeDisabled: (command: string, mode: string) => `${command} 已停用（syncMode: ${mode}）。執行 cam init 來變更，或執行 cam config show 檢查目前設定。`,
 
   // paths
-  notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 根目錄執行 cam。',
+  notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 內任一位置執行 cam。',
 } satisfies Locale;
