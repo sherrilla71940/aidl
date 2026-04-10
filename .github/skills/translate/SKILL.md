@@ -1,4 +1,5 @@
 ---
+name: translate
 description: Translate Copilot asset files (prompts, skills, instructions, agents) between English and Traditional Chinese (zh-TW) while preserving structure, frontmatter, and technical terms.
 ---
 
