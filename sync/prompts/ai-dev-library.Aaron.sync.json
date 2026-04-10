@@ -1,0 +1,50 @@
+{
+  "ownerFolder": "Aaron",
+  "managedFiles": [
+    {
+      "kind": "instruction",
+      "sourcePath": "Aaron/github/instructions/personal/commit-message-guidelines-en.instructions.md",
+      "managedFilename": "ai-dev-library__Aaron__instruction__personal__commit-message-guidelines-en.instructions.md"
+    },
+    {
+      "kind": "instruction",
+      "sourcePath": "Aaron/github/instructions/work/commit-message-guidelines-zhtw.instructions.md",
+      "managedFilename": "ai-dev-library__Aaron__instruction__work__commit-message-guidelines-zhtw.instructions.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/personal/create-creative-tic-tac-toe-game.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__personal__create-creative-tic-tac-toe-game.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/personal/sync/setup-user-level-sync-automation.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__personal__sync__setup-user-level-sync-automation.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/personal/sync/sync-repo-to-user-level.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__personal__sync__sync-repo-to-user-level.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/personal/sync/sync-user-level-to-repo.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__personal__sync__sync-user-level-to-repo.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/personal/sync/validate-sync.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__personal__sync__validate-sync.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/work/commit-message.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__work__commit-message.prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "sourcePath": "Aaron/github/prompts/work/setup-private-project-scoped-copilot-configuration.prompt.md",
+      "managedFilename": "ai-dev-library__Aaron__prompt__work__setup-private-project-scoped-copilot-configuration.prompt.md"
+    }
+  ]
+}
