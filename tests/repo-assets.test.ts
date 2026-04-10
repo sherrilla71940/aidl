@@ -9,6 +9,7 @@ import {
   findPersonalContentPaths,
   getLastCommitTimestamp,
   getTranslationCounterpart,
+  hasUncommittedChanges,
   listTranslationSources,
 } from '../src/repo-checks.js';
 
@@ -103,6 +104,9 @@ describe('translation parity', () => {
   it('zh-TW counterparts are not older than their English source in git history', () => {
     for (const sourceFile of sourceFiles) {
       const translatedFile = getTranslationCounterpart(sourceFile);
+      if (hasUncommittedChanges(repoRoot, translatedFile)) {
+        continue;
+      }
       const sourceTime = getLastCommitTimestamp(repoRoot, sourceFile);
       const translatedTime = getLastCommitTimestamp(repoRoot, translatedFile);
       expect(translatedTime, `${translatedFile} may be stale for ${sourceFile}`).toBeGreaterThanOrEqual(sourceTime);

@@ -44,6 +44,14 @@ export function getLastCommitTimestamp(repoRoot: string, relativePath: string): 
   return Number(output || '0');
 }
 
+export function hasUncommittedChanges(repoRoot: string, relativePath: string): boolean {
+  const output = execFileSync('git', ['status', '--porcelain', '--', relativePath], {
+    cwd: repoRoot,
+    encoding: 'utf-8',
+  }).trim();
+  return output.length > 0;
+}
+
 export function findPersonalContentPaths(changedPaths: string[]): string[] {
   return changedPaths
     .map(path => path.replace(/\\/g, '/'))
