@@ -27,6 +27,12 @@ That means the overlap is limited:
 - `copilot-asset-manager` covers git-tracked Copilot asset files that Settings Sync does not manage.
 - This repo remains useful for version history, review, team sharing, and selective push/pull even if Settings Sync is enabled.
 
+## Cross-file markdown links
+
+Relative links between files under `sync/` work in both the repo and VS Code because `cam push` preserves the directory structure. Use relative paths such as `../skills/debug/SKILL.md`, never absolute paths such as `/Users/...`, `C:\...`, or `file:///...`.
+
+`cam push` warns when it detects absolute markdown link targets in synced files, but it does not block the sync.
+
 ---
 
 ## push — repo → VSCode

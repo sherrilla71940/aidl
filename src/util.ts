@@ -43,3 +43,17 @@ export async function ask(question: string): Promise<string> {
   rl.close();
   return answer.trim();
 }
+
+export function findAbsoluteMarkdownLinkTargets(content: string): string[] {
+  const matches = [...content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)];
+  const targets = matches
+    .map(match => match[1].trim().replace(/^<|>$/g, ''))
+    .filter(target => {
+      if (!target) return false;
+      if (target.startsWith('http://') || target.startsWith('https://')) return false;
+      if (target.startsWith('#') || target.startsWith('mailto:')) return false;
+      return target.startsWith('/') || /^[A-Za-z]:[\\/]/.test(target) || target.startsWith('file://');
+    });
+
+  return [...new Set(targets)];
+}

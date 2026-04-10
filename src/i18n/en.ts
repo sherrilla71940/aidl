@@ -10,6 +10,7 @@ export interface Locale {
   pushLinked: (rel: string, target: string) => string;
   pushCopied: (rel: string, target: string) => string;
   pushComplete: (count: number, strategy: string, skipped: number) => string;
+  pushAbsolutePathWarning: (rel: string, target: string) => string;
   pushAgentNotice: string;
   pushAgentSetting: (path: string) => string;
 
@@ -72,6 +73,8 @@ export const en: Locale = {
   pushCopied: (rel: string, target: string) => `  Copied: ${rel} → ${target}`,
   pushComplete: (count: number, strategy: string, skipped: number) =>
     `Push complete: ${count} ${strategy}, ${skipped} skipped.`,
+  pushAbsolutePathWarning: (rel: string, target: string) =>
+    `WARNING ${rel} contains an absolute markdown link target: ${target}. Use relative paths instead.`,
   pushAgentNotice: 'ACTION REQUIRED: Add to your VS Code settings.json:',
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
 

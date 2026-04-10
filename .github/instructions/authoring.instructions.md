@@ -25,6 +25,12 @@ Nested folders within these directories are supported and sync correctly.
 2. Run `cam status` (or `/cam-status`) to verify the file was picked up
 3. `local/` is never synced — if an asset doesn't appear in VS Code, check it's in `sync/`, not `local/`
 
+## Cross-file links
+
+- Use relative paths for links between synced files, for example `../skills/debug/SKILL.md`
+- Never use absolute paths such as `/Users/...`, `C:\...`, or `file:///...`
+- `cam push` warns when it finds absolute markdown link targets in synced files
+
 ## Content quality
 
 - Minimum 100 words in the body — CI enforces this

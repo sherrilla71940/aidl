@@ -1,9 +1,9 @@
 import { join, relative, dirname } from 'node:path';
-import { mkdirSync, copyFileSync, symlinkSync, unlinkSync } from 'node:fs';
+import { mkdirSync, copyFileSync, symlinkSync, unlinkSync, readFileSync } from 'node:fs';
 import chalk from 'chalk';
 import { isWindows, getVscodeUserDir, findRepoRoot, mapToTarget } from './paths.js';
 import { readManifest, writeManifest, hasTarget, addEntry } from './manifest.js';
-import { walk, shouldSkip, pathExists } from './util.js';
+import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
@@ -32,6 +32,11 @@ export async function push(options: { yes: boolean }): Promise<void> {
   for (const file of files) {
     const rel = relative(syncDir, file).replace(/\\/g, '/');
     if (shouldSkip(rel)) continue;
+
+    const absoluteLinkTargets = findAbsoluteMarkdownLinkTargets(readFileSync(file, 'utf-8'));
+    for (const absoluteLinkTarget of absoluteLinkTargets) {
+      console.log(chalk.yellow(t().pushAbsolutePathWarning(rel, absoluteLinkTarget)));
+    }
 
     const target = mapToTarget(rel, vscodeDir);
     if (!target) continue;

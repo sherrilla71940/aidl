@@ -46,5 +46,5 @@ Users may want this repo for organizing only (no VS Code sync), or pull-only, or
 
 Relative links between `sync/` subdirectories already work in both the repo and VS Code because `cam push` mirrors the directory structure. No template variables needed.
 
-- [ ] Document in SYNC.md and authoring instructions: "use relative paths (e.g., `../skills/debug/SKILL.md`), never absolute paths"
-- [ ] Add a push-time warning if `cam push` detects absolute paths in synced files
+- [x] Document in SYNC.md and authoring instructions: "use relative paths (e.g., `../skills/debug/SKILL.md`), never absolute paths"
+- [x] Add a push-time warning if `cam push` detects absolute paths in synced files

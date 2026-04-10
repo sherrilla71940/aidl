@@ -15,6 +15,8 @@ export const zhTW: Locale = {
   pushCopied: (rel: string, target: string) => `  已複製：${rel} → ${target}`,
   pushComplete: (count: number, strategy: string, skipped: number) =>
     `推送完成：${count} 個${strategy}，${skipped} 個略過。`,
+  pushAbsolutePathWarning: (rel: string, target: string) =>
+    `警告 ${rel} 含有絕對 markdown 連結路徑：${target}。請改用相對路徑。`,
   pushAgentNotice: '必要操作：請加入以下設定到 VS Code settings.json：',
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
 

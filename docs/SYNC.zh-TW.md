@@ -29,6 +29,12 @@ VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Key
 - `copilot-asset-manager` 處理的是 Settings Sync 不會管理、而且可用 git 追蹤的 Copilot 資源檔。
 - 即使開啟 Settings Sync，這個 repo 仍然適合拿來做版本紀錄、審查、團隊分享，以及選擇性 push/pull。
 
+## 跨檔案 markdown 連結
+
+`sync/` 底下檔案之間的相對連結在 repo 與 VS Code 中都能正常運作，因為 `cam push` 會保留目錄結構。請使用像 `../skills/debug/SKILL.md` 這樣的相對路徑，不要使用 `/Users/...`、`C:\...` 或 `file:///...` 這類絕對路徑。
+
+當 `cam push` 偵測到 synced 檔案內有絕對 markdown 連結路徑時，會顯示警告，但不會阻止同步。
+
 ---
 
 ## push — repo → VS Code
