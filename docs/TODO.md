@@ -22,7 +22,6 @@ When repo content is added or updated (README, CONTRIBUTING, guides), the zh-TW 
 
 Users may want this repo for organizing only (no VS Code sync), or pull-only, or push-only.
 
-
 - [x] Add `cam init` command — prompts for sync direction: push-only, pull-only, both, neither
 - [x] Store preference in `.cam-config.json` (e.g., `"syncMode": "both"`)
 - [x] `cam push` / `cam pull` respect the setting; skip with a message if disabled
