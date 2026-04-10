@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { findRepoRoot } from './paths.js';
 
 export interface CamConfig {
   lang: string;
@@ -12,16 +13,7 @@ const SUPPORTED_LANGS = ['en', 'zh-TW'];
 const SUPPORTED_SYNC_MODES: SyncMode[] = ['both', 'push-only', 'pull-only', 'none'];
 
 function configPath(): string {
-  // Walk up to find repo root (sync/ dir), same logic as paths.ts but avoids circular import
-  let dir = process.cwd();
-  while (true) {
-    if (existsSync(join(dir, 'sync'))) {
-      return join(dir, '.cam-config.json');
-    }
-    const parent = join(dir, '..');
-    if (parent === dir) return join(process.cwd(), '.cam-config.json');
-    dir = parent;
-  }
+  return join(findRepoRoot(), '.cam-config.json');
 }
 
 export function readConfig(): CamConfig {

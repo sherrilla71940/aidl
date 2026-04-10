@@ -42,6 +42,7 @@ After that, your repo is the portable home of your AI setup.
 
 Chat commands require this repo open in VS Code.
 `sync/` maps to your VS Code user config directory — it does not sync workspace-level `.vscode/` settings.
+Terminal commands must be run from inside the repo directory.
 
 | Action | Terminal | Copilot Chat |
 |--------|----------|--------------|

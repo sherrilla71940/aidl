@@ -38,9 +38,9 @@ Users may want this repo for organizing only (no VS Code sync), or pull-only, or
 
 ## 5. README: repo-open vs terminal requirements
 
-- [ ] Chat commands require this repo **open in VS Code** (already documented)
-- [ ] Add: "Terminal commands must be run from inside the repo directory" under the commands table
-- [ ] Improve `cam` error message when not inside a repo tree — currently falls back silently to cwd
+- [x] Chat commands require this repo **open in VS Code** (already documented)
+- [x] Add: "Terminal commands must be run from inside the repo directory" under the commands table
+- [x] Improve `cam` error message when not inside a repo tree — currently falls back silently to cwd
 
 ## 6. Cross-file Markdown links
 

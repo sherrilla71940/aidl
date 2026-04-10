@@ -44,6 +44,7 @@ cam push
 
 Chat 指令需要在 VS Code 中開啟此 repo。
 `sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。
+終端機指令必須在 repo 目錄內執行。
 
 | 動作 | 終端機 | Copilot Chat |
 |------|--------|--------------|
