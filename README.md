@@ -1,6 +1,6 @@
-**English** | [繁體中文](README.zh-TW.md)
-
 # copilot-asset-manager — Git-backed Copilot assets with optional bidirectional VS Code sync
+
+**English** | [繁體中文](README.zh-TW.md)
 
 Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — all versioned and portable.
 
@@ -9,7 +9,7 @@ Use it alone to keep your AI working style portable across machines. Or fork it 
 ## How it's organized
 
 | Area | What lives here | Synced to VS Code? |
-|------|-----------------|--------------------|
+| ---- | ----------------- | -------------------- |
 | `.github/` | Project agents, skills, and prompts | No — workspace only |
 | `sync/` | Your prompts, skills, agents, instructions, and hooks | Yes |
 | `local/` | Private guides, notes, anything you want | No |
@@ -45,7 +45,7 @@ Chat commands require this repo open in VS Code.
 `sync/` maps to your VS Code user config directory — it does not sync workspace-level `.vscode/` settings. Terminal commands must be run from inside the repo directory.
 
 | Action | Terminal | Copilot Chat |
-|--------|----------|--------------|
+| ------ | ---------- | -------------- |
 | Initialize language + sync mode | `cam init` | — |
 | Import VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |

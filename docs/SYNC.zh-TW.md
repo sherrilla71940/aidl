@@ -1,6 +1,6 @@
-[English](SYNC.md) | **繁體中文**
-
 # SYNC.md — 同步邏輯詳解
+
+[English](SYNC.md) | **繁體中文**
 
 本文件描述 `cam` CLI（`src/`）的內部邏輯。使用方式請見 README。
 

@@ -1,8 +1,8 @@
+# copilot-asset-manager — 以 Git 管理 Copilot 資源，可選擇雙向同步 VS Code
+
 [English](README.md) | **繁體中文**
 
 > 這是 README.md 的翻譯版本。英文版為主要版本。
-
-# copilot-asset-manager — 以 Git 管理 Copilot 資源，可選擇雙向同步 VS Code
 
 Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、instructions、hooks 和私人筆記 — 全部用 git 管理，隨時可攜。
 
@@ -11,7 +11,7 @@ Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、in
 ## 目錄結構
 
 | 目錄 | 內容 | 會同步到 VS Code？ |
-|------|------|---------------------|
+| ---- | ---- | --------------------- |
 | `.github/` | 專案的 agents、skills 和 prompts | 否 — 僅限 workspace |
 | `sync/` | 你的 prompts、skills、agents、instructions 和 hooks | 是 |
 | `local/` | 私人筆記、指南，任何你想放的東西 | 否 |
@@ -47,7 +47,7 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 `sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。終端機指令必須在 repo 目錄內執行。
 
 | 動作 | 終端機 | Copilot Chat |
-|------|--------|--------------|
+| ------ | -------- | -------------- |
 | 初始化語言與同步模式 | `cam init` | — |
 | 匯入 VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
