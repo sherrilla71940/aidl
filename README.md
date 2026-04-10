@@ -50,12 +50,12 @@ Terminal commands must be run from inside the repo directory.
 | Import VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | Show sync state | `cam status` | `/cam-status` |
-| Remove orphaned entries | `cam clean` | — |
+| Remove orphaned entries | `cam clean` | `/cam-clean` |
 | Help & live status | — | `/cam-help` |
-| Plain-English interface | — | `@copilot-asset-manager` |
+| Plain-English help | — | `@copilot-asset-manager` |
 | Find community assets | — | `@scout` |
-| Set language | `cam config lang [en\|zh-TW]` | — |
-| Translate assets (en ↔ zh-TW) | — | Invoke the `translate` skill |
+| Set/show language | `cam config lang` / `cam config show` | `/cam-config` |
+| Translate assets (en ↔ zh-TW) | `cam translate <file>` | `/cam-translate` |
 
 ## Language support
 

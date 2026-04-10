@@ -52,12 +52,12 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 | 匯入 VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
 | 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | 顯示同步狀態 | `cam status` | `/cam-status` |
-| 移除孤立項目 | `cam clean` | — |
+| 移除孤立項目 | `cam clean` | `/cam-clean` |
 | 說明與即時狀態 | — | `/cam-help` |
-| 自然語言介面 | — | `@copilot-asset-manager` |
+| 自然語言協助 | — | `@copilot-asset-manager` |
 | 搜尋社群資源 | — | `@scout` |
-| 設定語言 | `cam config lang [en\|zh-TW]` | — |
-| 翻譯資源檔（en ↔ zh-TW） | — | 使用 `translate` skill |
+| 設定/顯示語言 | `cam config lang` / `cam config show` | `/cam-config` |
+| 翻譯資源檔（en ↔ zh-TW） | `cam translate <file>` | `/cam-translate` |
 
 ## 語言支援
 
