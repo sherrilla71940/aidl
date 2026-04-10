@@ -13,6 +13,7 @@ Run `cam status` and display the output, then list all available copilot-asset-m
 | `/cam-status` | Show what's synced, what's new, and what's orphaned |
 | `/cam-clean` | Remove orphaned manifest entries and stale synced files |
 | `/cam-config` | View or change your language setting |
+| `/cam-translate` | Translate a Markdown file between English and zh-TW |
 
 If this is your first time using copilot-asset-manager, start with `/cam-pull` to capture your existing VS Code config, then commit the result. On a new machine, run `/cam-push` to restore everything.
 
