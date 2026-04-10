@@ -2,7 +2,7 @@
 
 > 這是 README.md 的翻譯版本。英文版為主要版本。
 
-# copilot-asset-manager — 以 Git 管理 Copilot 資源，雙向同步 VS Code
+# copilot-asset-manager — 以 Git 管理 Copilot 資源，可選擇雙向同步 VS Code
 
 Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、instructions、hooks 和私人筆記 — 全部用 git 管理，隨時可攜。
 
