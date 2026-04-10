@@ -4,8 +4,8 @@
 
 Currently `clean`, `config lang`, and `config show` are terminal-only. `cam-help` is chat-only.
 
-- [ ] Add `/cam-clean` prompt
-- [ ] Add `/cam-config` prompt (language switching via chat)
+- [x] Add `/cam-clean` prompt
+- [x] Add `/cam-config` prompt (language switching via chat)
 - [ ] Add `cam translate` terminal command wrapping the translate skill logic
 - [ ] Add `/cam-translate` prompt that invokes the translate skill
 
