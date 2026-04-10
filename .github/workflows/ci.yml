@@ -84,3 +84,49 @@ jobs:
             echo "Keep personal config in your own fork — do not PR it upstream."
             exit 1
           fi
+
+  translation-parity:
+    name: Check zh-TW translation parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for missing or stale translations
+        run: |
+          set -euo pipefail
+          failed=0
+
+          # Collect English .md files in root and docs/ (exclude zh-TW files themselves)
+          sources=()
+          for f in *.md docs/*.md; do
+            [[ -f "$f" ]] || continue
+            [[ "$f" == *.zh-TW.md ]] && continue
+            [[ "$f" == TODO.md ]] && continue
+            [[ "$f" == LICENSE ]] && continue
+            sources+=("$f")
+          done
+
+          for src in "${sources[@]}"; do
+            # Derive expected zh-TW counterpart
+            zhtw="${src%.md}.zh-TW.md"
+            if [[ ! -f "$zhtw" ]]; then
+              echo "FAIL: $zhtw does not exist (translation of $src)"
+              failed=1
+            else
+              # Check if source is newer than translation (by last commit date)
+              src_date=$(git log -1 --format=%ct -- "$src" 2>/dev/null || echo 0)
+              zhtw_date=$(git log -1 --format=%ct -- "$zhtw" 2>/dev/null || echo 0)
+              if [[ "$src_date" -gt "$zhtw_date" ]]; then
+                echo "WARN: $zhtw may be stale (source $src was updated more recently)"
+                failed=1
+              fi
+            fi
+          done
+
+          if [[ $failed -ne 0 ]]; then
+            echo ""
+            echo "Run 'cam translate <file>' or use the translate skill in Copilot Chat to fix."
+            exit 1
+          fi
+          echo "All translations are up to date."

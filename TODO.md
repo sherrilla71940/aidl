@@ -14,7 +14,9 @@ Currently `clean`, `config lang`, and `config show` are terminal-only. `cam-help
 When repo content is added or updated (README, CONTRIBUTING, guides), the zh-TW counterpart should stay in sync.
 
 - [ ] `cam translate <file>` — reads file, detects language, outputs translated copy to conventional path (e.g., `README.md` → `README.zh-TW.md`)
-- [ ] Decide: enforce via CI check ("zh-TW file is stale") or keep as convention
+- [x] CI check: `translation-parity` job in CI fails if zh-TW counterpart is missing or stale (`.github/workflows/ci.yml`)
+- [x] Copilot pre-commit hook: `.github/hooks/translation-check.md` warns before commit and offers to invoke translate skill
+- [x] Instruction: `.github/instructions/translation-check.instructions.md` tells agents to check parity on `.md` edits
 
 ## 3. Push/pull optionality + `cam init`
 
