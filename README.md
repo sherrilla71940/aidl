@@ -59,7 +59,7 @@ Terminal commands must be run from inside the repo directory.
 
 ## Language support
 
-English and Traditional Chinese (zh-TW) are supported across the CLI and Copilot Chat agents. Set your preference:
+This repo is designed for bilingual English and Traditional Chinese (zh-TW) workflows across the CLI and Copilot Chat. Set your preference:
 
 ```bash
 cam config lang zh-TW   # switch to Chinese

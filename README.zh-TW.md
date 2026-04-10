@@ -61,7 +61,7 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 
 ## 語言支援
 
-支援英文和繁體中文（zh-TW），涵蓋 CLI 與 Copilot Chat agents。設定你的偏好：
+這個 repo 是為英文與繁體中文（zh-TW）的雙語工作流程設計，涵蓋 CLI 與 Copilot Chat。設定你的偏好：
 
 ```bash
 cam config lang zh-TW   # 切換為中文
