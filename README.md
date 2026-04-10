@@ -1,4 +1,4 @@
-# copilot-asset-manager — Git-backed Copilot assets with optional bidirectional VS Code sync
+# Copilot Asset Manager — Git-backed Copilot assets with optional bidirectional VS Code sync
 
 **English** | [繁體中文](README.zh-TW.md)
 

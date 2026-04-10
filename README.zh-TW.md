@@ -1,4 +1,4 @@
-# copilot-asset-manager — 以 Git 管理 Copilot 資源，可選擇雙向同步 VS Code
+# Copilot Asset Manager — 以 Git 管理 Copilot 資源，可選擇雙向同步 VS Code
 
 [English](README.md) | **繁體中文**
 
