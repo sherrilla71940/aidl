@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { getVscodeUserDir, findRepoRoot, normalizePath } from './paths.js';
 import { readManifest, writeManifest, addEntry } from './manifest.js';
 import { walk, shouldSkip, ask } from './util.js';
+import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
 const PULL_SUBDIRS = ['prompts', 'skills', 'instructions', 'hooks'];
@@ -26,6 +27,12 @@ function filesMatch(a: string, b: string): boolean {
 }
 
 export async function pull(options: { yes: boolean }): Promise<void> {
+  const config = readConfig();
+  if (config.syncMode === 'push-only' || config.syncMode === 'none') {
+    console.log(chalk.yellow(t().syncModeDisabled('pull', config.syncMode)));
+    return;
+  }
+
   const repoRoot = findRepoRoot();
   const syncDir = join(repoRoot, 'sync');
   const manifestPath = join(repoRoot, '.sync-manifest.json');

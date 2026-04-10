@@ -5,6 +5,7 @@ export const zhTW: Locale = {
   langPrompt: '語言 / Language? (en / zh-TW): ',
   langSet: (lang: string) => `語言已設為 ${lang}。`,
   langCurrent: (lang: string) => `目前語言：${lang}`,
+  syncModeCurrent: (mode: string) => `目前同步模式：${mode}`,
   configUsage: '用法：cam config lang [en|zh-TW]',
 
   // push
@@ -52,6 +53,18 @@ export const zhTW: Locale = {
   translateDirection: (dir: string) => `  方向：${dir}`,
   translateTargetExists: (path: string) => `目標檔案已存在：${path}（將被覆寫）`,
   translateHint: '請使用 Copilot Chat 中的 translate skill 來產生翻譯：\n  開啟 Chat → 輸入：「Translate this file」並附上來源檔案。',
+
+  // init
+  initHeading: '=== cam init ===',
+  initLangCurrent: (lang: string) => `目前語言：${lang}`,
+  initLangPrompt: '語言 / Language? (en / zh-TW) [按 Enter 保留目前設定]：',
+  initSyncModeOptions: '同步模式：',
+  initSyncModeCurrent: (mode: string) => `目前模式：${mode}`,
+  initSyncModePrompt: '選擇同步模式 (1–4) [按 Enter 保留目前設定]：',
+  initComplete: (lang: string, mode: string) => `設定已儲存：lang=${lang}, syncMode=${mode}`,
+
+  // sync mode gating
+  syncModeDisabled: (command: string, mode: string) => `${command} 已停用（syncMode: ${mode}）。執行 cam init 來變更。`,
 
   // paths
   notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 根目錄執行 cam。',

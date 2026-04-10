@@ -3,9 +3,13 @@ import { join } from 'node:path';
 
 export interface CamConfig {
   lang: string;
+  syncMode: SyncMode;
 }
 
+export type SyncMode = 'both' | 'push-only' | 'pull-only' | 'none';
+
 const SUPPORTED_LANGS = ['en', 'zh-TW'];
+const SUPPORTED_SYNC_MODES: SyncMode[] = ['both', 'push-only', 'pull-only', 'none'];
 
 function configPath(): string {
   // Walk up to find repo root (sync/ dir), same logic as paths.ts but avoids circular import
@@ -22,13 +26,16 @@ function configPath(): string {
 
 export function readConfig(): CamConfig {
   const p = configPath();
-  if (!existsSync(p)) return { lang: 'en' };
+  if (!existsSync(p)) return { lang: 'en', syncMode: 'both' };
   try {
     const raw = readFileSync(p, 'utf-8').replace(/^\uFEFF/, '');
     const data = JSON.parse(raw);
-    return { lang: SUPPORTED_LANGS.includes(data.lang) ? data.lang : 'en' };
+    return {
+      lang: SUPPORTED_LANGS.includes(data.lang) ? data.lang : 'en',
+      syncMode: SUPPORTED_SYNC_MODES.includes(data.syncMode) ? data.syncMode : 'both',
+    };
   } catch {
-    return { lang: 'en' };
+    return { lang: 'en', syncMode: 'both' };
   }
 }
 
@@ -40,4 +47,8 @@ export function isValidLang(lang: string): boolean {
   return SUPPORTED_LANGS.includes(lang);
 }
 
-export { SUPPORTED_LANGS };
+export function isValidSyncMode(mode: string): mode is SyncMode {
+  return (SUPPORTED_SYNC_MODES as string[]).includes(mode);
+}
+
+export { SUPPORTED_LANGS, SUPPORTED_SYNC_MODES };

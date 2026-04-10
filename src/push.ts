@@ -4,9 +4,16 @@ import chalk from 'chalk';
 import { isWindows, getVscodeUserDir, findRepoRoot, mapToTarget } from './paths.js';
 import { readManifest, writeManifest, hasTarget, addEntry } from './manifest.js';
 import { walk, shouldSkip, pathExists } from './util.js';
+import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
 export async function push(options: { yes: boolean }): Promise<void> {
+  const config = readConfig();
+  if (config.syncMode === 'pull-only' || config.syncMode === 'none') {
+    console.log(chalk.yellow(t().syncModeDisabled('push', config.syncMode)));
+    return;
+  }
+
   const repoRoot = findRepoRoot();
   const syncDir = join(repoRoot, 'sync');
   const manifestPath = join(repoRoot, '.sync-manifest.json');

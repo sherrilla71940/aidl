@@ -7,6 +7,7 @@ import { pull } from './pull.js';
 import { status } from './status.js';
 import { clean } from './clean.js';
 import { translate } from './translate.js';
+import { init } from './init.js';
 import { readConfig, writeConfig, isValidLang, SUPPORTED_LANGS } from './config.js';
 import { t, resetLocaleCache } from './i18n/index.js';
 import { ask } from './util.js';
@@ -44,6 +45,11 @@ program
   .command('translate <file>')
   .description('Detect language and show translation target path')
   .action((file: string) => translate(file));
+
+program
+  .command('init')
+  .description('Initialize language and sync preferences')
+  .action(() => init());
 
 const configCmd = program
   .command('config')
@@ -88,6 +94,7 @@ configCmd
   .action(() => {
     const config = readConfig();
     console.log(t().langCurrent(config.lang));
+    console.log(t().syncModeCurrent(config.syncMode));
   });
 
 program.parse();

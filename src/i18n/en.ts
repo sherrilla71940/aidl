@@ -2,6 +2,7 @@ export interface Locale {
   langPrompt: string;
   langSet: (lang: string) => string;
   langCurrent: (lang: string) => string;
+  syncModeCurrent: (mode: string) => string;
   configUsage: string;
 
   pushHeading: (dir: string) => string;
@@ -43,6 +44,16 @@ export interface Locale {
   translateTargetExists: (path: string) => string;
   translateHint: string;
 
+  initHeading: string;
+  initLangCurrent: (lang: string) => string;
+  initLangPrompt: string;
+  initSyncModeOptions: string;
+  initSyncModeCurrent: (mode: string) => string;
+  initSyncModePrompt: string;
+  initComplete: (lang: string, mode: string) => string;
+
+  syncModeDisabled: (command: string, mode: string) => string;
+
   notInRepo: string;
 }
 
@@ -51,6 +62,7 @@ export const en: Locale = {
   langPrompt: 'Language / 語言? (en / zh-TW): ',
   langSet: (lang: string) => `Language set to ${lang}.`,
   langCurrent: (lang: string) => `Current language: ${lang}`,
+  syncModeCurrent: (mode: string) => `Current sync mode: ${mode}`,
   configUsage: 'Usage: cam config lang [en|zh-TW]',
 
   // push
@@ -98,6 +110,18 @@ export const en: Locale = {
   translateDirection: (dir: string) => `  Direction: ${dir}`,
   translateTargetExists: (path: string) => `Target already exists: ${path} (will be overwritten)`,
   translateHint: 'Use the translate skill in Copilot Chat to produce the translation:\n  Open Chat → type: "Translate this file" and attach the source file.',
+
+  // init
+  initHeading: '=== cam init ===',
+  initLangCurrent: (lang: string) => `Current language: ${lang}`,
+  initLangPrompt: 'Language / 語言? (en / zh-TW) [press Enter to keep]: ',
+  initSyncModeOptions: 'Sync mode:',
+  initSyncModeCurrent: (mode: string) => `Current mode: ${mode}`,
+  initSyncModePrompt: 'Choose sync mode (1–4) [press Enter to keep]: ',
+  initComplete: (lang: string, mode: string) => `Config saved: lang=${lang}, syncMode=${mode}`,
+
+  // sync mode gating
+  syncModeDisabled: (command: string, mode: string) => `${command} is disabled (syncMode: ${mode}). Run cam init to change.`,
 
   // paths
   notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from the repo root.',
