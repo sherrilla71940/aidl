@@ -1,8 +1,16 @@
-import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import {
+  extractBody,
+  extractFrontmatter,
+  findMissingFrontmatterFields,
+  findPersonalContentPaths,
+  getLastCommitTimestamp,
+  getTranslationCounterpart,
+  listTranslationSources,
+} from '../src/repo-checks.js';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(testDir, '..');
@@ -17,27 +25,6 @@ function listFiles(relativeDir: string, suffix: string): string[] {
     .map(name => join(relativeDir, name).replace(/\\/g, '/'));
 }
 
-function frontmatter(content: string): string {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) {
-    throw new Error('Missing YAML frontmatter');
-  }
-  return match[1];
-}
-
-function body(content: string): string {
-  const match = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?([\s\S]*)$/);
-  return match?.[1]?.trim() ?? '';
-}
-
-function lastCommitTimestamp(relativePath: string): number {
-  const output = execFileSync('git', ['log', '-1', '--format=%ct', '--', relativePath], {
-    cwd: repoRoot,
-    encoding: 'utf-8',
-  }).trim();
-  return Number(output || '0');
-}
-
 describe('workspace prompt assets', () => {
   it('all slash command prompts have description and agent frontmatter', () => {
     const promptFiles = listFiles('.github/prompts', '.prompt.md');
@@ -45,10 +32,11 @@ describe('workspace prompt assets', () => {
     expect(promptFiles.length).toBeGreaterThan(0);
 
     for (const promptFile of promptFiles) {
-      const fm = frontmatter(read(promptFile));
-      expect(fm, promptFile).toMatch(/^description:/m);
+      const content = read(promptFile);
+      const fm = extractFrontmatter(content);
+      expect(findMissingFrontmatterFields(fm, ['description', 'agent']), promptFile).toEqual([]);
       expect(fm, promptFile).toMatch(/^agent:\s*agent$/m);
-      expect(body(read(promptFile)).length, promptFile).toBeGreaterThan(40);
+      expect(extractBody(content).length, promptFile).toBeGreaterThan(40);
     }
   });
 });
@@ -60,12 +48,11 @@ describe('workspace agent assets', () => {
     expect(agentFiles.length).toBeGreaterThan(0);
 
     for (const agentFile of agentFiles) {
-      const fm = frontmatter(read(agentFile));
-      expect(fm, agentFile).toMatch(/^description:/m);
-      expect(fm, agentFile).toMatch(/^tags:/m);
+      const content = read(agentFile);
+      const fm = extractFrontmatter(content);
+      expect(findMissingFrontmatterFields(fm, ['description', 'tags', 'type', 'tools']), agentFile).toEqual([]);
       expect(fm, agentFile).toMatch(/^type:\s*agent$/m);
-      expect(fm, agentFile).toMatch(/^tools:/m);
-      expect(body(read(agentFile)).length, agentFile).toBeGreaterThan(100);
+      expect(extractBody(content).length, agentFile).toBeGreaterThan(100);
     }
   });
 });
@@ -81,9 +68,9 @@ describe('workspace skill assets', () => {
 
     for (const skillFile of skillFiles) {
       const content = read(skillFile);
-      const fm = frontmatter(content);
-      expect(fm, skillFile).toMatch(/^description:/m);
-      expect(body(content).length, skillFile).toBeGreaterThan(100);
+      const fm = extractFrontmatter(content);
+      expect(findMissingFrontmatterFields(fm, ['description']), skillFile).toEqual([]);
+      expect(extractBody(content).length, skillFile).toBeGreaterThan(100);
     }
   });
 });
@@ -91,9 +78,9 @@ describe('workspace skill assets', () => {
 describe('hook contract', () => {
   it('translation pre-commit hook declares expected event and workflow', () => {
     const content = read('.github/hooks/translation-check.md');
-    const fm = frontmatter(content);
+    const fm = extractFrontmatter(content);
 
-    expect(fm).toMatch(/^description:/m);
+    expect(findMissingFrontmatterFields(fm, ['description', 'event'])).toEqual([]);
     expect(fm).toMatch(/^event:\s*preCommit$/m);
     expect(content).toContain('repo root and `docs/`');
     expect(content).toContain('`*.zh-TW.md`');
@@ -104,33 +91,36 @@ describe('hook contract', () => {
 });
 
 describe('translation parity', () => {
-  const sourceFiles = readdirSync(repoRoot)
-    .filter(name => name.endsWith('.md'))
-    .filter(name => !name.includes('.zh-TW.'))
-    .filter(name => name !== 'LICENSE')
-    .map(name => name.replace(/\\/g, '/'))
-    .concat(
-      readdirSync(join(repoRoot, 'docs'))
-        .filter(name => name.endsWith('.md'))
-        .filter(name => !name.includes('.zh-TW.'))
-        .filter(name => name !== 'TODO.md')
-        .map(name => join('docs', name).replace(/\\/g, '/')),
-    );
+  const sourceFiles = listTranslationSources(repoRoot);
 
   it('all root/docs markdown sources have zh-TW counterparts', () => {
     for (const sourceFile of sourceFiles) {
-      const translatedFile = sourceFile.replace(/\.md$/, '.zh-TW.md');
+      const translatedFile = getTranslationCounterpart(sourceFile);
       expect(existsSync(join(repoRoot, translatedFile)), `${translatedFile} missing for ${sourceFile}`).toBe(true);
     }
   });
 
   it('zh-TW counterparts are not older than their English source in git history', () => {
     for (const sourceFile of sourceFiles) {
-      const translatedFile = sourceFile.replace(/\.md$/, '.zh-TW.md');
-      const sourceTime = lastCommitTimestamp(sourceFile);
-      const translatedTime = lastCommitTimestamp(translatedFile);
+      const translatedFile = getTranslationCounterpart(sourceFile);
+      const sourceTime = getLastCommitTimestamp(repoRoot, sourceFile);
+      const translatedTime = getLastCommitTimestamp(repoRoot, translatedFile);
       expect(translatedTime, `${translatedFile} may be stale for ${sourceFile}`).toBeGreaterThanOrEqual(sourceTime);
     }
+  });
+});
+
+describe('no-personal-content CI policy', () => {
+  it('flags sync/local changes but ignores .gitkeep placeholders', () => {
+    expect(findPersonalContentPaths([
+      'src/cli.ts',
+      'sync/prompts/test.prompt.md',
+      'sync/prompts/.gitkeep',
+      'local/copilot-instructions.md',
+    ])).toEqual([
+      'sync/prompts/test.prompt.md',
+      'local/copilot-instructions.md',
+    ]);
   });
 });
 
