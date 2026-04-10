@@ -11,6 +11,7 @@ export async function status(): Promise<void> {
   const syncDir = join(repoRoot, 'sync');
   const manifestPath = join(repoRoot, '.sync-manifest.json');
   const manifest = readManifest(manifestPath);
+  let orphanedCount = 0;
 
   console.log('');
   console.log(chalk.green(t().statusHeading));
@@ -21,6 +22,7 @@ export async function status(): Promise<void> {
     const srcExists = existsSync(entry.source);
     const tgtExists = pathExists(entry.target);
     const label = srcExists && tgtExists ? 'OK' : 'ORPHANED';
+    if (label === 'ORPHANED') orphanedCount++;
     const syncNorm = normalizePath(syncDir);
     const srcNorm = normalizePath(entry.source);
     const display = srcNorm.startsWith(syncNorm + '/')
@@ -30,6 +32,11 @@ export async function status(): Promise<void> {
   }
 
   console.log('');
+
+  if (orphanedCount > 0) {
+    console.log(chalk.green(t().statusRunClean));
+    console.log('');
+  }
 
   const files = await walk(syncDir);
   const newFiles: string[] = [];

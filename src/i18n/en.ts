@@ -32,6 +32,7 @@ export interface Locale {
   statusSynced: (count: number) => string;
   statusNew: string;
   statusRunPush: string;
+  statusRunClean: string;
 
   cleanHeading: string;
   cleanRemoving: (target: string) => string;
@@ -80,7 +81,8 @@ export const en: Locale = {
 
   // pull
   pullScanning: 'Scanning VS Code config for untracked files...',
-  pullSkipDiffers: (rel: string) => `SKIP ${rel} — content differs (repo copy kept)`,
+  pullSkipDiffers: (rel: string) =>
+    `SKIP ${rel} — content differs (repo copy kept; rerun without --yes to review conflicts)`,
   pullConflict: (rel: string) => `CONFLICT: ${rel}`,
   pullConflictPrompt: '  Keep repo version (k), use VS Code version (v), skip (s)? [k/v/s] ',
   pullUpdated: (rel: string) => `  Updated: ${rel} (VS Code version accepted)`,
@@ -98,6 +100,7 @@ export const en: Locale = {
   statusSynced: (count: number) => `Synced (${count}):`,
   statusNew: 'New (not yet synced to VS Code):',
   statusRunPush: 'Run cam push to sync new files.',
+  statusRunClean: 'Run cam clean to remove orphaned entries from VS Code and the manifest.',
 
   // clean
   cleanHeading: 'Cleaning orphaned entries...',
@@ -124,7 +127,8 @@ export const en: Locale = {
   initComplete: (lang: string, mode: string) => `Config saved: lang=${lang}, syncMode=${mode}`,
 
   // sync mode gating
-  syncModeDisabled: (command: string, mode: string) => `${command} is disabled (syncMode: ${mode}). Run cam init to change.`,
+  syncModeDisabled: (command: string, mode: string) =>
+    `${command} is disabled (syncMode: ${mode}). Run cam init to change it, or cam config show to inspect the current setting.`,
 
   // paths
   notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from the repo root.',

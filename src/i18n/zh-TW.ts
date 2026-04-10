@@ -22,7 +22,7 @@ export const zhTW: Locale = {
 
   // pull
   pullScanning: '正在掃描 VS Code 設定中未追蹤的檔案...',
-  pullSkipDiffers: (rel: string) => `略過 ${rel} — 內容不同（保留 repo 版本）`,
+  pullSkipDiffers: (rel: string) => `略過 ${rel} — 內容不同（保留 repo 版本；如要處理衝突請不要加 --yes）`,
   pullConflict: (rel: string) => `衝突：${rel}`,
   pullConflictPrompt: '  保留 repo 版本 (k)、使用 VS Code 版本 (v)、略過 (s)？[k/v/s] ',
   pullUpdated: (rel: string) => `  已更新：${rel}（採用 VS Code 版本）`,
@@ -40,6 +40,7 @@ export const zhTW: Locale = {
   statusSynced: (count: number) => `已同步（${count}）：`,
   statusNew: '新增（尚未同步到 VS Code）：',
   statusRunPush: '執行 cam push 以同步新檔案。',
+  statusRunClean: '執行 cam clean，將孤立項目從 VS Code 與 manifest 中移除。',
 
   // clean
   cleanHeading: '正在清理孤立項目...',
@@ -66,7 +67,7 @@ export const zhTW: Locale = {
   initComplete: (lang: string, mode: string) => `設定已儲存：lang=${lang}, syncMode=${mode}`,
 
   // sync mode gating
-  syncModeDisabled: (command: string, mode: string) => `${command} 已停用（syncMode: ${mode}）。執行 cam init 來變更。`,
+  syncModeDisabled: (command: string, mode: string) => `${command} 已停用（syncMode: ${mode}）。執行 cam init 來變更，或執行 cam config show 檢查目前設定。`,
 
   // paths
   notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 根目錄執行 cam。',

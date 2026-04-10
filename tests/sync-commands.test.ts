@@ -124,6 +124,7 @@ describe('sync command integration', () => {
 
     expect(readFileSync(repoFile, 'utf-8')).toBe('repo version');
     expect(logSpy.mock.calls.flat().join('\n')).toContain('content differs');
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('rerun without --yes');
   });
 
   it('status reports OK, ORPHANED, and NEW entries from real filesystem state', async () => {
@@ -164,6 +165,8 @@ describe('sync command integration', () => {
     expect(output).toContain('[OK] prompts/ok.prompt.md');
     expect(output).toContain('[ORPHANED] prompts/missing.prompt.md');
     expect(output).toContain('[NEW] prompts/new.prompt.md');
+    expect(output).toContain('Run cam clean');
+    expect(output).toContain('Run cam push');
   });
 
   it('clean removes orphaned target files and manifest entries', async () => {
@@ -247,6 +250,7 @@ describe('push/pull focused warnings and gating', () => {
 
     expect(existsSync(join(layout.vscodeDir, 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('push is disabled');
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('cam config show');
   });
 
   it('pull is gated off when syncMode disables pull', async () => {
@@ -259,5 +263,6 @@ describe('push/pull focused warnings and gating', () => {
 
     expect(existsSync(join(layout.repoDir, 'sync', 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('pull is disabled');
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('cam config show');
   });
 });
