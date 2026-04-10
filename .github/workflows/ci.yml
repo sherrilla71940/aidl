@@ -57,8 +57,8 @@ jobs:
               echo "FAIL: $f is missing 'description' in frontmatter"
               failed=1
             fi
-            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^mode: agent"; then
-              echo "FAIL: $f is missing 'mode: agent' in frontmatter"
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^agent:"; then
+              echo "FAIL: $f is missing 'agent:' in frontmatter"
               failed=1
             fi
           done

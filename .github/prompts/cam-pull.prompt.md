@@ -1,6 +1,6 @@
 ---
 description: Capture untracked VS Code prompts, skills, and instructions into sync/ (pull VS Code → repo).
-mode: agent
+agent: agent
 ---
 
 Run the following command to import your existing VS Code config into the copilot-asset-manager repo:

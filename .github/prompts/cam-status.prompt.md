@@ -1,6 +1,6 @@
 ---
 description: Show which files are synced, which are new (not yet pushed), and which are orphaned.
-mode: agent
+agent: agent
 ---
 
 Run the following command to check sync status:

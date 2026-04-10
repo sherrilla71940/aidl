@@ -1,6 +1,6 @@
 ---
 description: Sync sync/ files to your VS Code user config (push repo → VS Code).
-mode: agent
+agent: agent
 ---
 
 Run the following command to push your copilot-asset-manager library to VS Code:
