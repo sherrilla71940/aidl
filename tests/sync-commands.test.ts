@@ -90,12 +90,26 @@ describe('sync command integration', () => {
     expect(manifest.agent_notice_shown).toBe(true);
   });
 
-  it('pull imports new VS Code files into sync and records them in the manifest', async () => {
+  it('pull imports new VS Code files into local by default and does not record them in the manifest', async () => {
     const vscodeFile = join(layout.vscodeDir, 'prompts', 'captured.prompt.md');
     writeFile(vscodeFile, '---\ndescription: capture\nagent: agent\n---\n\nCaptured text');
 
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true });
+    await pull({ yes: true, destination: 'local' });
+
+    const importedFile = join(layout.repoDir, 'local', 'prompts', 'captured.prompt.md');
+    expect(existsSync(importedFile)).toBe(true);
+    expect(readFileSync(importedFile, 'utf-8')).toBe(readFileSync(vscodeFile, 'utf-8'));
+
+    expect(existsSync(join(layout.repoDir, '.sync-manifest.json'))).toBe(false);
+  });
+
+  it('pull imports new VS Code files into sync when requested and records them in the manifest', async () => {
+    const vscodeFile = join(layout.vscodeDir, 'prompts', 'captured.prompt.md');
+    writeFile(vscodeFile, '---\ndescription: capture\nagent: agent\n---\n\nCaptured text');
+
+    const { pull } = await import('../src/pull.ts');
+    await pull({ yes: true, destination: 'sync' });
 
     const importedFile = join(layout.repoDir, 'sync', 'prompts', 'captured.prompt.md');
     expect(existsSync(importedFile)).toBe(true);
@@ -120,7 +134,7 @@ describe('sync command integration', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true });
+    await pull({ yes: true, destination: 'sync' });
 
     expect(readFileSync(repoFile, 'utf-8')).toBe('repo version');
     expect(logSpy.mock.calls.flat().join('\n')).toContain('content differs');
@@ -259,7 +273,7 @@ describe('push/pull focused warnings and gating', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true });
+    await pull({ yes: true, destination: 'local' });
 
     expect(existsSync(join(layout.repoDir, 'sync', 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('pull is disabled');

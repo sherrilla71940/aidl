@@ -8,6 +8,7 @@ import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
 const PULL_SUBDIRS = ['prompts', 'skills', 'instructions', 'hooks'];
+export type PullDestination = 'sync' | 'local';
 
 function isSymlinkIntoSync(file: string, syncDir: string): boolean {
   try {
@@ -26,7 +27,7 @@ function filesMatch(a: string, b: string): boolean {
   }
 }
 
-export async function pull(options: { yes: boolean }): Promise<void> {
+export async function pull(options: { yes: boolean; destination: PullDestination }): Promise<void> {
   const config = readConfig();
   if (config.syncMode === 'push-only' || config.syncMode === 'none') {
     console.log(chalk.yellow(t().syncModeDisabled('pull', config.syncMode)));
@@ -35,11 +36,12 @@ export async function pull(options: { yes: boolean }): Promise<void> {
 
   const repoRoot = findRepoRoot();
   const syncDir = join(repoRoot, 'sync');
+  const importDir = join(repoRoot, options.destination);
   const manifestPath = join(repoRoot, '.sync-manifest.json');
   const vscodeDir = getVscodeUserDir();
-  const manifest = readManifest(manifestPath);
+  const manifest = options.destination === 'sync' ? readManifest(manifestPath) : null;
 
-  console.log(chalk.green(t().pullScanning));
+  console.log(chalk.green(t().pullScanning(options.destination)));
 
   const candidates: string[] = [];
 
@@ -53,7 +55,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
       if (shouldSkip(rel)) continue;
       if (isSymlinkIntoSync(file, syncDir)) continue;
 
-      const dest = join(syncDir, rel);
+      const dest = join(importDir, rel);
 
       if (existsSync(dest)) {
         if (filesMatch(file, dest)) continue;
@@ -90,7 +92,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
   }
 
   console.log('');
-  console.log(chalk.green(t().pullFound(candidates.length)));
+  console.log(chalk.green(t().pullFound(candidates.length, options.destination)));
   candidates.forEach((f, i) => {
     console.log(`  ${i + 1}. ${relative(vscodeDir, f).replace(/\\/g, '/')}`);
   });
@@ -101,7 +103,7 @@ export async function pull(options: { yes: boolean }): Promise<void> {
     toImport = candidates;
   } else {
     console.log('');
-    const answer = await ask(t().pullImportPrompt);
+    const answer = await ask(t().pullImportPrompt(options.destination));
     if (/^[yY]$/.test(answer)) {
       toImport = candidates;
     } else if (/^[\d\s]+$/.test(answer)) {
@@ -119,22 +121,26 @@ export async function pull(options: { yes: boolean }): Promise<void> {
   let imported = 0;
   for (const file of toImport) {
     const rel = relative(vscodeDir, file).replace(/\\/g, '/');
-    const dest = join(syncDir, rel);
+    const dest = join(importDir, rel);
     mkdirSync(dirname(dest), { recursive: true });
     copyFileSync(file, dest);
 
-    addEntry(manifest, {
-      source: dest,
-      target: file,
-      strategy: 'copy',
-      timestamp: new Date().toISOString(),
-    });
+    if (manifest) {
+      addEntry(manifest, {
+        source: dest,
+        target: file,
+        strategy: 'copy',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
-    console.log(chalk.green(t().pullImported(rel)));
+    console.log(chalk.green(t().pullImported(rel, options.destination)));
     imported++;
   }
 
-  writeManifest(manifestPath, manifest);
+  if (manifest) {
+    writeManifest(manifestPath, manifest);
+  }
   console.log('');
-  console.log(chalk.green(t().pullComplete(imported)));
+  console.log(chalk.green(t().pullComplete(imported, options.destination)));
 }

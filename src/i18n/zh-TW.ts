@@ -21,7 +21,7 @@ export const zhTW: Locale = {
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
 
   // pull
-  pullScanning: '正在掃描 VS Code 設定中未追蹤的檔案...',
+  pullScanning: (destination: string) => `正在掃描 VS Code 設定中可匯入到 ${destination}/ 的檔案...`,
   pullSkipDiffers: (rel: string) => `略過 ${rel} — 內容不同（保留 repo 版本；如要處理衝突請不要加 --yes）`,
   pullConflict: (rel: string) => `衝突：${rel}`,
   pullConflictPrompt: '  保留 repo 版本 (k)、使用 VS Code 版本 (v)、略過 (s)？[k/v/s] ',
@@ -29,11 +29,11 @@ export const zhTW: Locale = {
   pullKept: (rel: string) => `  已保留：${rel}（保留 repo 版本）`,
   pullSkipped: (rel: string) => `  已略過：${rel}`,
   pullNothingNew: '沒有新檔案需要匯入。',
-  pullFound: (count: number) => `找到 ${count} 個未追蹤的檔案：`,
-  pullImportPrompt: '全部匯入？[y/N] 或輸入編號（例如 1 3）：',
+  pullFound: (count: number, destination: string) => `找到 ${count} 個可匯入到 ${destination}/ 的未追蹤檔案：`,
+  pullImportPrompt: (destination: string) => `要匯入到 ${destination}/ 嗎？[y/N] 或輸入編號（例如 1 3）：`,
   pullNothingImported: '未匯入任何檔案。',
-  pullImported: (rel: string) => `  已匯入：${rel} → sync/${rel}`,
-  pullComplete: (count: number) => `匯入完成：${count} 個已匯入。`,
+  pullImported: (rel: string, destination: string) => `  已匯入：${rel} → ${destination}/${rel}`,
+  pullComplete: (count: number, destination: string) => `匯入完成：${count} 個已匯入到 ${destination}/。`,
 
   // status
   statusHeading: '=== copilot-asset-manager 同步狀態 ===',

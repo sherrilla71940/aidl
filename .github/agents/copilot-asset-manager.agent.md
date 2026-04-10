@@ -35,7 +35,7 @@ If a Markdown translation is missing or stale, I should prefer the translate wor
 | Task | Command |
 |------|---------|
 | Initialize language + sync mode | `cam init` |
-| Capture VS Code config into repo | `cam pull` |
+| Capture VS Code config into repo | `cam pull [local\|sync]` |
 | Sync repo → VS Code | `cam push` |
 | Check what's synced | `cam status` |
 | Remove dead symlinks/entries | `cam clean` |
@@ -57,7 +57,7 @@ When the issue is missing or stale English/zh-TW documentation parity:
 
 **sync/** — Your assets, synced bidirectionally with your VS Code user config. This is where your prompts, skills, instructions, and optional personal agents live.
 
-**local/** — Private files: guides, notes, anything you want. No prescribed structure. Never touched by cam and never pushed to VS Code.
+**local/** — Private files: guides, notes, anything you want. No prescribed structure. `cam pull` imports here by default, and nothing under `local/` is ever pushed to VS Code.
 
 ## Safety constraint
 
@@ -69,7 +69,7 @@ I will NEVER run `clean`, `rm`, or any command that deletes, removes, or overwri
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-cam pull
+cam pull sync
 # Then add to VS Code settings.json:
 # "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
 ```

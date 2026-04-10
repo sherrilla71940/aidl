@@ -2,9 +2,9 @@
 
 **English** | [繁體中文](README.zh-TW.md)
 
-Fork this repo and build your AI development setup: prompts, skills, agents, instructions, hooks, and private guides — all versioned and portable.
+Use this repo as the Git-tracked home for your personal Copilot workflow library: prompts, skills, agents, instructions, hooks, and private guides. Keep it personal, or fork it for a team and share `sync/`.
 
-Use it alone to keep your AI working style portable across machines. Or fork it as a team repo — populate `sync/` with shared skills, agents, and instructions, and teammates clone + `push` to get the same setup.
+`cam push` syncs `sync/` to VS Code. `cam pull` imports from VS Code into `local/` or `sync/`; use `cam pull sync` + `cam push` for bidirectional sync, with one user-level copy in VS Code and one Git-tracked copy here.
 
 ## How it's organized
 
@@ -28,7 +28,7 @@ npm link                 # links `cam` on this machine
 cam init                 # set language + sync mode (Enter keeps defaults)
 
 # Import your existing VS Code prompts/skills/instructions/hooks into sync/
-cam pull
+cam pull sync
 
 # Commit so your fork is your source of truth
 git add sync/ && git commit -m "add my ai config" && git push
@@ -47,7 +47,7 @@ Chat commands require this repo open in VS Code.
 | Action | Terminal | Copilot Chat |
 | ------ | ---------- | -------------- |
 | Initialize language + sync mode | `cam init` | — |
-| Import VS Code → `sync/` | `cam pull [--yes]` | `/cam-pull` |
+| Import VS Code → repo | `cam pull [local|sync] [--yes]` | `/cam-pull` |
 | Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
 | Show sync state | `cam status` | `/cam-status` |
 | Remove orphaned entries | `cam clean` | `/cam-clean` |
@@ -73,7 +73,7 @@ After `cam push`, the synced instruction `cam-language.instructions.md` tells Co
 
 This repo ships its own workspace-native assets under `.github/` — the `@copilot-asset-manager` and `@scout` agents and the slash command prompts. These apply within this repo only and don't affect `sync/` or `local/`.
 
-`cam pull` does not import agents from VS Code. Keep personal agents in `sync/agents/`, then follow the one-time `chat.agentFilesLocations` notice shown by `cam push`.
+`cam pull [local|sync]` defaults to `local/` and does not import agents from VS Code. Keep personal agents in `sync/agents/`, then follow the one-time `chat.agentFilesLocations` notice shown by `cam push`.
 
 ## Contributing
 

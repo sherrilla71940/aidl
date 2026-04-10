@@ -13,7 +13,7 @@
   - `local/` — 以 git 追蹤的私人檔案，不會同步到 VS Code
 - **VS Code 使用者設定** （Linux: `~/.config/Code/User/`、macOS: `~/Library/Application Support/Code/User/`、Windows: `%APPDATA%\Code\User\`）
 
-Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 只匯入到 `sync/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
+Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `local/`，需要時也可指定匯入到 `sync/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
 支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，不會由 push 建立 symlink/複製，也不會由 pull 匯入。
 
@@ -78,16 +78,18 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VS Code → repo
 
+指令語法：`cam pull [local|sync] [--yes]`（預設為 `local`）。
+
 1. 掃描 VS Code 設定中的 `prompts/`、`skills/`、`instructions/`、`hooks/` 目錄。**不掃描 `agents/`** — 個人 agent 檔案透過 `chat.agentFilesLocations` 直接從 `sync/agents/` 讀取。
 
 1. 對每個找到的檔案：
 
 - 如果是指向 `sync/` 的 symlink — 跳過（已管理）。
-- 如果完全不在 `sync/` 中 — 列為匯入候選。
-- 如果已在 `sync/` 中且**內容相同** — 靜默跳過。
-- 如果已在 `sync/` 中且**內容不同** — 提示：
-  - **k** — 保留 repo 版本（`sync/` 不變）
-  - **v** — 接受 VS Code 版本（覆寫 `sync/`）
+- 如果在所選目的地（`local/` 或 `sync/`）中完全不存在 — 列為匯入候選。
+- 如果已在所選目的地中且**內容相同** — 靜默跳過。
+- 如果已在所選目的地中且**內容不同** — 提示：
+  - **k** — 保留 repo 版本（所選目的地不變）
+  - **v** — 接受 VS Code 版本（覆寫所選目的地副本）
   - **s** — 跳過（稍後決定）
 
   使用 `--yes` 時：衝突會顯示警告並略過，保留 repo 版本。
@@ -95,9 +97,9 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 1. 不加 `--yes` 時：列出候選檔案並提示使用者（`y` 全選，或輸入編號選擇特定項目）。
    加 `--yes` 時：全部匯入，不提示。
 
-1. 將選取的檔案複製到 `sync/`，保留目錄結構。
+1. 將選取的檔案複製到所選目的地，保留目錄結構。
 
-1. 更新 `.sync-manifest.json`。
+1. 只有在匯入到 `sync/` 時才更新 `.sync-manifest.json`。
 
 ---
 

@@ -14,7 +14,7 @@ export interface Locale {
   pushAgentNotice: string;
   pushAgentSetting: (path: string) => string;
 
-  pullScanning: string;
+  pullScanning: (destination: string) => string;
   pullSkipDiffers: (rel: string) => string;
   pullConflict: (rel: string) => string;
   pullConflictPrompt: string;
@@ -22,11 +22,11 @@ export interface Locale {
   pullKept: (rel: string) => string;
   pullSkipped: (rel: string) => string;
   pullNothingNew: string;
-  pullFound: (count: number) => string;
-  pullImportPrompt: string;
+  pullFound: (count: number, destination: string) => string;
+  pullImportPrompt: (destination: string) => string;
   pullNothingImported: string;
-  pullImported: (rel: string) => string;
-  pullComplete: (count: number) => string;
+  pullImported: (rel: string, destination: string) => string;
+  pullComplete: (count: number, destination: string) => string;
 
   statusHeading: string;
   statusSynced: (count: number) => string;
@@ -80,7 +80,7 @@ export const en: Locale = {
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
 
   // pull
-  pullScanning: 'Scanning VS Code config for untracked files...',
+  pullScanning: (destination: string) => `Scanning VS Code config for files to import into ${destination}/...`,
   pullSkipDiffers: (rel: string) =>
     `SKIP ${rel} — content differs (repo copy kept; rerun without --yes to review conflicts)`,
   pullConflict: (rel: string) => `CONFLICT: ${rel}`,
@@ -89,11 +89,11 @@ export const en: Locale = {
   pullKept: (rel: string) => `  Kept: ${rel} (repo version kept)`,
   pullSkipped: (rel: string) => `  Skipped: ${rel}`,
   pullNothingNew: 'Nothing new to import.',
-  pullFound: (count: number) => `Found ${count} untracked file(s):`,
-  pullImportPrompt: 'Import all? [y/N] or enter numbers (e.g. 1 3): ',
+  pullFound: (count: number, destination: string) => `Found ${count} untracked file(s) to import into ${destination}/:`,
+  pullImportPrompt: (destination: string) => `Import into ${destination}/? [y/N] or enter numbers (e.g. 1 3): `,
   pullNothingImported: 'Nothing imported.',
-  pullImported: (rel: string) => `  Imported: ${rel} → sync/${rel}`,
-  pullComplete: (count: number) => `Pull complete: ${count} imported.`,
+  pullImported: (rel: string, destination: string) => `  Imported: ${rel} → ${destination}/${rel}`,
+  pullComplete: (count: number, destination: string) => `Pull complete: ${count} imported into ${destination}/.`,
 
   // status
   statusHeading: '=== copilot-asset-manager sync status ===',

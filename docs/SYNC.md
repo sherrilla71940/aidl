@@ -13,7 +13,7 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
   - `local/` — git-tracked private files, never synced to VS Code
 - **VSCode user config** (`~/.config/Code/User/` on Linux, `~/Library/Application Support/Code/User/` on macOS, `%APPDATA%\Code\User\` on Windows)
 
-Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` only imports into `sync/`. `push` only syncs `sync/`. `local/` is never synced to VSCode.
+Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `local/` by default, or `sync/` when requested. `push` only syncs `sync/`. `local/` is never synced to VSCode.
 
 Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push or imported by pull.
 
@@ -78,16 +78,18 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VSCode → repo
 
+Command syntax: `cam pull [local|sync] [--yes]` (`local` is the default).
+
 1. Scan VSCode config `prompts/`, `skills/`, `instructions/`, `hooks/` directories. **Do NOT scan `agents/`** — personal agent files are sourced directly from `sync/agents/` via `chat.agentFilesLocations`.
 
 1. For each file found:
 
 - If a symlink pointing into `sync/` — skip (already managed).
-- If NOT in `sync/` at all — candidate for import.
-- If already in `sync/` with **identical content** — skip silently.
-- If already in `sync/` with **different content** — prompt:
-  - **k** — keep the repo version (no change to `sync/`)
-  - **v** — accept the VS Code version (overwrites `sync/` copy)
+- If NOT in the selected destination (`local/` or `sync/`) — candidate for import.
+- If already in the selected destination with **identical content** — skip silently.
+- If already in the selected destination with **different content** — prompt:
+  - **k** — keep the repo version (no change to the selected destination)
+  - **v** — accept the VS Code version (overwrites the selected destination copy)
   - **s** — skip (decide later)
 
   With `--yes`: conflicts are skipped with a warning, repo version is kept.
@@ -95,9 +97,9 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 1. Without `--yes`: list candidates and prompt user (select all with `y`, or specific items by number).
    With `--yes`: import all without prompting.
 
-1. Copy selected files into `sync/` preserving the directory structure.
+1. Copy selected files into the selected destination, preserving the directory structure.
 
-1. Update `.sync-manifest.json`.
+1. Update `.sync-manifest.json` only when importing into `sync/`.
 
 ---
 

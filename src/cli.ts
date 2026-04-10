@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 import chalk from 'chalk';
 import { push } from './push.js';
 import { pull } from './pull.js';
@@ -11,8 +11,17 @@ import { init } from './init.js';
 import { readConfig, writeConfig, isValidLang, SUPPORTED_LANGS } from './config.js';
 import { t, resetLocaleCache } from './i18n/index.js';
 import { ask } from './util.js';
+import type { PullDestination } from './pull.js';
 
 const program = new Command();
+
+function parsePullDestination(value: string): PullDestination {
+  if (value === 'local' || value === 'sync') {
+    return value;
+  }
+
+  throw new InvalidArgumentError('Pull destination must be "local" or "sync".');
+}
 
 program
   .name('cam')
@@ -27,9 +36,10 @@ program
 
 program
   .command('pull')
-  .description('Import untracked VS Code files into sync/')
+  .description('Import untracked VS Code files into local/ or sync/ (default: local/)')
+  .argument('[destination]', 'Import destination: local or sync', parsePullDestination, 'local')
   .option('--yes', 'Import all without prompting')
-  .action((opts) => pull({ yes: opts.yes ?? false }));
+  .action((destination: PullDestination, opts) => pull({ yes: opts.yes ?? false, destination }));
 
 program
   .command('status')
