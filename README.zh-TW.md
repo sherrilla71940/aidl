@@ -20,6 +20,8 @@ Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、in
 
 ## 快速開始
 
+先決條件：Node.js 18+ 和 npm。
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager

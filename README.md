@@ -18,6 +18,8 @@ Both `sync/` and `local/` are yours. The difference is that files under `sync/` 
 
 ## Quick start
 
+Prerequisites: Node.js 18+ and npm.
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
