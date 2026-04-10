@@ -35,6 +35,14 @@ export interface Locale {
   cleanRemoving: (target: string) => string;
   cleanComplete: (count: number) => string;
 
+  translateNotFound: (file: string) => string;
+  translateHeading: string;
+  translateSource: (path: string) => string;
+  translateTarget: (path: string) => string;
+  translateDirection: (dir: string) => string;
+  translateTargetExists: (path: string) => string;
+  translateHint: string;
+
   notInRepo: string;
 }
 
@@ -81,6 +89,15 @@ export const en: Locale = {
   cleanRemoving: (target: string) => `  Removing orphaned: ${target}`,
   cleanComplete: (count: number) =>
     `Clean complete: ${count} orphaned ${count === 1 ? 'entry' : 'entries'} removed.`,
+
+  // translate
+  translateNotFound: (file: string) => `File not found: ${file}`,
+  translateHeading: '=== cam translate ===',
+  translateSource: (path: string) => `  Source: ${path}`,
+  translateTarget: (path: string) => `  Target: ${path}`,
+  translateDirection: (dir: string) => `  Direction: ${dir}`,
+  translateTargetExists: (path: string) => `Target already exists: ${path} (will be overwritten)`,
+  translateHint: 'Use the translate skill in Copilot Chat to produce the translation:\n  Open Chat → type: "Translate this file" and attach the source file.',
 
   // paths
   notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from the repo root.',

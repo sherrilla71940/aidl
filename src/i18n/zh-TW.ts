@@ -44,6 +44,15 @@ export const zhTW: Locale = {
   cleanComplete: (count: number) =>
     `清理完成：已移除 ${count} 個孤立項目。`,
 
+  // translate
+  translateNotFound: (file: string) => `找不到檔案：${file}`,
+  translateHeading: '=== cam translate ===',
+  translateSource: (path: string) => `  來源：${path}`,
+  translateTarget: (path: string) => `  目標：${path}`,
+  translateDirection: (dir: string) => `  方向：${dir}`,
+  translateTargetExists: (path: string) => `目標檔案已存在：${path}（將被覆寫）`,
+  translateHint: '請使用 Copilot Chat 中的 translate skill 來產生翻譯：\n  開啟 Chat → 輸入：「Translate this file」並附上來源檔案。',
+
   // paths
   notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 根目錄執行 cam。',
 } satisfies Locale;
