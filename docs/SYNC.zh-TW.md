@@ -15,7 +15,7 @@
 
 Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 只匯入到 `sync/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
-支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，push 不會建立 symlink 或複製。
+支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，不會由 push 建立 symlink/複製，也不會由 pull 匯入。
 
 `sync/` 對應到你的 VS Code 使用者設定目錄，不會同步 workspace-level 的 `.vscode/` 設定。
 
@@ -44,12 +44,14 @@ VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Key
 - `sync/prompts/**/*.prompt.md`
 - `sync/skills/*/SKILL.md`（僅一層 — 資料夾名稱 = skill 名稱）
 - `sync/instructions/**/*.instructions.md`
+- `sync/hooks/**/*`
 
 1. 對每個檔案，決定 VS Code 使用者設定中的目標路徑：
 
 - `sync/prompts/**/*` → `{vscodeUserPath}/prompts/<相對子路徑>`（結構保留）
 - `sync/skills/{name}/SKILL.md` → `{vscodeUserPath}/skills/{name}/SKILL.md`
 - `sync/instructions/**/*` → `{vscodeUserPath}/instructions/<相對子路徑>`
+- `sync/hooks/**/*` → `{vscodeUserPath}/hooks/<相對子路徑>`
 
 1. **衝突檢查：** 如果目標路徑已存在，且未被 manifest 追蹤（即非 copilot-asset-manager 建立的），跳過並輸出：
 
@@ -76,19 +78,19 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VS Code → repo
 
-1. 掃描 VS Code 設定中的 `prompts/`、`skills/`、`instructions/` 目錄。**不掃描 `agents/`** — 個人 agent 檔案透過 `chat.agentFilesLocations` 直接從 `sync/agents/` 讀取。
+1. 掃描 VS Code 設定中的 `prompts/`、`skills/`、`instructions/`、`hooks/` 目錄。**不掃描 `agents/`** — 個人 agent 檔案透過 `chat.agentFilesLocations` 直接從 `sync/agents/` 讀取。
 
 1. 對每個找到的檔案：
 
 - 如果是指向 `sync/` 的 symlink — 跳過（已管理）。
 - 如果完全不在 `sync/` 中 — 列為匯入候選。
 - 如果已在 `sync/` 中且**內容相同** — 靜默跳過。
-- 如果已在 `sync/` 中且**內容不同** — 顯示精簡 diff 並提示：
+- 如果已在 `sync/` 中且**內容不同** — 提示：
   - **k** — 保留 repo 版本（`sync/` 不變）
   - **v** — 接受 VS Code 版本（覆寫 `sync/`）
   - **s** — 跳過（稍後決定）
 
-  使用 `--yes` 時：衝突靜默跳過，保留 repo 版本。
+  使用 `--yes` 時：衝突會顯示警告並略過，保留 repo 版本。
 
 1. 不加 `--yes` 時：列出候選檔案並提示使用者（`y` 全選，或輸入編號選擇特定項目）。
    加 `--yes` 時：全部匯入，不提示。
@@ -105,6 +107,7 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 2. 對每個同步項目：檢查 source 和 target 是否仍存在。回報 OK 或 ORPHANED。
 3. 掃描 `sync/` 中不在 manifest 裡的檔案。回報為 NEW。
 4. NEW 表示這些資源尚未執行 `push`。
+5. ORPHANED 表示 source 或 target 已遺失；執行 `cam clean` 可清掉過期的 manifest 項目與殘留 target。
 
 ---
 

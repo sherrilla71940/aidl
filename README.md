@@ -24,16 +24,17 @@ Prerequisites: Node.js 18+ and npm.
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-cam config lang en       # optional: set language (en or zh-TW)
+npm link                 # links `cam` on this machine
+cam init                 # set language + sync mode (Enter keeps defaults)
 
-# Import your existing VS Code prompts/skills/instructions into sync/
+# Import your existing VS Code prompts/skills/instructions/hooks into sync/
 cam pull
 
 # Commit so your fork is your source of truth
 git add sync/ && git commit -m "add my ai config" && git push
 
 # On any new machine: clone your fork and restore
-cam push
+cam push                 # first push may ask for chat.agentFilesLocations for sync/agents
 ```
 
 After that, your repo is the portable home of your AI setup.
@@ -71,6 +72,8 @@ After `cam push`, the synced instruction `cam-language.instructions.md` tells Co
 ## Workspace defaults
 
 This repo ships its own workspace-native assets under `.github/` — the `@copilot-asset-manager` and `@scout` agents and the slash command prompts. These apply within this repo only and don't affect `sync/` or `local/`.
+
+`cam pull` does not import agents from VS Code. Keep personal agents in `sync/agents/`, then follow the one-time `chat.agentFilesLocations` notice shown by `cam push`.
 
 ## Contributing
 

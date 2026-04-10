@@ -26,16 +26,17 @@ Fork 這個 repo，打造你的 AI 開發環境：prompts、skills、agents、in
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-cam config lang zh-TW    # 可選：設定語言（en 或 zh-TW）
+npm link                 # 在這台機器上建立 `cam` 連結
+cam init                 # 設定語言與同步模式（直接按 Enter 可保留預設值）
 
-# 把現有的 VS Code prompts/skills/instructions 匯入 sync/
+# 把現有的 VS Code prompts/skills/instructions/hooks 匯入 sync/
 cam pull
 
 # commit 讓你的 fork 成為唯一的真實來源
 git add sync/ && git commit -m "add my ai config" && git push
 
 # 在任何新機器上：clone 你的 fork 然後還原
-cam push
+cam push                 # 第一次 push 可能會提示設定 sync/agents 的 chat.agentFilesLocations
 ```
 
 完成後，這個 repo 就是你 AI 設定的可攜式家園。
@@ -73,6 +74,8 @@ cam config show         # 顯示目前語言
 ## Workspace 預設資源
 
 此 repo 在 `.github/` 下附帶了 workspace 專用資源 — `@copilot-asset-manager` 和 `@scout` agents 以及斜線指令 prompts。這些只在此 repo 中生效，不會影響 `sync/` 或 `local/`。
+
+`cam pull` 不會從 VS Code 匯入 agents。個人的 agents 請放在 `sync/agents/`，再依照 `cam push` 第一次顯示的 `chat.agentFilesLocations` 提示完成設定。
 
 ## 貢獻
 

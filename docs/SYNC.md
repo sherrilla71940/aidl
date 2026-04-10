@@ -13,7 +13,9 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
   - `local/` — git-tracked private files, never synced to VS Code
 - **VSCode user config** (`~/.config/Code/User/` on Linux, `~/Library/Application Support/Code/User/` on macOS, `%APPDATA%\Code\User\` on Windows)
 
-Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` only imports into `sync/`. `push` only syncs `sync/`. `local/` is never synced to VSCode.\n\nSupported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push.
+Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` only imports into `sync/`. `push` only syncs `sync/`. `local/` is never synced to VSCode.
+
+Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push or imported by pull.
 
 `sync/` maps to your VS Code user config directory. It does not sync workspace-level `.vscode/` settings.
 
@@ -42,12 +44,14 @@ Relative links between files under `sync/` work in both the repo and VS Code bec
 - `sync/prompts/**/*.prompt.md`
 - `sync/skills/*/SKILL.md` (one level only — folder name = skill name)
 - `sync/instructions/**/*.instructions.md`
+- `sync/hooks/**/*`
 
 1. For each file, determine the target path in VSCode user config:
 
 - `sync/prompts/**/*` → `{vscodeUserPath}/prompts/<relative-subpath>` (structure preserved)
 - `sync/skills/{name}/SKILL.md` → `{vscodeUserPath}/skills/{name}/SKILL.md`
 - `sync/instructions/**/*` → `{vscodeUserPath}/instructions/<relative-subpath>`
+- `sync/hooks/**/*` → `{vscodeUserPath}/hooks/<relative-subpath>`
 
 1. **Conflict check:** if a target path already exists and is NOT tracked in the manifest (i.e., not created by copilot-asset-manager), skip it and print:
 
@@ -74,19 +78,19 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 
 ## pull — VSCode → repo
 
-1. Scan VSCode config `prompts/`, `skills/`, `instructions/` directories. **Do NOT scan `agents/`** — personal agent files are sourced directly from `sync/agents/` via `chat.agentFilesLocations`.
+1. Scan VSCode config `prompts/`, `skills/`, `instructions/`, `hooks/` directories. **Do NOT scan `agents/`** — personal agent files are sourced directly from `sync/agents/` via `chat.agentFilesLocations`.
 
 1. For each file found:
 
 - If a symlink pointing into `sync/` — skip (already managed).
 - If NOT in `sync/` at all — candidate for import.
 - If already in `sync/` with **identical content** — skip silently.
-- If already in `sync/` with **different content** — show a compact diff and prompt:
+- If already in `sync/` with **different content** — prompt:
   - **k** — keep the repo version (no change to `sync/`)
   - **v** — accept the VS Code version (overwrites `sync/` copy)
   - **s** — skip (decide later)
 
-  With `--yes`: conflicts are skipped silently, repo version is kept.
+  With `--yes`: conflicts are skipped with a warning, repo version is kept.
 
 1. Without `--yes`: list candidates and prompt user (select all with `y`, or specific items by number).
    With `--yes`: import all without prompting.
@@ -103,6 +107,7 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 2. For each synced entry: check source and target still exist. Report OK or ORPHANED.
 3. Scan `sync/` for files not in manifest. Report as NEW.
 4. NEW files mean `push` hasn't been run for those assets yet.
+5. ORPHANED entries mean the source or target file is missing; run `cam clean` to remove stale manifest entries and leftover targets.
 
 ---
 
