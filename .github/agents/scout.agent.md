@@ -1,7 +1,5 @@
 ---
 description: Research agent that finds existing community prompts, skills, and agents for what you're trying to do. Searches known sources and recommends starting points before you build from scratch.
-tags: [research, discovery, community, prompts, skills]
-type: agent
 tools: [web/fetch, search/codebase]
 ---
 

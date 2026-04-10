@@ -31,12 +31,8 @@ jobs:
               echo "FAIL: $f is missing 'description' in frontmatter"
               failed=1
             fi
-            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^tags:"; then
-              echo "FAIL: $f is missing 'tags' in frontmatter"
-              failed=1
-            fi
-            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^type:"; then
-              echo "FAIL: $f is missing 'type' in frontmatter"
+            if ! awk '/^---/{n++; next} n==1' "$f" | grep -q "^tools:"; then
+              echo "FAIL: $f is missing 'tools' in frontmatter"
               failed=1
             fi
           done

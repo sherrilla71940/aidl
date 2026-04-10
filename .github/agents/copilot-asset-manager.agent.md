@@ -1,7 +1,5 @@
 ---
 description: Chat interface for managing your Copilot asset library. Knows all copilot-asset-manager commands and guides you through pull, push, status, clean, init, and translation workflows in plain English, including translation parity fixes via the translate skill.
-tags: [copilot-asset-manager, sync, copilot, prompts, skills, agents]
-type: agent
 tools: [codebase, terminal]
 ---
 

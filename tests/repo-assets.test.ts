@@ -51,8 +51,7 @@ describe('workspace agent assets', () => {
     for (const agentFile of agentFiles) {
       const content = read(agentFile);
       const fm = extractFrontmatter(content);
-      expect(findMissingFrontmatterFields(fm, ['description', 'tags', 'type', 'tools']), agentFile).toEqual([]);
-      expect(fm, agentFile).toMatch(/^type:\s*agent$/m);
+      expect(findMissingFrontmatterFields(fm, ['description', 'tools']), agentFile).toEqual([]);
       expect(extractBody(content).length, agentFile).toBeGreaterThan(100);
     }
   });
