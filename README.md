@@ -41,8 +41,7 @@ After that, your repo is the portable home of your AI setup.
 ## Commands
 
 Chat commands require this repo open in VS Code.
-`sync/` maps to your VS Code user config directory — it does not sync workspace-level `.vscode/` settings.
-Terminal commands must be run from inside the repo directory.
+`sync/` maps to your VS Code user config directory — it does not sync workspace-level `.vscode/` settings. Terminal commands must be run from inside the repo directory.
 
 | Action | Terminal | Copilot Chat |
 |--------|----------|--------------|
@@ -52,10 +51,10 @@ Terminal commands must be run from inside the repo directory.
 | Show sync state | `cam status` | `/cam-status` |
 | Remove orphaned entries | `cam clean` | `/cam-clean` |
 | Help & live status | — | `/cam-help` |
-| Plain-English help | — | `@copilot-asset-manager` |
-| Find community assets | — | `@scout` |
 | Set/show language | `cam config lang` / `cam config show` | `/cam-config` |
 | Translate assets (en ↔ zh-TW) | `cam translate <file>` | `/cam-translate` |
+
+Agents: use `@copilot-asset-manager` as the default project assistant for most repo tasks; use `@scout` for community prompts, skills, and agent research.
 
 ## Language support
 

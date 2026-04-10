@@ -43,8 +43,7 @@ cam push
 ## 指令
 
 Chat 指令需要在 VS Code 中開啟此 repo。
-`sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。
-終端機指令必須在 repo 目錄內執行。
+`sync/` 對應到你的 VS Code 使用者設定目錄 — 不會同步 workspace-level 的 `.vscode/` 設定。終端機指令必須在 repo 目錄內執行。
 
 | 動作 | 終端機 | Copilot Chat |
 |------|--------|--------------|
@@ -54,10 +53,10 @@ Chat 指令需要在 VS Code 中開啟此 repo。
 | 顯示同步狀態 | `cam status` | `/cam-status` |
 | 移除孤立項目 | `cam clean` | `/cam-clean` |
 | 說明與即時狀態 | — | `/cam-help` |
-| 自然語言協助 | — | `@copilot-asset-manager` |
-| 搜尋社群資源 | — | `@scout` |
 | 設定/顯示語言 | `cam config lang` / `cam config show` | `/cam-config` |
 | 翻譯資源檔（en ↔ zh-TW） | `cam translate <file>` | `/cam-translate` |
+
+Agents：用 `@copilot-asset-manager` 當此 repo 的預設助理，處理多數工作；用 `@scout` 研究社群 prompts、skills 與 agents。
 
 ## 語言支援
 
