@@ -6,7 +6,7 @@ import { readManifest, writeManifest, hasTarget, addEntry, removeByTarget } from
 import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
-import type { SyncEntry } from './manifest.js';
+import type { Manifest, SyncEntry } from './manifest.js';
 
 export type CleanupMode = 'report' | 'ask' | 'delete';
 
@@ -16,7 +16,7 @@ function getSyncRelative(syncDir: string, path: string): string {
   return normalized.startsWith(syncPrefix) ? normalized.slice(syncPrefix.length) : normalized;
 }
 
-function pruneLegacyTargetsForSource(manifest: { synced: SyncEntry[] }, source: string, target: string): void {
+function pruneLegacyTargetsForSource(manifest: Manifest, source: string, target: string): void {
   const normalizedSource = normalizePath(source);
   const normalizedTarget = normalizePath(target);
   const legacyEntries = manifest.synced.filter(entry => (
@@ -54,6 +54,19 @@ function groupStaleEntriesBySource(syncDir: string, entries: SyncEntry[]): Array
   }
 
   return Array.from(groups.values());
+}
+
+function deleteStaleEntryGroup(manifest: Manifest, group: { entries: SyncEntry[] }): void {
+  for (const entry of group.entries) {
+    if (pathExists(entry.target)) {
+      try {
+        unlinkSync(entry.target);
+      } catch {
+        // target already gone
+      }
+    }
+    removeByTarget(manifest, entry.target);
+  }
 }
 
 export async function push(options: { yes: boolean; cleanup: CleanupMode }): Promise<void> {
@@ -140,31 +153,36 @@ export async function push(options: { yes: boolean; cleanup: CleanupMode }): Pro
   if (staleEntryGroups.length > 0) {
     console.log('');
     console.log(chalk.yellow(t().pushStaleHeading(staleEntryGroups.length)));
-    for (const group of staleEntryGroups) {
-      for (const entry of group.entries) {
-        console.log(chalk.yellow(t().pushStaleEntry(group.rel, entry.target)));
-      }
+    if (effectiveCleanup === 'ask') {
+      const decisions: Array<{ group: typeof staleEntryGroups[number]; shouldDelete: boolean }> = [];
 
-      let shouldDelete = effectiveCleanup === 'delete';
-      if (effectiveCleanup === 'ask') {
-        const answer = await ask(t().pushStalePrompt(group.rel));
-        shouldDelete = /^[yY]$/.test(answer);
-      }
-
-      if (shouldDelete) {
+      for (const group of staleEntryGroups) {
         for (const entry of group.entries) {
-          if (pathExists(entry.target)) {
-            try {
-              unlinkSync(entry.target);
-            } catch {
-              // target already gone
-            }
-          }
-          removeByTarget(manifest, entry.target);
+          console.log(chalk.yellow(t().pushStaleEntry(group.rel, entry.target)));
         }
-        console.log(chalk.green(t().pushStaleDeleted(group.rel)));
-      } else if (effectiveCleanup === 'ask') {
-        console.log(chalk.green(t().pushStaleKept(group.rel)));
+
+        const answer = await ask(t().pushStalePrompt(group.rel));
+        decisions.push({ group, shouldDelete: /^[yY]$/.test(answer) });
+      }
+
+      for (const decision of decisions) {
+        if (decision.shouldDelete) {
+          deleteStaleEntryGroup(manifest, decision.group);
+          console.log(chalk.green(t().pushStaleDeleted(decision.group.rel)));
+        } else {
+          console.log(chalk.green(t().pushStaleKept(decision.group.rel)));
+        }
+      }
+    } else {
+      for (const group of staleEntryGroups) {
+        for (const entry of group.entries) {
+          console.log(chalk.yellow(t().pushStaleEntry(group.rel, entry.target)));
+        }
+
+        if (effectiveCleanup === 'delete') {
+          deleteStaleEntryGroup(manifest, group);
+          console.log(chalk.green(t().pushStaleDeleted(group.rel)));
+        }
       }
     }
   }

@@ -329,6 +329,59 @@ describe('sync command integration', () => {
     expect(manifest.synced).toHaveLength(0);
   });
 
+  it('push asks about all stale groups before deleting any targets when cleanup=ask', async () => {
+    const staleSourceA = join(layout.repoDir, 'sync', 'instructions', 'removed-a.instructions.md');
+    const staleSourceB = join(layout.repoDir, 'sync', 'skills', 'old-skill', 'SKILL.md');
+    const staleTargetA = join(layout.copilotDir, 'instructions', 'removed-a.instructions.md');
+    const staleTargetB = join(layout.copilotDir, 'skills', 'old-skill', 'SKILL.md');
+    writeFile(staleTargetA, 'stale user copy a');
+    writeFile(staleTargetB, 'stale user copy b');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: staleSourceA,
+            target: staleTargetA,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+          {
+            source: staleSourceB,
+            target: staleTargetB,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    let promptCount = 0;
+    vi.doMock('../src/util.js', async () => {
+      const actual = await vi.importActual<typeof import('../src/util.ts')>('../src/util.ts');
+      return {
+        ...actual,
+        ask: vi.fn().mockImplementation(async () => {
+          promptCount += 1;
+          if (promptCount === 2) {
+            expect(existsSync(staleTargetA)).toBe(true);
+            expect(existsSync(staleTargetB)).toBe(true);
+          }
+          return 'y';
+        }),
+      };
+    });
+
+    const { push } = await import('../src/push.ts');
+    await push({ yes: false, cleanup: 'ask' });
+
+    expect(existsSync(staleTargetA)).toBe(false);
+    expect(existsSync(staleTargetB)).toBe(false);
+    const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(0);
+  });
+
   it('push prunes legacy targets for a live source when the canonical target changes', async () => {
     const sourceFile = join(layout.repoDir, 'sync', 'instructions', 'style.instructions.md');
     const legacyTarget = join(layout.vscodeDir, 'instructions', 'style.instructions.md');
