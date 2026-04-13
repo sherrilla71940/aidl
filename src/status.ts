@@ -1,7 +1,7 @@
 import { join, relative } from 'node:path';
 import { existsSync } from 'node:fs';
 import chalk from 'chalk';
-import { getVscodeUserDir, findRepoRoot, normalizePath } from './paths.js';
+import { findRepoRoot, normalizePath } from './paths.js';
 import { readManifest, hasSource } from './manifest.js';
 import { walk, shouldSkip, pathExists } from './util.js';
 import { t } from './i18n/index.js';
@@ -40,10 +40,8 @@ export async function status(): Promise<void> {
 
   const files = await walk(syncDir);
   const newFiles: string[] = [];
-  const agentFiles: string[] = [];
   for (const f of files) {
     const rel = relative(syncDir, f).replace(/\\/g, '/');
-    if (rel.endsWith('.agent.md')) { agentFiles.push(rel); continue; }
     if (shouldSkip(rel)) continue;
     if (!hasSource(manifest, f)) {
       newFiles.push(rel);
@@ -57,14 +55,5 @@ export async function status(): Promise<void> {
     }
     console.log('');
     console.log(chalk.green(t().statusRunPush));
-  }
-
-  if (agentFiles.length > 0) {
-    console.log('');
-    console.log(chalk.green(t().statusAgentSection(agentFiles.length)));
-    for (const f of agentFiles) {
-      console.log(chalk.green(t().statusAgentFile(f)));
-    }
-    console.log(chalk.yellow(t().statusAgentHint));
   }
 }

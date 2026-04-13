@@ -19,35 +19,26 @@ npm install
 npm link                 # 在這台機器上建立 `cam` 連結
 cam init                 # 設定語言與同步模式（直接按 Enter 可保留預設值）
 
-# 預設把現有的 VS Code prompts/skills/instructions/hooks 匯入 sync/
+# 預設把現有的 VS Code prompts 與 Copilot 個人層級資源匯入 sync/
 cam pull                # 如果只想留在 repo，改用 `cam pull local`
 
 # commit 讓你的 fork 成為唯一的真實來源
 git add . && git commit -m "add my ai config" && git push
 
 # 在任何新機器上：clone 你的 fork 然後還原
-cam push                 # 第一次 push 可能會提示設定 sync/agents 的 chat.agentFilesLocations
+cam push                 # 會把 prompts 同步到 VS Code profile 資料夾，其他資源同步到 ~/.copilot
 ```
-## Agent 設定
-如果你把個人的 agents 放在 `sync/agents/`，請把該資料夾在你本機上的實際路徑加到 VS Code 的 `chat.agentFilesLocations`。
-如果你有使用 VS Code Settings Sync，最好的情況是在每台機器都把這個 repo clone 到相同路徑；如果不同機器的路徑不同，就在各台機器上把 `chat.agentFilesLocations` 改成對應的本機 repo 路徑。
-如果你想讓其他 VS Code 設定繼續同步，但把這一項保留成每台機器各自設定，請把 `chat.agentFilesLocations` 加到 `settingsSync.ignoredSettings`。
+## 使用者層級目標位置
+`cam push` 會使用 VS Code 目前的使用者層級自訂資源位置：
+- `sync/prompts/` → VS Code profile 的 prompt 資料夾（`Code/User/prompts`）
+- `sync/instructions/`、`sync/skills/`、`sync/hooks/`、`sync/agents/` → `~/.copilot/`
 
-```json
-{
-	"chat.agentFilesLocations": [
-		"/actual/path/to/copilot-asset-manager/sync/agents"
-	],
-	"settingsSync.ignoredSettings": [
-		"chat.agentFilesLocations"
-	]
-}
-```
+若 VS Code Settings Sync 已設定同步 Prompts and Instructions，VS Code 可以在裝置之間漫遊這些使用者層級的 prompt 與 instruction 資源。至於 agents、skills、hooks，仍建議以這個 repo 作為完整還原與審查的真實來源。
 
 如果你是在 Copilot Chat 中操作，請用 `/cam-pull` 和 `/cam-push` 取代終端機指令。完成後，這個 repo 就是你 AI 設定的可攜式家園。
 ## 指令
 
-Chat 指令需要在 VS Code 中開啟此 repo。終端機指令可以在 repo 內任一位置執行。`sync/` 對應到你的 VS Code 使用者設定目錄，不包含 workspace-level 的 `.vscode/` 設定。
+Chat 指令需要在 VS Code 中開啟此 repo。終端機指令可以在 repo 內任一位置執行。`sync/` 對應到 VS Code 使用者層級的自訂資源儲存位置，不包含 workspace-level 的 `.vscode/` 設定。
 Slash command 可以直接附帶輸入，例如 `/cam-pull local all`、`/cam-config lang zh-TW` 或 `/cam-translate README.md`。以 pull 來說，目的地和是否跳過提示是分開的：`cam pull` 預設匯入到 `sync/`，`local` 會改變目的地，`all` 則對應到 `--yes`。
 
 | 動作 | 終端機 | Copilot Chat |

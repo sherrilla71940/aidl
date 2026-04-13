@@ -4,6 +4,14 @@ import { existsSync } from 'node:fs';
 
 export const isWindows = platform() === 'win32';
 
+export interface SyncRoots {
+  vscodeUserDir: string;
+  copilotUserDir: string;
+}
+
+const SYNC_SUBDIRS = ['prompts', 'skills', 'instructions', 'hooks', 'agents'] as const;
+type SyncSubdir = typeof SYNC_SUBDIRS[number];
+
 export function getVscodeUserDir(): string {
   if (isWindows) {
     const appData = process.env.APPDATA || join(homedir(), 'AppData', 'Roaming');
@@ -14,6 +22,17 @@ export function getVscodeUserDir(): string {
   }
   const configHome = process.env.XDG_CONFIG_HOME || join(homedir(), '.config');
   return join(configHome, 'Code', 'User');
+}
+
+export function getCopilotUserDir(): string {
+  return join(homedir(), '.copilot');
+}
+
+export function getSyncRoots(): SyncRoots {
+  return {
+    vscodeUserDir: getVscodeUserDir(),
+    copilotUserDir: getCopilotUserDir(),
+  };
 }
 
 export function findRepoRoot(from: string = process.cwd()): string {
@@ -36,10 +55,20 @@ export function normalizePath(p: string): string {
   return isWindows ? normalized.toLowerCase() : normalized;
 }
 
-const SYNC_SUBDIRS = new Set(['prompts', 'skills', 'instructions', 'hooks']);
+function isSyncSubdir(value: string): value is SyncSubdir {
+  return (SYNC_SUBDIRS as readonly string[]).includes(value);
+}
 
-export function mapToTarget(relPath: string, vscodeDir: string): string | null {
+export function mapToTarget(relPath: string, roots: SyncRoots): string | null {
   const topDir = relPath.split('/')[0];
-  if (!SYNC_SUBDIRS.has(topDir)) return null;
-  return join(vscodeDir, relPath);
+  if (!isSyncSubdir(topDir)) return null;
+  const baseDir = topDir === 'prompts' ? roots.vscodeUserDir : roots.copilotUserDir;
+  return join(baseDir, relPath);
+}
+
+export function getPullSourceDirs(roots: SyncRoots): Array<{ subdir: SyncSubdir; dir: string }> {
+  return SYNC_SUBDIRS.map(subdir => ({
+    subdir,
+    dir: join(subdir === 'prompts' ? roots.vscodeUserDir : roots.copilotUserDir, subdir),
+  }));
 }

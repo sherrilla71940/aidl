@@ -11,23 +11,25 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
 - **copilot-asset-manager repo areas**
   - `sync/` — git-tracked config synced to VS Code
   - `local/` — git-tracked private files, never synced to VS Code
-- **VSCode user config** (`~/.config/Code/User/` on Linux, `~/Library/Application Support/Code/User/` on macOS, `%APPDATA%\Code\User\` on Windows)
+- **VS Code user-level customization storage**
+  - prompts: VS Code profile data (`Code/User/prompts`)
+  - instructions, skills, hooks, agents: `~/.copilot/`
 
-Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `sync/` by default, or `local/` when requested. `push` only syncs `sync/`. `local/` is never synced to VSCode.
+Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `sync/` by default, or `local/` when requested. `push` only syncs `sync/`. `local/` is never synced to VS Code.
 
-Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`. Agents (`*.agent.md`) are discovered via `chat.agentFilesLocations` and are not symlinked/copied by push or imported by pull.
+Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`, `agents/`.
 
-`sync/` maps to your VS Code user config directory. It does not sync workspace-level `.vscode/` settings.
+`sync/` maps to user-level Copilot customization storage. It does not sync workspace-level `.vscode/` settings.
 
 ## VS Code Settings Sync overlap
 
-VS Code's built-in Settings Sync already handles user-level Settings, Keyboard Shortcuts, User Snippets, User Tasks, UI State, Extensions, and Profiles. It does not sync arbitrary files under the VS Code user config directory such as `prompts/`, `instructions/`, `skills/`, `hooks/`, or `agents/`.
+VS Code's built-in Settings Sync already handles user-level Settings, Keyboard Shortcuts, User Snippets, User Tasks, UI State, Extensions, and Profiles. Current Copilot customization docs also support roaming user prompt files and user instruction files when Settings Sync is configured to include Prompts and Instructions.
 
 That means the overlap is limited:
 
 - Settings Sync can already move your normal editor preferences between machines.
-- `copilot-asset-manager` covers git-tracked Copilot asset files that Settings Sync does not manage.
-- This repo remains useful for version history, review, team sharing, and selective push/pull even if Settings Sync is enabled.
+- Prompt and instruction roaming is handled by VS Code when that sync category is enabled.
+- `copilot-asset-manager` remains useful as the git-tracked source of truth for full restore, review, team sharing, selective push/pull, and file-based assets such as skills, hooks, and agents.
 
 ## Cross-file markdown links
 
@@ -37,21 +39,23 @@ Relative links between files under `sync/` work in both the repo and VS Code bec
 
 ---
 
-## push — repo → VSCode
+## push — repo → VS Code
 
-1. Scan `sync/` recursively for all non-.gitkeep, non-.agent.md files matching:
+1. Scan `sync/` recursively for all non-.gitkeep files matching:
 
 - `sync/prompts/**/*.prompt.md`
 - `sync/skills/*/SKILL.md` (one level only — folder name = skill name)
 - `sync/instructions/**/*.instructions.md`
 - `sync/hooks/**/*`
+- `sync/agents/**/*.agent.md`
 
-1. For each file, determine the target path in VSCode user config:
+1. For each file, determine the target path by asset type:
 
 - `sync/prompts/**/*` → `{vscodeUserPath}/prompts/<relative-subpath>` (structure preserved)
-- `sync/skills/{name}/SKILL.md` → `{vscodeUserPath}/skills/{name}/SKILL.md`
-- `sync/instructions/**/*` → `{vscodeUserPath}/instructions/<relative-subpath>`
-- `sync/hooks/**/*` → `{vscodeUserPath}/hooks/<relative-subpath>`
+- `sync/skills/{name}/SKILL.md` → `{copilotUserPath}/skills/{name}/SKILL.md`
+- `sync/instructions/**/*` → `{copilotUserPath}/instructions/<relative-subpath>`
+- `sync/hooks/**/*` → `{copilotUserPath}/hooks/<relative-subpath>`
+- `sync/agents/**/*` → `{copilotUserPath}/agents/<relative-subpath>`
 
 1. **Conflict check:** if a target path already exists and is NOT tracked in the manifest (i.e., not created by copilot-asset-manager), skip it and print:
 
@@ -65,22 +69,19 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 1. Write each synced file to `.sync-manifest.json`.
 
-1. **Agent discovery:** VS Code does not auto-scan any global `agents/` folder. After push, check whether `sync/agents/` is listed in `chat.agentFilesLocations` in VSCode settings.json. If this has not been shown before, print:
-
-```text
-ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
-  "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
-```
-
-   Track `agent_notice_shown: true` in `.sync-manifest.json` so this prints only once per machine.
-
 ---
 
 ## pull — VSCode → repo
 
 Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
 
-1. Scan VSCode config `prompts/`, `skills/`, `instructions/`, `hooks/` directories. **Do NOT scan `agents/`** — personal agent files are sourced directly from `sync/agents/` via `chat.agentFilesLocations`.
+1. Scan user-level customization storage:
+
+- `{vscodeUserPath}/prompts/`
+- `{copilotUserPath}/skills/`
+- `{copilotUserPath}/instructions/`
+- `{copilotUserPath}/hooks/`
+- `{copilotUserPath}/agents/`
 
 1. For each file found:
 
@@ -138,7 +139,7 @@ Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
 ```
 
 - `strategy` — `symlink` (macOS/Linux) or `copy` (Windows)
-- `agent_notice_shown` — `true` after the `chat.agentFilesLocations` instruction has been printed once on this machine
+- `agent_notice_shown` — legacy field retained for backward compatibility
 
 The manifest is **gitignored** — it is local machine state only.
 

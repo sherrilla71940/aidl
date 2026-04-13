@@ -9,15 +9,18 @@ interface TempLayout {
   rootDir: string;
   repoDir: string;
   vscodeDir: string;
+  copilotDir: string;
 }
 
 function createTempLayout(): TempLayout {
   const rootDir = mkdtempSync(join(tmpdir(), 'cam-sync-test-'));
   const repoDir = join(rootDir, 'repo');
   const vscodeDir = join(rootDir, 'vscode-user');
+  const copilotDir = join(rootDir, 'copilot-user');
   mkdirSync(join(repoDir, 'sync'), { recursive: true });
   mkdirSync(vscodeDir, { recursive: true });
-  return { rootDir, repoDir, vscodeDir };
+  mkdirSync(copilotDir, { recursive: true });
+  return { rootDir, repoDir, vscodeDir, copilotDir };
 }
 
 function writeFile(path: string, content: string): void {
@@ -48,6 +51,8 @@ describe('sync command integration', () => {
       return {
         ...actual,
         getVscodeUserDir: () => layout.vscodeDir,
+        getCopilotUserDir: () => layout.copilotDir,
+        getSyncRoots: () => ({ vscodeUserDir: layout.vscodeDir, copilotUserDir: layout.copilotDir }),
       };
     });
   });
@@ -103,6 +108,31 @@ describe('sync command integration', () => {
     expect(existsSync(join(layout.repoDir, '.sync-manifest.json'))).toBe(false);
   });
 
+  it('push syncs instructions, skills, hooks, and agents into ~/.copilot-style directories', async () => {
+    const instructionFile = join(layout.repoDir, 'sync', 'instructions', 'style.instructions.md');
+    const skillFile = join(layout.repoDir, 'sync', 'skills', 'demo-skill', 'SKILL.md');
+    const hookFile = join(layout.repoDir, 'sync', 'hooks', 'format.json');
+    const agentFile = join(layout.repoDir, 'sync', 'agents', 'review.agent.md');
+    writeFile(instructionFile, '---\ndescription: style\napplyTo: "**/*.ts"\n---\n\nBody text');
+    writeFile(skillFile, '---\nname: demo-skill\ndescription: Demo skill\n---\n\nSkill body text');
+    writeFile(hookFile, '{"version":1}');
+    writeFile(agentFile, '---\ndescription: review\n---\n\nAgent body text');
+
+    const { push } = await import('../src/push.ts');
+    await push({ yes: true });
+
+    expect(existsSync(join(layout.copilotDir, 'instructions', 'style.instructions.md'))).toBe(true);
+    expect(existsSync(join(layout.copilotDir, 'skills', 'demo-skill', 'SKILL.md'))).toBe(true);
+    expect(existsSync(join(layout.copilotDir, 'hooks', 'format.json'))).toBe(true);
+    expect(existsSync(join(layout.copilotDir, 'agents', 'review.agent.md'))).toBe(true);
+
+    const manifest = readJson<{ synced: Array<{ target: string }> }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced.some(e => e.target === join(layout.copilotDir, 'instructions', 'style.instructions.md'))).toBe(true);
+    expect(manifest.synced.some(e => e.target === join(layout.copilotDir, 'skills', 'demo-skill', 'SKILL.md'))).toBe(true);
+    expect(manifest.synced.some(e => e.target === join(layout.copilotDir, 'hooks', 'format.json'))).toBe(true);
+    expect(manifest.synced.some(e => e.target === join(layout.copilotDir, 'agents', 'review.agent.md'))).toBe(true);
+  });
+
   it('pull imports new VS Code files into sync when requested and records them in the manifest', async () => {
     const vscodeFile = join(layout.vscodeDir, 'prompts', 'captured.prompt.md');
     writeFile(vscodeFile, '---\ndescription: capture\nagent: agent\n---\n\nCaptured text');
@@ -123,6 +153,23 @@ describe('sync command integration', () => {
       target: vscodeFile,
       strategy: 'copy',
     });
+  });
+
+  it('pull imports instructions from ~/.copilot-style directories', async () => {
+    const instructionFile = join(layout.copilotDir, 'instructions', 'captured.instructions.md');
+    writeFile(instructionFile, '---\ndescription: capture\napplyTo: "**"\n---\n\nCaptured text');
+
+    const { pull } = await import('../src/pull.ts');
+    await pull({ yes: true, destination: 'sync' });
+
+    const importedFile = join(layout.repoDir, 'sync', 'instructions', 'captured.instructions.md');
+    expect(existsSync(importedFile)).toBe(true);
+    expect(readFileSync(importedFile, 'utf-8')).toBe(readFileSync(instructionFile, 'utf-8'));
+
+    const manifest = readJson<{ synced: Array<{ source: string; target: string; strategy: string }> }>(
+      join(layout.repoDir, '.sync-manifest.json'),
+    );
+    expect(manifest.synced.some(e => e.source === importedFile && e.target === instructionFile && e.strategy === 'copy')).toBe(true);
   });
 
   it('pull keeps the repo copy on differing content in --yes mode', async () => {
@@ -228,6 +275,8 @@ describe('push/pull focused warnings and gating', () => {
       return {
         ...actual,
         getVscodeUserDir: () => layout.vscodeDir,
+        getCopilotUserDir: () => layout.copilotDir,
+        getSyncRoots: () => ({ vscodeUserDir: layout.vscodeDir, copilotUserDir: layout.copilotDir }),
       };
     });
   });
@@ -279,21 +328,17 @@ describe('push/pull focused warnings and gating', () => {
     expect(logSpy.mock.calls.flat().join('\n')).toContain('cam config show');
   });
 
-  it('push logs agent files with [AGENT] and does not copy them to vscodeDir', async () => {
+  it('push syncs agent files into the ~/.copilot-style agents directory', async () => {
     writeFile(
       join(layout.repoDir, 'sync', 'agents', 'test.agent.md'),
       '---\ndescription: test agent\n---\n\nAgent body text',
     );
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { push } = await import('../src/push.ts');
     await push({ yes: true });
 
-    // Agent file must NOT be copied to the VS Code user dir
+    expect(existsSync(join(layout.copilotDir, 'agents', 'test.agent.md'))).toBe(true);
     expect(existsSync(join(layout.vscodeDir, 'agents', 'test.agent.md'))).toBe(false);
-    // But it must appear in the output with [AGENT] label
-    expect(logSpy.mock.calls.flat().join('\n')).toContain('[AGENT]');
-    expect(logSpy.mock.calls.flat().join('\n')).toContain('chat.agentFilesLocations');
   });
 
   it('push adopts an identical-content unmanaged target into the manifest', async () => {

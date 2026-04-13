@@ -25,7 +25,7 @@ export async function walk(dir: string): Promise<string[]> {
 
 export function shouldSkip(relPath: string): boolean {
   const name = relPath.split('/').pop() || '';
-  return name === '.gitkeep' || name.endsWith('.agent.md');
+  return name === '.gitkeep';
 }
 
 export function pathExists(p: string): boolean {

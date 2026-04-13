@@ -1,7 +1,7 @@
 import { join, relative, dirname } from 'node:path';
 import { mkdirSync, copyFileSync, symlinkSync, unlinkSync, readFileSync } from 'node:fs';
 import chalk from 'chalk';
-import { isWindows, getVscodeUserDir, findRepoRoot, mapToTarget } from './paths.js';
+import { isWindows, getSyncRoots, findRepoRoot, mapToTarget } from './paths.js';
 import { readManifest, writeManifest, hasTarget, addEntry } from './manifest.js';
 import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets } from './util.js';
 import { readConfig } from './config.js';
@@ -17,22 +17,20 @@ export async function push(options: { yes: boolean }): Promise<void> {
   const repoRoot = findRepoRoot();
   const syncDir = join(repoRoot, 'sync');
   const manifestPath = join(repoRoot, '.sync-manifest.json');
-  const vscodeDir = getVscodeUserDir();
+  const roots = getSyncRoots();
   const manifest = readManifest(manifestPath);
 
   const strategy: 'symlink' | 'copy' = isWindows ? 'copy' : 'symlink';
   const strategyLabel = isWindows ? 'copied' : 'linked';
 
-  console.log(chalk.green(t().pushHeading(vscodeDir)));
+  console.log(chalk.green(t().pushHeading(`${roots.vscodeUserDir} + ${roots.copilotUserDir}`)));
 
   const files = await walk(syncDir);
   let linked = 0;
   let skipped = 0;
-  const agentFiles: string[] = [];
 
   for (const file of files) {
     const rel = relative(syncDir, file).replace(/\\/g, '/');
-    if (rel.endsWith('.agent.md')) { agentFiles.push(rel); continue; }
     if (shouldSkip(rel)) continue;
 
     const absoluteLinkTargets = findAbsoluteMarkdownLinkTargets(readFileSync(file, 'utf-8'));
@@ -40,7 +38,7 @@ export async function push(options: { yes: boolean }): Promise<void> {
       console.log(chalk.yellow(t().pushAbsolutePathWarning(rel, absoluteLinkTarget)));
     }
 
-    const target = mapToTarget(rel, vscodeDir);
+    const target = mapToTarget(rel, roots);
     if (!target) continue;
 
     mkdirSync(dirname(target), { recursive: true });
@@ -85,17 +83,6 @@ export async function push(options: { yes: boolean }): Promise<void> {
 
   console.log('');
   console.log(chalk.green(t().pushComplete(linked, strategyLabel, skipped)));
-
-  if (agentFiles.length > 0) {
-    console.log('');
-    console.log(chalk.green(t().pushAgentSection));
-    for (const rel of agentFiles) {
-      console.log(chalk.green(t().pushAgentSkipped(rel)));
-    }
-    console.log('');
-    console.log(chalk.yellow(t().pushAgentNotice));
-    console.log(chalk.yellow(t().pushAgentSetting(syncDir.replace(/\\/g, '/'))));
-  }
 
   writeManifest(manifestPath, manifest);
 }

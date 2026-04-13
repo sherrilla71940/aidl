@@ -19,36 +19,27 @@ npm install
 npm link                 # links `cam` on this machine
 cam init                 # set language + sync mode (Enter keeps defaults)
 
-# Import your existing VS Code prompts/skills/instructions/hooks into sync/ by default
+# Import your existing VS Code prompts and Copilot profile assets into sync/ by default
 cam pull                # use `cam pull local` for a repo-only copy
 
 # Commit so your fork is your source of truth
 git add . && git commit -m "add my ai config" && git push
 
 # On any new machine: clone your fork and restore
-cam push                 # first push may ask for chat.agentFilesLocations for sync/agents
+cam push                 # syncs prompts to VS Code profile data and other assets to ~/.copilot
 ```
-## Agent setup
-If you keep personal agents in `sync/agents/`, add the actual local path of that folder to `chat.agentFilesLocations` in VS Code.
-If you use VS Code Settings Sync, this works best when the repo is cloned to the same path on every machine. If different machines use different paths, update `chat.agentFilesLocations` on each machine to match the local repo path.
-If you want the rest of your VS Code settings to sync but keep this one machine-specific, add `chat.agentFilesLocations` to `settingsSync.ignoredSettings`.
+## User-level targets
+`cam push` uses VS Code's current user-level customization layout:
+- `sync/prompts/` → your VS Code profile prompt folder (`Code/User/prompts`)
+- `sync/instructions/`, `sync/skills/`, `sync/hooks/`, `sync/agents/` → `~/.copilot/`
 
-```json
-{
-	"chat.agentFilesLocations": [
-		"/actual/path/to/copilot-asset-manager/sync/agents"
-	],
-	"settingsSync.ignoredSettings": [
-		"chat.agentFilesLocations"
-	]
-}
-```
+With Settings Sync configured to include Prompts and Instructions, VS Code can roam these user-level prompt and instruction assets across devices. Agents, skills, and hooks are still managed as file-based user assets, so this repo remains the source of truth for full restore and review.
 
 In Copilot Chat, use `/cam-pull` and `/cam-push` instead of the terminal commands. After that, your repo is the portable home of your AI setup.
 
 ## Commands
 
-Chat commands require this repo open in VS Code. Terminal commands can be run from anywhere inside the repo. `sync/` maps to your VS Code user config directory, not workspace-level `.vscode/` settings.
+Chat commands require this repo open in VS Code. Terminal commands can be run from anywhere inside the repo. `sync/` maps to VS Code user-level customization storage, not workspace-level `.vscode/` settings.
 Slash commands can take inline input, for example `/cam-pull local all`, `/cam-config lang zh-TW`, or `/cam-translate README.md`. For pull, destination and prompt-skipping are separate: `cam pull` defaults to `sync/`, `local` changes the destination, and `all` maps to `--yes`.
 
 | Action | Terminal | Copilot Chat |

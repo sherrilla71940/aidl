@@ -11,23 +11,25 @@
 - **copilot-asset-manager repo 區域**
   - `sync/` — 以 git 追蹤的設定，會同步到 VS Code
   - `local/` — 以 git 追蹤的私人檔案，不會同步到 VS Code
-- **VS Code 使用者設定** （Linux: `~/.config/Code/User/`、macOS: `~/Library/Application Support/Code/User/`、Windows: `%APPDATA%\Code\User\`）
+- **VS Code 使用者層級自訂資源儲存位置**
+  - prompts：VS Code profile 資料夾（`Code/User/prompts`）
+  - instructions、skills、hooks、agents：`~/.copilot/`
 
 Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `sync/`，需要時也可指定匯入到 `local/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
-支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`。Agents（`*.agent.md`）透過 `chat.agentFilesLocations` 發現，不會由 push 建立 symlink/複製，也不會由 pull 匯入。
+支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`、`agents/`。
 
-`sync/` 對應到你的 VS Code 使用者設定目錄，不會同步 workspace-level 的 `.vscode/` 設定。
+`sync/` 對應到使用者層級的 Copilot 自訂資源儲存位置，不會同步 workspace-level 的 `.vscode/` 設定。
 
 ## VS Code Settings Sync 的重疊範圍
 
-VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Keyboard Shortcuts、User Snippets、User Tasks、UI State、Extensions 和 Profiles。它不會同步 VS Code 使用者設定目錄下的任意檔案，例如 `prompts/`、`instructions/`、`skills/`、`hooks/` 或 `agents/`。
+VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Keyboard Shortcuts、User Snippets、User Tasks、UI State、Extensions 和 Profiles。依照目前的 Copilot 自訂資源文件，當 Settings Sync 設定為包含 Prompts and Instructions 時，VS Code 也可以漫遊使用者層級的 prompt 與 instruction 檔案。
 
 所以兩者的重疊其實很有限：
 
 - Settings Sync 已經能在不同機器之間帶著你的編輯器偏好走。
-- `copilot-asset-manager` 處理的是 Settings Sync 不會管理、而且可用 git 追蹤的 Copilot 資源檔。
-- 即使開啟 Settings Sync，這個 repo 仍然適合拿來做版本紀錄、審查、團隊分享，以及選擇性 push/pull。
+- prompt 與 instruction 的漫遊由 VS Code 在啟用該同步類別時處理。
+- `copilot-asset-manager` 仍然適合當作完整還原、審查、團隊分享、選擇性 push/pull，以及 skills、hooks、agents 這些檔案型資源的 git 版真實來源。
 
 ## 跨檔案 markdown 連結
 
@@ -39,19 +41,21 @@ VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Key
 
 ## push — repo → VS Code
 
-1. 遞迴掃描 `sync/` 中所有非 .gitkeep、非 .agent.md 的檔案，比對：
+1. 遞迴掃描 `sync/` 中所有非 .gitkeep 的檔案，比對：
 
 - `sync/prompts/**/*.prompt.md`
 - `sync/skills/*/SKILL.md`（僅一層 — 資料夾名稱 = skill 名稱）
 - `sync/instructions/**/*.instructions.md`
 - `sync/hooks/**/*`
+- `sync/agents/**/*.agent.md`
 
-1. 對每個檔案，決定 VS Code 使用者設定中的目標路徑：
+1. 依資源類型決定目標路徑：
 
 - `sync/prompts/**/*` → `{vscodeUserPath}/prompts/<相對子路徑>`（結構保留）
-- `sync/skills/{name}/SKILL.md` → `{vscodeUserPath}/skills/{name}/SKILL.md`
-- `sync/instructions/**/*` → `{vscodeUserPath}/instructions/<相對子路徑>`
-- `sync/hooks/**/*` → `{vscodeUserPath}/hooks/<相對子路徑>`
+- `sync/skills/{name}/SKILL.md` → `{copilotUserPath}/skills/{name}/SKILL.md`
+- `sync/instructions/**/*` → `{copilotUserPath}/instructions/<相對子路徑>`
+- `sync/hooks/**/*` → `{copilotUserPath}/hooks/<相對子路徑>`
+- `sync/agents/**/*` → `{copilotUserPath}/agents/<相對子路徑>`
 
 1. **衝突檢查：** 如果目標路徑已存在，且未被 manifest 追蹤（即非 copilot-asset-manager 建立的），跳過並輸出：
 
@@ -65,22 +69,19 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 1. 將每個同步的檔案寫入 `.sync-manifest.json`。
 
-1. **Agent 發現機制：** VS Code 不會自動掃描全域的 `agents/` 資料夾。push 後，檢查 `sync/agents/` 是否已列在 VS Code settings.json 的 `chat.agentFilesLocations` 中。如果尚未顯示過，輸出：
-
-```text
-ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
-  "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
-```
-
-   在 `.sync-manifest.json` 中記錄 `agent_notice_shown: true`，每台機器只顯示一次。
-
 ---
 
 ## pull — VS Code → repo
 
 指令語法：`cam pull [sync|local] [--yes]`（預設為 `sync`）。
 
-1. 掃描 VS Code 設定中的 `prompts/`、`skills/`、`instructions/`、`hooks/` 目錄。**不掃描 `agents/`** — 個人 agent 檔案透過 `chat.agentFilesLocations` 直接從 `sync/agents/` 讀取。
+1. 掃描使用者層級自訂資源儲存位置：
+
+- `{vscodeUserPath}/prompts/`
+- `{copilotUserPath}/skills/`
+- `{copilotUserPath}/instructions/`
+- `{copilotUserPath}/hooks/`
+- `{copilotUserPath}/agents/`
 
 1. 對每個找到的檔案：
 
@@ -138,7 +139,7 @@ ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
 ```
 
 - `strategy` — `symlink`（macOS/Linux）或 `copy`（Windows）
-- `agent_notice_shown` — 在該機器上顯示過 `chat.agentFilesLocations` 指示後為 `true`
+- `agent_notice_shown` — 為了向後相容而保留的舊欄位
 
 Manifest 已加入 **gitignore** — 僅為本機狀態。
 

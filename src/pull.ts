@@ -1,13 +1,12 @@
 import { join, relative, dirname } from 'node:path';
 import { existsSync, mkdirSync, copyFileSync, readFileSync, readlinkSync } from 'node:fs';
 import chalk from 'chalk';
-import { getVscodeUserDir, findRepoRoot, normalizePath } from './paths.js';
+import { getSyncRoots, getPullSourceDirs, findRepoRoot, normalizePath } from './paths.js';
 import { readManifest, writeManifest, addEntry } from './manifest.js';
 import { walk, shouldSkip, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
-const PULL_SUBDIRS = ['prompts', 'skills', 'instructions', 'hooks'];
 export type PullDestination = 'sync' | 'local';
 
 function isSymlinkIntoSync(file: string, syncDir: string): boolean {
@@ -38,20 +37,19 @@ export async function pull(options: { yes: boolean; destination: PullDestination
   const syncDir = join(repoRoot, 'sync');
   const importDir = join(repoRoot, options.destination);
   const manifestPath = join(repoRoot, '.sync-manifest.json');
-  const vscodeDir = getVscodeUserDir();
+  const roots = getSyncRoots();
   const manifest = options.destination === 'sync' ? readManifest(manifestPath) : null;
 
   console.log(chalk.green(t().pullScanning(options.destination)));
 
-  const candidates: string[] = [];
+  const candidates: Array<{ file: string; rel: string }> = [];
 
-  for (const subdir of PULL_SUBDIRS) {
-    const srcDir = join(vscodeDir, subdir);
+  for (const { subdir, dir: srcDir } of getPullSourceDirs(roots)) {
     if (!existsSync(srcDir)) continue;
 
     const files = await walk(srcDir);
     for (const file of files) {
-      const rel = relative(vscodeDir, file).replace(/\\/g, '/');
+      const rel = `${subdir}/${relative(srcDir, file).replace(/\\/g, '/')}`;
       if (shouldSkip(rel)) continue;
       if (isSymlinkIntoSync(file, syncDir)) continue;
 
@@ -82,7 +80,7 @@ export async function pull(options: { yes: boolean; destination: PullDestination
         continue;
       }
 
-      candidates.push(file);
+      candidates.push({ file, rel });
     }
   }
 
@@ -93,11 +91,11 @@ export async function pull(options: { yes: boolean; destination: PullDestination
 
   console.log('');
   console.log(chalk.green(t().pullFound(candidates.length, options.destination)));
-  candidates.forEach((f, i) => {
-    console.log(`  ${i + 1}. ${relative(vscodeDir, f).replace(/\\/g, '/')}`);
+  candidates.forEach((candidate, i) => {
+    console.log(`  ${i + 1}. ${candidate.rel}`);
   });
 
-  let toImport: string[];
+  let toImport: Array<{ file: string; rel: string }>;
 
   if (options.yes) {
     toImport = candidates;
@@ -119,8 +117,7 @@ export async function pull(options: { yes: boolean; destination: PullDestination
   }
 
   let imported = 0;
-  for (const file of toImport) {
-    const rel = relative(vscodeDir, file).replace(/\\/g, '/');
+  for (const { file, rel } of toImport) {
     const dest = join(importDir, rel);
     mkdirSync(dirname(dest), { recursive: true });
     copyFileSync(file, dest);
