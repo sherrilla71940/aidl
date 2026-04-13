@@ -113,6 +113,22 @@ describe('translation parity', () => {
   });
 });
 
+describe('agent sync documentation', () => {
+  it('documents copied user-level agents and the current direct-loading setting shape', () => {
+    const readme = read('README.md');
+    const readmeZh = read('README.zh-TW.md');
+    const syncDoc = read('docs/SYNC.md');
+    const syncDocZh = read('docs/SYNC.zh-TW.md');
+
+    for (const content of [readme, readmeZh, syncDoc, syncDocZh]) {
+      expect(content).toContain('.copilot/agents');
+      expect(content).toContain('"chat.agentFilesLocations": { "sync/agents": true }');
+      expect(content).not.toContain('"chat.agentFilesLocations": [');
+      expect(content).not.toContain('Agents are not copied');
+    }
+  });
+});
+
 describe('no-personal-content CI policy', () => {
   it('flags sync/local changes but ignores .gitkeep placeholders', () => {
     expect(findPersonalContentPaths([

@@ -2,6 +2,8 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { en } from '../src/i18n/en.ts';
+import { zhTW } from '../src/i18n/zh-TW.ts';
 
 const originalCwd = process.cwd();
 
@@ -184,5 +186,19 @@ describe('translate behavior', () => {
     await expect(translate('missing.md')).rejects.toThrow('process.exit:1');
     expect(errorSpy.mock.calls.flat().join('\n')).toContain('File not found: missing.md');
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+});
+
+describe('agent guidance strings', () => {
+  it('uses the current object form for direct repo agent loading in English', () => {
+    expect(en.pushAgentSetting('ignored')).toBe('  "chat.agentFilesLocations": { "sync/agents": true }');
+    expect(en.pushAgentSection).toContain('.copilot/agents');
+    expect(en.statusAgentHint).toContain('"sync/agents": true');
+  });
+
+  it('uses the current object form for direct repo agent loading in zh-TW', () => {
+    expect(zhTW.pushAgentSetting('ignored')).toBe('  "chat.agentFilesLocations": { "sync/agents": true }');
+    expect(zhTW.pushAgentSection).toContain('.copilot/agents');
+    expect(zhTW.statusAgentHint).toContain('"sync/agents": true');
   });
 });

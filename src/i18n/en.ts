@@ -92,10 +92,10 @@ export const en: Locale = {
     `Push complete: ${count} ${strategy}, ${skipped} skipped.`,
   pushAbsolutePathWarning: (rel: string, target: string) =>
     `WARNING ${rel} contains an absolute markdown link target: ${target}. Use relative paths instead.`,
-  pushAgentNotice: 'ACTION REQUIRED: Add to your VS Code settings.json:',
-  pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
-  pushAgentSection: 'Agent files (linked via chat.agentFilesLocations):',
-  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — served directly from sync/agents/`,
+  pushAgentNotice: 'OPTIONAL: For live development directly from this repo, add to your VS Code settings.json:',
+  pushAgentSetting: (_path: string) => '  "chat.agentFilesLocations": { "sync/agents": true }',
+  pushAgentSection: 'Agent files (copied to user-level .copilot/agents):',
+  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — copied to user-level agents storage`,
   pushAdopted: (rel: string) => `  Adopted: ${rel} (target content matched — now tracked in manifest)`,
   pushStaleHeading: (count: number) => `Stale user-level file(s) found during push (${count}):`,
   pushStaleEntry: (rel: string, target: string) => `  Stale: ${rel} → ${target}`,
@@ -131,9 +131,9 @@ export const en: Locale = {
   statusNew: 'New (not yet synced to VS Code):',
   statusRunPush: 'Run cam push to sync new files.',
   statusRunClean: 'Run cam clean to remove orphaned entries from VS Code and the manifest.',
-  statusAgentSection: (count: number) => `Agents (${count}) — linked via chat.agentFilesLocations:`,
+  statusAgentSection: (count: number) => `Agents (${count}) — synced to user-level .copilot/agents:`,
   statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
-  statusAgentHint: 'Add sync/agents/ path to "chat.agentFilesLocations" in VS Code settings.json',
+  statusAgentHint: 'Optional for live repo loading: add "sync/agents": true under "chat.agentFilesLocations" in VS Code settings.json',
 
   // clean
   cleanHeading: 'Cleaning orphaned entries...',

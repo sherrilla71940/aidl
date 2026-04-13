@@ -72,10 +72,10 @@ Three ways to interact:
 │                      │                           │    User/instructions/│
 └─────────────────────┘                            └──────────────────────┘
 
-│  user-sync/agents/   │  ── chat.agentFilesLocations points here (no copy)
+│  user-sync/agents/   │  ── synced to user-level agent storage
 ```
 
-Only `user-sync/` participates in sync. Agents are not copied — VSCode is pointed at `user-sync/agents/` directly via `chat.agentFilesLocations`.
+Only `user-sync/` participates in sync. Agent files are synced from `user-sync/agents/` into user-level agent storage. An extra `chat.agentFilesLocations` entry is only needed if you want VS Code to load directly from the repo folder during development.
 
 ## Repo structure
 
@@ -135,23 +135,24 @@ Zero-install. Just run the script.
    - `user-sync/prompts/**/*.prompt.md`
    - `user-sync/skills/*/SKILL.md`  ← one level only, intentional: folder name = skill name
    - `user-sync/instructions/**/*.instructions.md`
-   - `user-sync/agents/**/*.agent.md`  ← scanned but handled separately (no file copy)
+  - `user-sync/agents/**/*.agent.md`
 2. For each file (except `.agent.md`), determine target in VSCode user config:
    - `user-sync/prompts/**/*.prompt.md` → `{vscodeUserPath}/prompts/<relative-subpath>` (preserve directory structure)
    - `user-sync/skills/*/SKILL.md` → `{vscodeUserPath}/skills/{folder}/SKILL.md` (folder name must match exactly)
    - `user-sync/instructions/**/*.instructions.md` → `{vscodeUserPath}/instructions/<relative-subpath>` (preserve directory structure)
+  - `user-sync/agents/**/*.agent.md` → `{copilotUserPath}/agents/<relative-subpath>` (preserve directory structure)
 3. **Conflict check:** for each target path, if a file already exists AND is not a symlink previously created by aidl (not in manifest): skip it and print `SKIP <file> — exists at target but not created by aidl (delete the target file first if you want to overwrite)`
 4. Create symlinks (macOS/Linux) or copies (Windows) for all non-conflicting files
 5. Track what's synced in a `.sync-manifest.json` at repo root
-6. **Agent discovery:** VS Code does not auto-scan any global `agents/` folder. Instead, after linking, check whether the absolute path to `user-sync/agents/` is already listed in `chat.agentFilesLocations` in the user's VSCode `settings.json`. If not, print:
+6. **Optional live repo loading:** if the user wants VS Code to load agents directly from `user-sync/agents/` while editing in place, check whether `chat.agentFilesLocations` contains a workspace-relative entry. If not, print:
    ```
-   ACTION REQUIRED: Add to your VSCode settings.json to enable agent discovery:
-     "chat.agentFilesLocations": ["/absolute/path/to/aidl/user-sync/agents"]
+   OPTIONAL: Add to your VSCode settings.json for live repo-backed agent discovery:
+     "chat.agentFilesLocations": { "user-sync/agents": true }
    ```
    Track whether this message has been printed in `.sync-manifest.json` so it only appears once per machine, not on every push.
 
 ### Pull (VSCode → repo)
-1. Scan VSCode user config `prompts/`, `skills/`, `instructions/` dirs. Do NOT scan `agents/` — those files are already sourced directly from `user-sync/agents/` via `chat.agentFilesLocations`.
+1. Scan VSCode user config `prompts/`, `skills/`, `instructions/`, and user-level `agents/` dirs.
 2. For each file found:
    - If NOT in `user-sync/` at all: candidate for import
    - If already in `user-sync/` with **identical content**: skip silently

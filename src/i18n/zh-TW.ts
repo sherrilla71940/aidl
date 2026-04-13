@@ -17,10 +17,10 @@ export const zhTW: Locale = {
     `推送完成：${count} 個${strategy}，${skipped} 個略過。`,
   pushAbsolutePathWarning: (rel: string, target: string) =>
     `警告 ${rel} 含有絕對 markdown 連結路徑：${target}。請改用相對路徑。`,
-  pushAgentNotice: '必要操作：請加入以下設定到 VS Code settings.json：',
-  pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
-  pushAgentSection: '代理程式檔案（透過 chat.agentFilesLocations 連結）：',
-  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — 直接由 sync/agents/ 提供`,
+  pushAgentNotice: '可選：若要直接從此 repo 進行即時開發，請加入以下設定到 VS Code settings.json：',
+  pushAgentSetting: (_path: string) => '  "chat.agentFilesLocations": { "sync/agents": true }',
+  pushAgentSection: '代理程式檔案（已複製到使用者層級 .copilot/agents）：',
+  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — 已複製到使用者層級代理程式儲存位置`,
   pushAdopted: (rel: string) => `  已採用：${rel}（目標內容相符 — 已納入 manifest 追蹤）`,
   pushStaleHeading: (count: number) => `推送時發現 ${count} 個使用者層級的過期檔案：`,
   pushStaleEntry: (rel: string, target: string) => `  過期：${rel} → ${target}`,
@@ -54,9 +54,9 @@ export const zhTW: Locale = {
   statusNew: '新增（尚未同步到 VS Code）：',
   statusRunPush: '執行 cam push 以同步新檔案。',
   statusRunClean: '執行 cam clean，將孤立項目從 VS Code 與 manifest 中移除。',
-  statusAgentSection: (count: number) => `代理程式（${count}）— 透過 chat.agentFilesLocations 連結：`,
+  statusAgentSection: (count: number) => `代理程式（${count}）— 已同步到使用者層級 .copilot/agents：`,
   statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
-  statusAgentHint: '請將 sync/agents/ 路徑加入 VS Code settings.json 的 "chat.agentFilesLocations"',
+  statusAgentHint: '若要直接從 repo 載入，可在 VS Code settings.json 的 "chat.agentFilesLocations" 下加入 "sync/agents": true',
 
   // clean
   cleanHeading: '正在清理孤立項目...',

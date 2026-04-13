@@ -18,13 +18,10 @@ cd copilot-asset-manager
 npm install
 npm link                 # links `cam` on this machine
 cam init                 # set language + sync mode (Enter keeps defaults)
-
 # Import your existing VS Code prompts and Copilot profile assets into sync/ by default
 cam pull                # use `cam pull local` for a repo-only copy
-
 # Commit so your fork is your source of truth
 git add . && git commit -m "add my ai config" && git push
-
 # On any new machine: clone your fork and restore
 cam push                 # syncs prompts to VS Code profile data and other assets to ~/.copilot
 ```
@@ -35,7 +32,14 @@ cam push                 # syncs prompts to VS Code profile data and other asset
 
 With Settings Sync configured to include Prompts and Instructions, VS Code can roam these user-level prompt and instruction assets across devices. Agents, skills, and hooks are still managed as file-based user assets, so this repo remains the source of truth for full restore and review.
 
-Current VS Code limitation: `sync/agents/` does copy to user-level storage, but Copilot CLI sessions currently only expose workspace custom agents. If you need an agent in Copilot CLI, put it in `.github/agents/`.
+`sync/agents/` is handled the same way as the other non-prompt asset types: `cam push` copies it into the user-level `.copilot/agents` directory. To have VS Code load agents directly from this repo while you edit them in place, set this in `settings.json` and reload the window:
+```jsonc
+"chat.agentFilesLocations": {
+	"sync/agents": true
+}
+```
+
+If a synced agent file exists under `.copilot/agents` but does not appear in VS Code, treat that as a VS Code discovery issue and use Chat Diagnostics to inspect loaded custom agents and any parse errors.
 
 Deletion is conservative by default: `cam push` and `cam pull sync` report stale counterpart files from the manifest, and only remove them when you opt into `--cleanup ask` or `--cleanup delete`.
 

@@ -18,13 +18,10 @@ cd copilot-asset-manager
 npm install
 npm link                 # 在這台機器上建立 `cam` 連結
 cam init                 # 設定語言與同步模式（直接按 Enter 可保留預設值）
-
 # 預設把現有的 VS Code prompts 與 Copilot 個人層級資源匯入 sync/
 cam pull                # 如果只想留在 repo，改用 `cam pull local`
-
 # commit 讓你的 fork 成為唯一的真實來源
 git add . && git commit -m "add my ai config" && git push
-
 # 在任何新機器上：clone 你的 fork 然後還原
 cam push                 # 會把 prompts 同步到 VS Code profile 資料夾，其他資源同步到 ~/.copilot
 ```
@@ -35,7 +32,14 @@ cam push                 # 會把 prompts 同步到 VS Code profile 資料夾，
 
 若 VS Code Settings Sync 已設定同步 Prompts and Instructions，VS Code 可以在裝置之間漫遊這些使用者層級的 prompt 與 instruction 資源。至於 agents、skills、hooks，仍建議以這個 repo 作為完整還原與審查的真實來源。
 
-目前 VS Code 有一個限制：`sync/agents/` 雖然會複製到使用者層級儲存位置，但 Copilot CLI session 目前只會顯示 workspace custom agents。若你需要在 Copilot CLI 使用 agent，請改放在 `.github/agents/`。
+`sync/agents/` 的處理方式和其他非 prompt 類型相同：`cam push` 會把它複製到使用者層級的 `.copilot/agents` 目錄。若你想在 repo 內直接編輯並讓 VS Code 直接從這裡載入 agent，請在 `settings.json` 設定以下內容，然後重新載入視窗：
+```jsonc
+"chat.agentFilesLocations": {
+	"sync/agents": true
+}
+```
+
+如果同步後的 agent 檔案已經存在於 `.copilot/agents`，但仍未出現在 VS Code，請把它視為 VS Code 的 discovery 問題，並用 Chat Diagnostics 檢查已載入的 custom agents 與任何解析錯誤。
 
 刪除行為預設採保守模式：`cam push` 與 `cam pull sync` 只會回報 manifest 中偵測到的過期對應檔案；只有在你明確指定 `--cleanup ask` 或 `--cleanup delete` 時才會移除。
 

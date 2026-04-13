@@ -70,6 +70,6 @@ git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
 cam pull
-# Then add to VS Code settings.json:
-# "chat.agentFilesLocations": ["/absolute/path/to/copilot-asset-manager/sync/agents"]
+# Optional for live repo-backed agent discovery while editing in-place:
+# "chat.agentFilesLocations": { "sync/agents": true }
 ```
