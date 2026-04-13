@@ -87,7 +87,6 @@ describe('sync command integration', () => {
       target: targetFile,
       strategy: process.platform === 'win32' ? 'copy' : 'symlink',
     });
-    expect(manifest.agent_notice_shown).toBe(true);
   });
 
   it('pull imports new VS Code files into local by default and does not record them in the manifest', async () => {
@@ -278,5 +277,40 @@ describe('push/pull focused warnings and gating', () => {
     expect(existsSync(join(layout.repoDir, 'sync', 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('pull is disabled');
     expect(logSpy.mock.calls.flat().join('\n')).toContain('cam config show');
+  });
+
+  it('push logs agent files with [AGENT] and does not copy them to vscodeDir', async () => {
+    writeFile(
+      join(layout.repoDir, 'sync', 'agents', 'test.agent.md'),
+      '---\ndescription: test agent\n---\n\nAgent body text',
+    );
+
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { push } = await import('../src/push.ts');
+    await push({ yes: true });
+
+    // Agent file must NOT be copied to the VS Code user dir
+    expect(existsSync(join(layout.vscodeDir, 'agents', 'test.agent.md'))).toBe(false);
+    // But it must appear in the output with [AGENT] label
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('[AGENT]');
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('chat.agentFilesLocations');
+  });
+
+  it('push adopts an identical-content unmanaged target into the manifest', async () => {
+    const content = '---\ndescription: adopted\nagent: agent\n---\n\nBody text';
+    const sourceFile = join(layout.repoDir, 'sync', 'prompts', 'adopted.prompt.md');
+    const targetFile = join(layout.vscodeDir, 'prompts', 'adopted.prompt.md');
+    writeFile(sourceFile, content);
+    writeFile(targetFile, content); // pre-existing, identical, not in manifest
+
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { push } = await import('../src/push.ts');
+    await push({ yes: true });
+
+    const manifest = readJson<{ synced: Array<{ source: string; target: string }> }>(
+      join(layout.repoDir, '.sync-manifest.json'),
+    );
+    expect(manifest.synced.some(e => e.source === sourceFile && e.target === targetFile)).toBe(true);
+    expect(logSpy.mock.calls.flat().join('\n')).toContain('Adopted');
   });
 });

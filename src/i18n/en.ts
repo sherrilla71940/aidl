@@ -13,6 +13,9 @@ export interface Locale {
   pushAbsolutePathWarning: (rel: string, target: string) => string;
   pushAgentNotice: string;
   pushAgentSetting: (path: string) => string;
+  pushAgentSection: string;
+  pushAgentSkipped: (rel: string) => string;
+  pushAdopted: (rel: string) => string;
 
   pullScanning: (destination: string) => string;
   pullSkipDiffers: (rel: string) => string;
@@ -33,6 +36,9 @@ export interface Locale {
   statusNew: string;
   statusRunPush: string;
   statusRunClean: string;
+  statusAgentSection: (count: number) => string;
+  statusAgentFile: (rel: string) => string;
+  statusAgentHint: string;
 
   cleanHeading: string;
   cleanRemoving: (target: string) => string;
@@ -78,6 +84,9 @@ export const en: Locale = {
     `WARNING ${rel} contains an absolute markdown link target: ${target}. Use relative paths instead.`,
   pushAgentNotice: 'ACTION REQUIRED: Add to your VS Code settings.json:',
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
+  pushAgentSection: 'Agent files (linked via chat.agentFilesLocations):',
+  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — served directly from sync/agents/`,
+  pushAdopted: (rel: string) => `  Adopted: ${rel} (target content matched — now tracked in manifest)`,
 
   // pull
   pullScanning: (destination: string) => `Scanning VS Code config for files to import into ${destination}/...`,
@@ -101,6 +110,9 @@ export const en: Locale = {
   statusNew: 'New (not yet synced to VS Code):',
   statusRunPush: 'Run cam push to sync new files.',
   statusRunClean: 'Run cam clean to remove orphaned entries from VS Code and the manifest.',
+  statusAgentSection: (count: number) => `Agents (${count}) — linked via chat.agentFilesLocations:`,
+  statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
+  statusAgentHint: 'Add sync/agents/ path to "chat.agentFilesLocations" in VS Code settings.json',
 
   // clean
   cleanHeading: 'Cleaning orphaned entries...',

@@ -28,9 +28,11 @@ export async function push(options: { yes: boolean }): Promise<void> {
   const files = await walk(syncDir);
   let linked = 0;
   let skipped = 0;
+  const agentFiles: string[] = [];
 
   for (const file of files) {
     const rel = relative(syncDir, file).replace(/\\/g, '/');
+    if (rel.endsWith('.agent.md')) { agentFiles.push(rel); continue; }
     if (shouldSkip(rel)) continue;
 
     const absoluteLinkTargets = findAbsoluteMarkdownLinkTargets(readFileSync(file, 'utf-8'));
@@ -47,6 +49,16 @@ export async function push(options: { yes: boolean }): Promise<void> {
       if (hasTarget(manifest, target)) {
         unlinkSync(target);
       } else {
+        // If content matches, adopt the target into the manifest instead of skipping
+        const srcContent = readFileSync(file, 'utf-8');
+        let tgtContent: string | null = null;
+        try { tgtContent = readFileSync(target, 'utf-8'); } catch { /* unreadable */ }
+        if (tgtContent !== null && srcContent === tgtContent) {
+          addEntry(manifest, { source: file, target, strategy, timestamp: new Date().toISOString() });
+          console.log(chalk.green(t().pushAdopted(rel)));
+          linked++;
+          continue;
+        }
         console.log(chalk.yellow(t().pushSkipNotManaged(rel)));
         skipped++;
         continue;
@@ -74,11 +86,15 @@ export async function push(options: { yes: boolean }): Promise<void> {
   console.log('');
   console.log(chalk.green(t().pushComplete(linked, strategyLabel, skipped)));
 
-  if (!manifest.agent_notice_shown) {
+  if (agentFiles.length > 0) {
+    console.log('');
+    console.log(chalk.green(t().pushAgentSection));
+    for (const rel of agentFiles) {
+      console.log(chalk.green(t().pushAgentSkipped(rel)));
+    }
     console.log('');
     console.log(chalk.yellow(t().pushAgentNotice));
     console.log(chalk.yellow(t().pushAgentSetting(syncDir.replace(/\\/g, '/'))));
-    manifest.agent_notice_shown = true;
   }
 
   writeManifest(manifestPath, manifest);

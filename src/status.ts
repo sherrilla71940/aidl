@@ -40,8 +40,10 @@ export async function status(): Promise<void> {
 
   const files = await walk(syncDir);
   const newFiles: string[] = [];
+  const agentFiles: string[] = [];
   for (const f of files) {
     const rel = relative(syncDir, f).replace(/\\/g, '/');
+    if (rel.endsWith('.agent.md')) { agentFiles.push(rel); continue; }
     if (shouldSkip(rel)) continue;
     if (!hasSource(manifest, f)) {
       newFiles.push(rel);
@@ -55,5 +57,14 @@ export async function status(): Promise<void> {
     }
     console.log('');
     console.log(chalk.green(t().statusRunPush));
+  }
+
+  if (agentFiles.length > 0) {
+    console.log('');
+    console.log(chalk.green(t().statusAgentSection(agentFiles.length)));
+    for (const f of agentFiles) {
+      console.log(chalk.green(t().statusAgentFile(f)));
+    }
+    console.log(chalk.yellow(t().statusAgentHint));
   }
 }

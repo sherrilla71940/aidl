@@ -19,6 +19,9 @@ export const zhTW: Locale = {
     `警告 ${rel} 含有絕對 markdown 連結路徑：${target}。請改用相對路徑。`,
   pushAgentNotice: '必要操作：請加入以下設定到 VS Code settings.json：',
   pushAgentSetting: (path: string) => `  "chat.agentFilesLocations": ["${path}/agents"]`,
+  pushAgentSection: '代理程式檔案（透過 chat.agentFilesLocations 連結）：',
+  pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — 直接由 sync/agents/ 提供`,
+  pushAdopted: (rel: string) => `  已採用：${rel}（目標內容相符 — 已納入 manifest 追蹤）`,
 
   // pull
   pullScanning: (destination: string) => `正在掃描 VS Code 設定中可匯入到 ${destination}/ 的檔案...`,
@@ -41,6 +44,9 @@ export const zhTW: Locale = {
   statusNew: '新增（尚未同步到 VS Code）：',
   statusRunPush: '執行 cam push 以同步新檔案。',
   statusRunClean: '執行 cam clean，將孤立項目從 VS Code 與 manifest 中移除。',
+  statusAgentSection: (count: number) => `代理程式（${count}）— 透過 chat.agentFilesLocations 連結：`,
+  statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
+  statusAgentHint: '請將 sync/agents/ 路徑加入 VS Code settings.json 的 "chat.agentFilesLocations"',
 
   // clean
   cleanHeading: '正在清理孤立項目...',
