@@ -99,9 +99,9 @@ export const en: Locale = {
   pushAdopted: (rel: string) => `  Adopted: ${rel} (target content matched — now tracked in manifest)`,
   pushStaleHeading: (count: number) => `Stale user-level file(s) found during push (${count}):`,
   pushStaleEntry: (rel: string, target: string) => `  Stale: ${rel} → ${target}`,
-  pushStalePrompt: (rel: string) => `  Delete user-level copy for ${rel}? [y/N] `,
-  pushStaleDeleted: (rel: string) => `  Deleted user-level copy: ${rel}`,
-  pushStaleKept: (rel: string) => `  Kept user-level copy: ${rel}`,
+  pushStalePrompt: (rel: string) => `  Delete stale user-level target(s) for ${rel}? [y/N] `,
+  pushStaleDeleted: (rel: string) => `  Deleted stale user-level target(s): ${rel}`,
+  pushStaleKept: (rel: string) => `  Kept stale user-level target(s): ${rel}`,
 
   // pull
   pullScanning: (destination: string) => `Scanning VS Code config for files to import into ${destination}/...`,

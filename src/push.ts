@@ -1,11 +1,12 @@
 import { join, relative, dirname } from 'node:path';
 import { mkdirSync, copyFileSync, symlinkSync, unlinkSync, readFileSync } from 'node:fs';
 import chalk from 'chalk';
-import { isWindows, getSyncRoots, findRepoRoot, mapToTarget } from './paths.js';
+import { isWindows, getSyncRoots, findRepoRoot, mapToTarget, normalizePath } from './paths.js';
 import { readManifest, writeManifest, hasTarget, addEntry, removeByTarget } from './manifest.js';
 import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
+import type { SyncEntry } from './manifest.js';
 
 export type CleanupMode = 'report' | 'ask' | 'delete';
 
@@ -13,6 +14,46 @@ function getSyncRelative(syncDir: string, path: string): string {
   const syncPrefix = `${syncDir.replace(/\\/g, '/')}/`;
   const normalized = path.replace(/\\/g, '/');
   return normalized.startsWith(syncPrefix) ? normalized.slice(syncPrefix.length) : normalized;
+}
+
+function pruneLegacyTargetsForSource(manifest: { synced: SyncEntry[] }, source: string, target: string): void {
+  const normalizedSource = normalizePath(source);
+  const normalizedTarget = normalizePath(target);
+  const legacyEntries = manifest.synced.filter(entry => (
+    normalizePath(entry.source) === normalizedSource && normalizePath(entry.target) !== normalizedTarget
+  ));
+
+  for (const entry of legacyEntries) {
+    if (pathExists(entry.target)) {
+      try {
+        unlinkSync(entry.target);
+      } catch {
+        // ignore missing or already-removed legacy targets
+      }
+    }
+    removeByTarget(manifest, entry.target);
+  }
+}
+
+function groupStaleEntriesBySource(syncDir: string, entries: SyncEntry[]): Array<{ source: string; rel: string; entries: SyncEntry[] }> {
+  const groups = new Map<string, { source: string; rel: string; entries: SyncEntry[] }>();
+
+  for (const entry of entries) {
+    const key = normalizePath(entry.source);
+    const existing = groups.get(key);
+    if (existing) {
+      existing.entries.push(entry);
+      continue;
+    }
+
+    groups.set(key, {
+      source: entry.source,
+      rel: getSyncRelative(syncDir, entry.source),
+      entries: [entry],
+    });
+  }
+
+  return Array.from(groups.values());
 }
 
 export async function push(options: { yes: boolean; cleanup: CleanupMode }): Promise<void> {
@@ -48,6 +89,8 @@ export async function push(options: { yes: boolean; cleanup: CleanupMode }): Pro
 
     const target = mapToTarget(rel, roots);
     if (!target) continue;
+
+    pruneLegacyTargetsForSource(manifest, file, target);
 
     mkdirSync(dirname(target), { recursive: true });
 
@@ -93,30 +136,35 @@ export async function push(options: { yes: boolean; cleanup: CleanupMode }): Pro
   console.log(chalk.green(t().pushComplete(linked, strategyLabel, skipped)));
 
   const effectiveCleanup = options.yes && options.cleanup === 'ask' ? 'report' : options.cleanup;
-  const staleEntries = manifest.synced.filter(entry => !pathExists(entry.source));
-  if (staleEntries.length > 0) {
+  const staleEntryGroups = groupStaleEntriesBySource(syncDir, manifest.synced.filter(entry => !pathExists(entry.source)));
+  if (staleEntryGroups.length > 0) {
     console.log('');
-    console.log(chalk.yellow(t().pushStaleHeading(staleEntries.length)));
-    for (const entry of staleEntries) {
-      const rel = getSyncRelative(syncDir, entry.source);
-      console.log(chalk.yellow(t().pushStaleEntry(rel, entry.target)));
+    console.log(chalk.yellow(t().pushStaleHeading(staleEntryGroups.length)));
+    for (const group of staleEntryGroups) {
+      for (const entry of group.entries) {
+        console.log(chalk.yellow(t().pushStaleEntry(group.rel, entry.target)));
+      }
 
       let shouldDelete = effectiveCleanup === 'delete';
       if (effectiveCleanup === 'ask') {
-        const answer = await ask(t().pushStalePrompt(rel));
+        const answer = await ask(t().pushStalePrompt(group.rel));
         shouldDelete = /^[yY]$/.test(answer);
       }
 
       if (shouldDelete) {
-        if (pathExists(entry.target)) {
-          try {
-            unlinkSync(entry.target);
-          } catch { /* target already gone */ }
+        for (const entry of group.entries) {
+          if (pathExists(entry.target)) {
+            try {
+              unlinkSync(entry.target);
+            } catch {
+              // target already gone
+            }
+          }
+          removeByTarget(manifest, entry.target);
         }
-        removeByTarget(manifest, entry.target);
-        console.log(chalk.green(t().pushStaleDeleted(rel)));
+        console.log(chalk.green(t().pushStaleDeleted(group.rel)));
       } else if (effectiveCleanup === 'ask') {
-        console.log(chalk.green(t().pushStaleKept(rel)));
+        console.log(chalk.green(t().pushStaleKept(group.rel)));
       }
     }
   }

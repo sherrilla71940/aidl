@@ -24,9 +24,9 @@ export const zhTW: Locale = {
   pushAdopted: (rel: string) => `  已採用：${rel}（目標內容相符 — 已納入 manifest 追蹤）`,
   pushStaleHeading: (count: number) => `推送時發現 ${count} 個使用者層級的過期檔案：`,
   pushStaleEntry: (rel: string, target: string) => `  過期：${rel} → ${target}`,
-  pushStalePrompt: (rel: string) => `  要刪除 ${rel} 的使用者層級副本嗎？[y/N] `,
-  pushStaleDeleted: (rel: string) => `  已刪除使用者層級副本：${rel}`,
-  pushStaleKept: (rel: string) => `  已保留使用者層級副本：${rel}`,
+  pushStalePrompt: (rel: string) => `  要刪除 ${rel} 的過期使用者層級目標嗎？[y/N] `,
+  pushStaleDeleted: (rel: string) => `  已刪除過期的使用者層級目標：${rel}`,
+  pushStaleKept: (rel: string) => `  已保留過期的使用者層級目標：${rel}`,
 
   // pull
   pullScanning: (destination: string) => `正在掃描 VS Code 設定中可匯入到 ${destination}/ 的檔案...`,

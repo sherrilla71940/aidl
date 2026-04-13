@@ -283,6 +283,83 @@ describe('sync command integration', () => {
     expect(manifest.synced).toHaveLength(0);
   });
 
+  it('push groups multiple stale targets for the same source into one cleanup prompt', async () => {
+    const staleSource = join(layout.repoDir, 'sync', 'instructions', 'removed.instructions.md');
+    const legacyTarget = join(layout.vscodeDir, 'instructions', 'removed.instructions.md');
+    const currentTarget = join(layout.copilotDir, 'instructions', 'removed.instructions.md');
+    writeFile(legacyTarget, 'legacy user copy');
+    writeFile(currentTarget, 'current user copy');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: staleSource,
+            target: legacyTarget,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+          {
+            source: staleSource,
+            target: currentTarget,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    const askMock = vi.fn().mockResolvedValueOnce('y');
+    vi.doMock('../src/util.js', async () => {
+      const actual = await vi.importActual<typeof import('../src/util.ts')>('../src/util.ts');
+      return {
+        ...actual,
+        ask: askMock,
+      };
+    });
+
+    const { push } = await import('../src/push.ts');
+    await push({ yes: false, cleanup: 'ask' });
+
+    expect(askMock).toHaveBeenCalledTimes(1);
+    expect(existsSync(legacyTarget)).toBe(false);
+    expect(existsSync(currentTarget)).toBe(false);
+    const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(0);
+  });
+
+  it('push prunes legacy targets for a live source when the canonical target changes', async () => {
+    const sourceFile = join(layout.repoDir, 'sync', 'instructions', 'style.instructions.md');
+    const legacyTarget = join(layout.vscodeDir, 'instructions', 'style.instructions.md');
+    const currentTarget = join(layout.copilotDir, 'instructions', 'style.instructions.md');
+    writeFile(sourceFile, '---\ndescription: style\napplyTo: "**"\n---\n\nBody text');
+    writeFile(legacyTarget, 'legacy user copy');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: sourceFile,
+            target: legacyTarget,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    const { push } = await import('../src/push.ts');
+    await push({ yes: true, cleanup: 'report' });
+
+    expect(existsSync(legacyTarget)).toBe(false);
+    expect(existsSync(currentTarget)).toBe(true);
+    const manifest = readJson<{ synced: Array<{ source: string; target: string }> }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(1);
+    expect(manifest.synced[0]).toMatchObject({ source: sourceFile, target: currentTarget });
+  });
+
   it('pull deletes stale repo files when cleanup=delete and destination=sync', async () => {
     const repoFile = join(layout.repoDir, 'sync', 'instructions', 'removed.instructions.md');
     const missingUserFile = join(layout.copilotDir, 'instructions', 'removed.instructions.md');

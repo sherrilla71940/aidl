@@ -360,7 +360,7 @@ Applied when Copilot works in the aidl repo itself. Keep it short and direct:
 - This is the aidl repo: sync scripts, bundled agents, and the Copilot UX layer.
 - Files under `user-sync/` must have valid YAML frontmatter — see `authoring.instructions.md` for field requirements.
 - `sync.sh` and `sync.ps1` must stay functionally equivalent. Edit both when changing sync behavior.
-- Do not expand the README beyond 80 lines. It is intentionally concise.
+- Do not expand the README beyond 150 lines. Keep it concise.
 - Do not add features or subcommands beyond what is specced.
 
 ### .github/pull_request_template.md
@@ -379,7 +379,7 @@ Applied when Copilot works in the aidl repo itself. Keep it short and direct:
 - [ ] `shellcheck scripts/sync.sh` passes locally
 - [ ] `scripts/sync.ps1` updated to match if `sync.sh` changed
 - [ ] Bundled agent frontmatter valid (description, tags, type present)
-- [ ] README remains under 80 lines
+- [ ] README remains under 150 lines
 
 > Note: New skills, agents, or prompts belong in the registry repo, not here.
 ```
@@ -403,7 +403,7 @@ Top-of-page order (critical — do not reorder):
 5. `## Why not just Settings Sync?` (3 lines)
 6. `## Contributing` (2 lines)
 
-**Keep the README under 80 lines of content.** If it's longer, cut.
+**Keep the README under 150 lines of content.** If it's longer, cut.
 
 ### Content:
 ```

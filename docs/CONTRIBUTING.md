@@ -57,7 +57,7 @@ The `no-personal-content` CI check only runs on the upstream `copilot-asset-mana
 
 - `npm run build` must pass with no errors
 - Workspace agent and skill files must have valid frontmatter
-- README must remain under 80 lines
+- README must remain under 150 lines
 - No `sync/` or `local/` changes — CI will reject them automatically
 
 See the PR template for the full checklist.

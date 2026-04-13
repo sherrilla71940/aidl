@@ -11,7 +11,7 @@
 ## Checklist
 - [ ] `npm run build` passes locally
 - [ ] Workspace asset frontmatter valid (description, tags, type present)
-- [ ] README remains under 80 lines
+- [ ] README remains under 150 lines
 - [ ] No changes to `sync/` or `local/` (personal config stays in your fork)
 
 > PRs that include `sync/` or `local/` changes will be rejected by CI.
