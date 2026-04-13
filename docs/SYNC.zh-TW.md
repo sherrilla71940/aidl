@@ -17,6 +17,8 @@
 
 Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `sync/`，需要時也可指定匯入到 `local/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
+關於 agents 的補充：`sync/agents/` 屬於使用者層級 agent 同步。`cam push` 會把這些檔案複製到使用者層級儲存位置，但依目前 VS Code 行為，Copilot CLI session 只會顯示 workspace custom agents。若某個 agent 必須能在 Copilot CLI 中被選取，請改定義在 `.github/agents/`。
+
 支援的資源子目錄：`prompts/`、`skills/`、`instructions/`、`hooks/`、`agents/`。
 
 `sync/` 對應到使用者層級的 Copilot 自訂資源儲存位置，不會同步 workspace-level 的 `.vscode/` 設定。
@@ -63,6 +65,12 @@ VS Code 內建的 Settings Sync 已經會同步使用者層級的 Settings、Key
 SKIP <rel-path> — exists at target but not created by copilot-asset-manager (delete the target file first if you want to overwrite)
 ```
 
+1. 同步目前檔案後，再比對 manifest 與 `sync/`：
+
+- 預設 `--cleanup report`：只回報那些 repo source 已刪除、但使用者層級副本仍存在的 manifest 管理檔案
+- `--cleanup ask`：逐一詢問是否刪除使用者層級副本，並從 manifest 移除該項目
+- `--cleanup delete`：自動刪除這些過期的使用者層級副本，並從 manifest 移除該項目
+
 1. 視需要建立父目錄。
 
 1. 建立 symlink（macOS/Linux）或複製（Windows）到目標位置。
@@ -73,7 +81,7 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 ## pull — VS Code → repo
 
-指令語法：`cam pull [sync|local] [--yes]`（預設為 `sync`）。
+指令語法：`cam pull [sync|local] [--yes] [--cleanup report|ask|delete]`（預設為 `sync`）。
 
 1. 掃描使用者層級自訂資源儲存位置：
 
@@ -100,6 +108,14 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 1. 將選取的檔案複製到所選目的地，保留目錄結構。
 
+1. 匯入到 `sync/` 時，會再比對 manifest 與使用者層級儲存位置：
+
+- 預設 `--cleanup report`：只回報那些使用者層級副本已刪除、但 repo 副本仍存在的 manifest 管理檔案
+- `--cleanup ask`：逐一詢問是否刪除 repo 副本，並從 manifest 移除該項目
+- `--cleanup delete`：自動刪除這些過期的 repo 副本，並從 manifest 移除該項目
+
+  `--cleanup` 只影響 `pull sync`。`pull local` 不會刪除 repo 檔案，因為它不使用 manifest。
+
 1. 只有在匯入到 `sync/` 時才更新 `.sync-manifest.json`。
 
 ---
@@ -119,6 +135,8 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 - 找出 manifest 中 source 已不存在的項目。
 - 移除對應的 target 檔案（symlink 或複製檔），如果存在的話。
 - 從 manifest 中移除該項目。
+
+`clean` 仍然是明確的批次清理指令；`push` 與 `pull sync` 則透過 `--cleanup` 提供每次執行時的較細緻控制。
 
 ---
 

@@ -2,12 +2,20 @@ import { join, relative, dirname } from 'node:path';
 import { mkdirSync, copyFileSync, symlinkSync, unlinkSync, readFileSync } from 'node:fs';
 import chalk from 'chalk';
 import { isWindows, getSyncRoots, findRepoRoot, mapToTarget } from './paths.js';
-import { readManifest, writeManifest, hasTarget, addEntry } from './manifest.js';
-import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets } from './util.js';
+import { readManifest, writeManifest, hasTarget, addEntry, removeByTarget } from './manifest.js';
+import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
-export async function push(options: { yes: boolean }): Promise<void> {
+export type CleanupMode = 'report' | 'ask' | 'delete';
+
+function getSyncRelative(syncDir: string, path: string): string {
+  const syncPrefix = `${syncDir.replace(/\\/g, '/')}/`;
+  const normalized = path.replace(/\\/g, '/');
+  return normalized.startsWith(syncPrefix) ? normalized.slice(syncPrefix.length) : normalized;
+}
+
+export async function push(options: { yes: boolean; cleanup: CleanupMode }): Promise<void> {
   const config = readConfig();
   if (config.syncMode === 'pull-only' || config.syncMode === 'none') {
     console.log(chalk.yellow(t().syncModeDisabled('push', config.syncMode)));
@@ -83,6 +91,35 @@ export async function push(options: { yes: boolean }): Promise<void> {
 
   console.log('');
   console.log(chalk.green(t().pushComplete(linked, strategyLabel, skipped)));
+
+  const effectiveCleanup = options.yes && options.cleanup === 'ask' ? 'report' : options.cleanup;
+  const staleEntries = manifest.synced.filter(entry => !pathExists(entry.source));
+  if (staleEntries.length > 0) {
+    console.log('');
+    console.log(chalk.yellow(t().pushStaleHeading(staleEntries.length)));
+    for (const entry of staleEntries) {
+      const rel = getSyncRelative(syncDir, entry.source);
+      console.log(chalk.yellow(t().pushStaleEntry(rel, entry.target)));
+
+      let shouldDelete = effectiveCleanup === 'delete';
+      if (effectiveCleanup === 'ask') {
+        const answer = await ask(t().pushStalePrompt(rel));
+        shouldDelete = /^[yY]$/.test(answer);
+      }
+
+      if (shouldDelete) {
+        if (pathExists(entry.target)) {
+          try {
+            unlinkSync(entry.target);
+          } catch { /* target already gone */ }
+        }
+        removeByTarget(manifest, entry.target);
+        console.log(chalk.green(t().pushStaleDeleted(rel)));
+      } else if (effectiveCleanup === 'ask') {
+        console.log(chalk.green(t().pushStaleKept(rel)));
+      }
+    }
+  }
 
   writeManifest(manifestPath, manifest);
 }

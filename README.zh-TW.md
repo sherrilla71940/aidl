@@ -35,6 +35,10 @@ cam push                 # 會把 prompts 同步到 VS Code profile 資料夾，
 
 若 VS Code Settings Sync 已設定同步 Prompts and Instructions，VS Code 可以在裝置之間漫遊這些使用者層級的 prompt 與 instruction 資源。至於 agents、skills、hooks，仍建議以這個 repo 作為完整還原與審查的真實來源。
 
+目前 VS Code 有一個限制：`sync/agents/` 雖然會複製到使用者層級儲存位置，但 Copilot CLI session 目前只會顯示 workspace custom agents。若你需要在 Copilot CLI 使用 agent，請改放在 `.github/agents/`。
+
+刪除行為預設採保守模式：`cam push` 與 `cam pull sync` 只會回報 manifest 中偵測到的過期對應檔案；只有在你明確指定 `--cleanup ask` 或 `--cleanup delete` 時才會移除。
+
 如果你是在 Copilot Chat 中操作，請用 `/cam-pull` 和 `/cam-push` 取代終端機指令。完成後，這個 repo 就是你 AI 設定的可攜式家園。
 ## 指令
 
@@ -44,8 +48,8 @@ Slash command 可以直接附帶輸入，例如 `/cam-pull local all`、`/cam-co
 | 動作 | 終端機 | Copilot Chat |
 | ------ | -------- | -------------- |
 | 初始化語言與同步模式 | `cam init` | — |
-| 匯入 VS Code → repo | `cam pull [sync/local] [--yes]` | `/cam-pull` |
-| 還原 `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
+| 匯入 VS Code → repo | `cam pull [sync/local] [--yes] [--cleanup report|ask|delete]` | `/cam-pull` |
+| 還原 `sync/` → VS Code | `cam push [--yes] [--cleanup report|ask|delete]` | `/cam-push` |
 | 顯示同步狀態 | `cam status` | `/cam-status` |
 | 移除孤立項目 | `cam clean` | `/cam-clean` |
 | 說明與即時狀態 | — | `/cam-help` |

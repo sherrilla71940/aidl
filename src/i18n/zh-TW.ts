@@ -22,6 +22,11 @@ export const zhTW: Locale = {
   pushAgentSection: '代理程式檔案（透過 chat.agentFilesLocations 連結）：',
   pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — 直接由 sync/agents/ 提供`,
   pushAdopted: (rel: string) => `  已採用：${rel}（目標內容相符 — 已納入 manifest 追蹤）`,
+  pushStaleHeading: (count: number) => `推送時發現 ${count} 個使用者層級的過期檔案：`,
+  pushStaleEntry: (rel: string, target: string) => `  過期：${rel} → ${target}`,
+  pushStalePrompt: (rel: string) => `  要刪除 ${rel} 的使用者層級副本嗎？[y/N] `,
+  pushStaleDeleted: (rel: string) => `  已刪除使用者層級副本：${rel}`,
+  pushStaleKept: (rel: string) => `  已保留使用者層級副本：${rel}`,
 
   // pull
   pullScanning: (destination: string) => `正在掃描 VS Code 設定中可匯入到 ${destination}/ 的檔案...`,
@@ -37,6 +42,11 @@ export const zhTW: Locale = {
   pullNothingImported: '未匯入任何檔案。',
   pullImported: (rel: string, destination: string) => `  已匯入：${rel} → ${destination}/${rel}`,
   pullComplete: (count: number, destination: string) => `匯入完成：${count} 個已匯入到 ${destination}/。`,
+  pullStaleHeading: (count: number, destination: string) => `發現 ${count} 個 ${destination}/ 檔案已在使用者層級儲存位置消失：`,
+  pullStaleEntry: (rel: string, target: string) => `  過期：${rel} ← ${target}`,
+  pullStalePrompt: (rel: string) => `  要刪除 repo 中的 ${rel} 嗎？[y/N] `,
+  pullStaleDeleted: (rel: string) => `  已刪除 repo 副本：${rel}`,
+  pullStaleKept: (rel: string) => `  已保留 repo 副本：${rel}`,
 
   // status
   statusHeading: '=== copilot-asset-manager 同步狀態 ===',

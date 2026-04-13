@@ -17,6 +17,8 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
 
 Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `sync/` by default, or `local/` when requested. `push` only syncs `sync/`. `local/` is never synced to VS Code.
 
+Note on agents: `sync/agents/` is user-level agent sync. `cam push` copies those files into user-level storage, but current VS Code behavior only exposes workspace custom agents in Copilot CLI sessions. If an agent must be selectable in Copilot CLI, define it in `.github/agents/`.
+
 Supported asset subdirectories: `prompts/`, `skills/`, `instructions/`, `hooks/`, `agents/`.
 
 `sync/` maps to user-level Copilot customization storage. It does not sync workspace-level `.vscode/` settings.
@@ -63,6 +65,12 @@ Relative links between files under `sync/` work in both the repo and VS Code bec
 SKIP <rel-path> — exists at target but not created by copilot-asset-manager (delete the target file first if you want to overwrite)
 ```
 
+1. After syncing current files, compare the manifest against `sync/`:
+
+- default `--cleanup report`: report stale manifest-managed user files whose repo source was deleted
+- `--cleanup ask`: prompt one-by-one before deleting the user-level copy and removing the manifest entry
+- `--cleanup delete`: remove stale user-level copies automatically and drop their manifest entries
+
 1. Create parent directories as needed.
 
 1. Symlink (macOS/Linux) or copy (Windows) the file to the target.
@@ -73,7 +81,7 @@ SKIP <rel-path> — exists at target but not created by copilot-asset-manager (d
 
 ## pull — VSCode → repo
 
-Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
+Command syntax: `cam pull [sync|local] [--yes] [--cleanup report|ask|delete]` (`sync` is the default).
 
 1. Scan user-level customization storage:
 
@@ -100,6 +108,14 @@ Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
 
 1. Copy selected files into the selected destination, preserving the directory structure.
 
+1. When importing into `sync/`, compare the manifest against user-level storage:
+
+- default `--cleanup report`: report stale manifest-managed repo files whose user-level counterpart was deleted
+- `--cleanup ask`: prompt one-by-one before deleting the repo copy and removing the manifest entry
+- `--cleanup delete`: remove stale repo copies automatically and drop their manifest entries
+
+  `--cleanup` only affects `pull sync`. `pull local` never deletes repo files because it does not use the manifest.
+
 1. Update `.sync-manifest.json` only when importing into `sync/`.
 
 ---
@@ -119,6 +135,8 @@ Command syntax: `cam pull [sync|local] [--yes]` (`sync` is the default).
 - Find manifest entries whose source no longer exists.
 - Remove the corresponding target file (symlink or copy) if present.
 - Remove the entry from the manifest.
+
+`clean` remains the explicit bulk cleanup command. `push` and `pull sync` now provide lighter per-run cleanup controls via `--cleanup`.
 
 ---
 

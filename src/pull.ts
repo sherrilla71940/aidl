@@ -1,13 +1,14 @@
 import { join, relative, dirname } from 'node:path';
-import { existsSync, mkdirSync, copyFileSync, readFileSync, readlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, copyFileSync, readFileSync, readlinkSync, unlinkSync } from 'node:fs';
 import chalk from 'chalk';
 import { getSyncRoots, getPullSourceDirs, findRepoRoot, normalizePath } from './paths.js';
-import { readManifest, writeManifest, addEntry } from './manifest.js';
+import { readManifest, writeManifest, addEntry, removeBySource } from './manifest.js';
 import { walk, shouldSkip, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 
 export type PullDestination = 'sync' | 'local';
+export type CleanupMode = 'report' | 'ask' | 'delete';
 
 function isSymlinkIntoSync(file: string, syncDir: string): boolean {
   try {
@@ -26,7 +27,7 @@ function filesMatch(a: string, b: string): boolean {
   }
 }
 
-export async function pull(options: { yes: boolean; destination: PullDestination }): Promise<void> {
+export async function pull(options: { yes: boolean; destination: PullDestination; cleanup: CleanupMode }): Promise<void> {
   const config = readConfig();
   if (config.syncMode === 'push-only' || config.syncMode === 'none') {
     console.log(chalk.yellow(t().syncModeDisabled('pull', config.syncMode)));
@@ -84,7 +85,39 @@ export async function pull(options: { yes: boolean; destination: PullDestination
     }
   }
 
+  if (manifest) {
+    const effectiveCleanup = options.yes && options.cleanup === 'ask' ? 'report' : options.cleanup;
+    const staleEntries = manifest.synced.filter(entry => existsSync(entry.source) && !existsSync(entry.target));
+    if (staleEntries.length > 0) {
+      console.log('');
+      console.log(chalk.yellow(t().pullStaleHeading(staleEntries.length, options.destination)));
+      for (const entry of staleEntries) {
+        const rel = relative(importDir, entry.source).replace(/\\/g, '/');
+        console.log(chalk.yellow(t().pullStaleEntry(rel, entry.target)));
+
+        let shouldDelete = effectiveCleanup === 'delete';
+        if (effectiveCleanup === 'ask') {
+          const answer = await ask(t().pullStalePrompt(rel));
+          shouldDelete = /^[yY]$/.test(answer);
+        }
+
+        if (shouldDelete) {
+          try {
+            unlinkSync(entry.source);
+          } catch { /* source already gone */ }
+          removeBySource(manifest, entry.source);
+          console.log(chalk.green(t().pullStaleDeleted(rel)));
+        } else if (effectiveCleanup === 'ask') {
+          console.log(chalk.green(t().pullStaleKept(rel)));
+        }
+      }
+    }
+  }
+
   if (candidates.length === 0) {
+    if (manifest) {
+      writeManifest(manifestPath, manifest);
+    }
     console.log(chalk.green(t().pullNothingNew));
     return;
   }

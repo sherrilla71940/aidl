@@ -13,6 +13,8 @@ import { t, resetLocaleCache } from './i18n/index.js';
 import { ask } from './util.js';
 import type { PullDestination } from './pull.js';
 
+type CleanupMode = 'report' | 'ask' | 'delete';
+
 const program = new Command();
 
 function parsePullDestination(value: string): PullDestination {
@@ -21,6 +23,14 @@ function parsePullDestination(value: string): PullDestination {
   }
 
   throw new InvalidArgumentError('Pull destination must be "local" or "sync".');
+}
+
+function parseCleanupMode(value: string): CleanupMode {
+  if (value === 'report' || value === 'ask' || value === 'delete') {
+    return value;
+  }
+
+  throw new InvalidArgumentError('Cleanup mode must be "report", "ask", or "delete".');
 }
 
 program
@@ -32,14 +42,16 @@ program
   .command('push')
   .description('Sync sync/ files to VS Code user config')
   .option('--yes', 'Skip confirmation prompts')
-  .action((opts) => push({ yes: opts.yes ?? false }));
+  .option('--cleanup <mode>', 'Handle stale user-level files: report, ask, or delete', parseCleanupMode, 'report')
+  .action((opts) => push({ yes: opts.yes ?? false, cleanup: opts.cleanup }));
 
 program
   .command('pull')
   .description('Import untracked VS Code files into sync/ or local/ (default: sync/)')
   .argument('[destination]', 'Import destination: sync or local', parsePullDestination, 'sync')
   .option('--yes', 'Import all without prompting')
-  .action((destination: PullDestination, opts) => pull({ yes: opts.yes ?? false, destination }));
+  .option('--cleanup <mode>', 'Handle stale repo files when destination is sync: report, ask, or delete', parseCleanupMode, 'report')
+  .action((destination: PullDestination, opts) => pull({ yes: opts.yes ?? false, destination, cleanup: opts.cleanup }));
 
 program
   .command('status')

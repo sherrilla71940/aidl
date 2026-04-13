@@ -35,6 +35,10 @@ cam push                 # syncs prompts to VS Code profile data and other asset
 
 With Settings Sync configured to include Prompts and Instructions, VS Code can roam these user-level prompt and instruction assets across devices. Agents, skills, and hooks are still managed as file-based user assets, so this repo remains the source of truth for full restore and review.
 
+Current VS Code limitation: `sync/agents/` does copy to user-level storage, but Copilot CLI sessions currently only expose workspace custom agents. If you need an agent in Copilot CLI, put it in `.github/agents/`.
+
+Deletion is conservative by default: `cam push` and `cam pull sync` report stale counterpart files from the manifest, and only remove them when you opt into `--cleanup ask` or `--cleanup delete`.
+
 In Copilot Chat, use `/cam-pull` and `/cam-push` instead of the terminal commands. After that, your repo is the portable home of your AI setup.
 
 ## Commands
@@ -45,8 +49,8 @@ Slash commands can take inline input, for example `/cam-pull local all`, `/cam-c
 | Action | Terminal | Copilot Chat |
 | ------ | ---------- | -------------- |
 | Initialize language + sync mode | `cam init` | — |
-| Import VS Code → repo | `cam pull [sync/local] [--yes]` | `/cam-pull` |
-| Restore `sync/` → VS Code | `cam push [--yes]` | `/cam-push` |
+| Import VS Code → repo | `cam pull [sync/local] [--yes] [--cleanup report|ask|delete]` | `/cam-pull` |
+| Restore `sync/` → VS Code | `cam push [--yes] [--cleanup report|ask|delete]` | `/cam-push` |
 | Show sync state | `cam status` | `/cam-status` |
 | Remove orphaned entries | `cam clean` | `/cam-clean` |
 | Help & live status | — | `/cam-help` |

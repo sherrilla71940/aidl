@@ -43,3 +43,8 @@ export function removeByTarget(manifest: Manifest, target: string): void {
   const t = normalizePath(target);
   manifest.synced = manifest.synced.filter(e => normalizePath(e.target) !== t);
 }
+
+export function removeBySource(manifest: Manifest, source: string): void {
+  const s = normalizePath(source);
+  manifest.synced = manifest.synced.filter(e => normalizePath(e.source) !== s);
+}

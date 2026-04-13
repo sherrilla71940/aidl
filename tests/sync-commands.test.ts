@@ -60,6 +60,7 @@ describe('sync command integration', () => {
   afterEach(() => {
     vi.doUnmock('chalk');
     vi.doUnmock('../src/paths.js');
+    vi.doUnmock('../src/util.js');
     process.chdir(originalCwd);
     rmSync(layout.rootDir, { recursive: true, force: true });
     vi.restoreAllMocks();
@@ -70,7 +71,7 @@ describe('sync command integration', () => {
     writeFile(sourceFile, '---\ndescription: hello\nagent: agent\n---\n\nBody text');
 
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     const targetFile = join(layout.vscodeDir, 'prompts', 'hello.prompt.md');
     expect(existsSync(targetFile)).toBe(true);
@@ -99,7 +100,7 @@ describe('sync command integration', () => {
     writeFile(vscodeFile, '---\ndescription: capture\nagent: agent\n---\n\nCaptured text');
 
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true, destination: 'local' });
+    await pull({ yes: true, destination: 'local', cleanup: 'report' });
 
     const importedFile = join(layout.repoDir, 'local', 'prompts', 'captured.prompt.md');
     expect(existsSync(importedFile)).toBe(true);
@@ -119,7 +120,7 @@ describe('sync command integration', () => {
     writeFile(agentFile, '---\ndescription: review\n---\n\nAgent body text');
 
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     expect(existsSync(join(layout.copilotDir, 'instructions', 'style.instructions.md'))).toBe(true);
     expect(existsSync(join(layout.copilotDir, 'skills', 'demo-skill', 'SKILL.md'))).toBe(true);
@@ -138,7 +139,7 @@ describe('sync command integration', () => {
     writeFile(vscodeFile, '---\ndescription: capture\nagent: agent\n---\n\nCaptured text');
 
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true, destination: 'sync' });
+    await pull({ yes: true, destination: 'sync', cleanup: 'report' });
 
     const importedFile = join(layout.repoDir, 'sync', 'prompts', 'captured.prompt.md');
     expect(existsSync(importedFile)).toBe(true);
@@ -160,7 +161,7 @@ describe('sync command integration', () => {
     writeFile(instructionFile, '---\ndescription: capture\napplyTo: "**"\n---\n\nCaptured text');
 
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true, destination: 'sync' });
+    await pull({ yes: true, destination: 'sync', cleanup: 'report' });
 
     const importedFile = join(layout.repoDir, 'sync', 'instructions', 'captured.instructions.md');
     expect(existsSync(importedFile)).toBe(true);
@@ -180,7 +181,7 @@ describe('sync command integration', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true, destination: 'sync' });
+    await pull({ yes: true, destination: 'sync', cleanup: 'report' });
 
     expect(readFileSync(repoFile, 'utf-8')).toBe('repo version');
     expect(logSpy.mock.calls.flat().join('\n')).toContain('content differs');
@@ -254,6 +255,95 @@ describe('sync command integration', () => {
     const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
     expect(manifest.synced).toHaveLength(0);
   });
+
+  it('push deletes stale user-level files when cleanup=delete', async () => {
+    const staleSource = join(layout.repoDir, 'sync', 'instructions', 'removed.instructions.md');
+    const staleTarget = join(layout.copilotDir, 'instructions', 'removed.instructions.md');
+    writeFile(staleTarget, 'stale user copy');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: staleSource,
+            target: staleTarget,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    const { push } = await import('../src/push.ts');
+    await push({ yes: true, cleanup: 'delete' });
+
+    expect(existsSync(staleTarget)).toBe(false);
+    const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(0);
+  });
+
+  it('pull deletes stale repo files when cleanup=delete and destination=sync', async () => {
+    const repoFile = join(layout.repoDir, 'sync', 'instructions', 'removed.instructions.md');
+    const missingUserFile = join(layout.copilotDir, 'instructions', 'removed.instructions.md');
+    writeFile(repoFile, 'repo copy');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: repoFile,
+            target: missingUserFile,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    const { pull } = await import('../src/pull.ts');
+    await pull({ yes: true, destination: 'sync', cleanup: 'delete' });
+
+    expect(existsSync(repoFile)).toBe(false);
+    const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(0);
+  });
+
+  it('pull asks before deleting stale repo files when cleanup=ask', async () => {
+    const repoFile = join(layout.repoDir, 'sync', 'instructions', 'keep.instructions.md');
+    const missingUserFile = join(layout.copilotDir, 'instructions', 'keep.instructions.md');
+    writeFile(repoFile, 'repo copy');
+    writeFile(
+      join(layout.repoDir, '.sync-manifest.json'),
+      `${JSON.stringify({
+        synced: [
+          {
+            source: repoFile,
+            target: missingUserFile,
+            strategy: 'copy',
+            timestamp: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        agent_notice_shown: false,
+      }, null, 2)}\n`,
+    );
+
+    vi.doMock('../src/util.js', async () => {
+      const actual = await vi.importActual<typeof import('../src/util.ts')>('../src/util.ts');
+      return {
+        ...actual,
+        ask: vi.fn().mockResolvedValueOnce('n'),
+      };
+    });
+
+    const { pull } = await import('../src/pull.ts');
+    await pull({ yes: false, destination: 'sync', cleanup: 'ask' });
+
+    expect(existsSync(repoFile)).toBe(true);
+    const manifest = readJson<{ synced: unknown[] }>(join(layout.repoDir, '.sync-manifest.json'));
+    expect(manifest.synced).toHaveLength(1);
+  });
 });
 
 describe('push/pull focused warnings and gating', () => {
@@ -284,6 +374,7 @@ describe('push/pull focused warnings and gating', () => {
   afterEach(() => {
     vi.doUnmock('chalk');
     vi.doUnmock('../src/paths.js');
+    vi.doUnmock('../src/util.js');
     process.chdir(originalCwd);
     rmSync(layout.rootDir, { recursive: true, force: true });
     vi.restoreAllMocks();
@@ -297,7 +388,7 @@ describe('push/pull focused warnings and gating', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     expect(logSpy.mock.calls.flat().join('\n')).toContain('absolute markdown link target: file:///tmp/example.md');
   });
@@ -308,7 +399,7 @@ describe('push/pull focused warnings and gating', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     expect(existsSync(join(layout.vscodeDir, 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('push is disabled');
@@ -321,7 +412,7 @@ describe('push/pull focused warnings and gating', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { pull } = await import('../src/pull.ts');
-    await pull({ yes: true, destination: 'local' });
+    await pull({ yes: true, destination: 'local', cleanup: 'report' });
 
     expect(existsSync(join(layout.repoDir, 'sync', 'prompts', 'blocked.prompt.md'))).toBe(false);
     expect(logSpy.mock.calls.flat().join('\n')).toContain('pull is disabled');
@@ -335,7 +426,7 @@ describe('push/pull focused warnings and gating', () => {
     );
 
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     expect(existsSync(join(layout.copilotDir, 'agents', 'test.agent.md'))).toBe(true);
     expect(existsSync(join(layout.vscodeDir, 'agents', 'test.agent.md'))).toBe(false);
@@ -350,7 +441,7 @@ describe('push/pull focused warnings and gating', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { push } = await import('../src/push.ts');
-    await push({ yes: true });
+    await push({ yes: true, cleanup: 'report' });
 
     const manifest = readJson<{ synced: Array<{ source: string; target: string }> }>(
       join(layout.repoDir, '.sync-manifest.json'),

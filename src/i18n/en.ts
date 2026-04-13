@@ -16,6 +16,11 @@ export interface Locale {
   pushAgentSection: string;
   pushAgentSkipped: (rel: string) => string;
   pushAdopted: (rel: string) => string;
+  pushStaleHeading: (count: number) => string;
+  pushStaleEntry: (rel: string, target: string) => string;
+  pushStalePrompt: (rel: string) => string;
+  pushStaleDeleted: (rel: string) => string;
+  pushStaleKept: (rel: string) => string;
 
   pullScanning: (destination: string) => string;
   pullSkipDiffers: (rel: string) => string;
@@ -30,6 +35,11 @@ export interface Locale {
   pullNothingImported: string;
   pullImported: (rel: string, destination: string) => string;
   pullComplete: (count: number, destination: string) => string;
+  pullStaleHeading: (count: number, destination: string) => string;
+  pullStaleEntry: (rel: string, target: string) => string;
+  pullStalePrompt: (rel: string) => string;
+  pullStaleDeleted: (rel: string) => string;
+  pullStaleKept: (rel: string) => string;
 
   statusHeading: string;
   statusSynced: (count: number) => string;
@@ -87,6 +97,11 @@ export const en: Locale = {
   pushAgentSection: 'Agent files (linked via chat.agentFilesLocations):',
   pushAgentSkipped: (rel: string) => `  [AGENT] ${rel} — served directly from sync/agents/`,
   pushAdopted: (rel: string) => `  Adopted: ${rel} (target content matched — now tracked in manifest)`,
+  pushStaleHeading: (count: number) => `Stale user-level file(s) found during push (${count}):`,
+  pushStaleEntry: (rel: string, target: string) => `  Stale: ${rel} → ${target}`,
+  pushStalePrompt: (rel: string) => `  Delete user-level copy for ${rel}? [y/N] `,
+  pushStaleDeleted: (rel: string) => `  Deleted user-level copy: ${rel}`,
+  pushStaleKept: (rel: string) => `  Kept user-level copy: ${rel}`,
 
   // pull
   pullScanning: (destination: string) => `Scanning VS Code config for files to import into ${destination}/...`,
@@ -103,6 +118,12 @@ export const en: Locale = {
   pullNothingImported: 'Nothing imported.',
   pullImported: (rel: string, destination: string) => `  Imported: ${rel} → ${destination}/${rel}`,
   pullComplete: (count: number, destination: string) => `Pull complete: ${count} imported into ${destination}/.`,
+  pullStaleHeading: (count: number, destination: string) =>
+    `Stale ${destination}/ file(s) missing from user-level storage (${count}):`,
+  pullStaleEntry: (rel: string, target: string) => `  Stale: ${rel} ← ${target}`,
+  pullStalePrompt: (rel: string) => `  Delete repo copy for ${rel}? [y/N] `,
+  pullStaleDeleted: (rel: string) => `  Deleted repo copy: ${rel}`,
+  pullStaleKept: (rel: string) => `  Kept repo copy: ${rel}`,
 
   // status
   statusHeading: '=== copilot-asset-manager sync status ===',
