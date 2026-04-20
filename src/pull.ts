@@ -6,6 +6,7 @@ import { readManifest, writeManifest, addEntry, removeBySource } from './manifes
 import { walk, shouldSkip, ask } from './util.js';
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
+import { getCurrentBranch, isTrunkBranch } from './repo-checks.js';
 
 export type PullDestination = 'sync' | 'local';
 export type CleanupMode = 'report' | 'ask' | 'delete';
@@ -35,6 +36,22 @@ export async function pull(options: { yes: boolean; destination: PullDestination
   }
 
   const repoRoot = findRepoRoot();
+
+  const branch = getCurrentBranch(repoRoot);
+  if (isTrunkBranch(branch) && options.destination === 'sync') {
+    console.log('');
+    console.log(chalk.yellow(`  ⚠  You are on '${branch}'. cam pull into sync/ on a trunk branch will leave personal files untracked.`));
+    console.log(chalk.yellow('     Run this on your personal branch instead (e.g. personal/aaron).'));
+    console.log('');
+    if (!options.yes) {
+      const answer = await ask('  Continue anyway? [y/N]: ');
+      if (answer.toLowerCase() !== 'y') {
+        console.log('  Aborted.');
+        return;
+      }
+    }
+  }
+
   const syncDir = join(repoRoot, 'sync');
   const importDir = join(repoRoot, options.destination);
   const manifestPath = join(repoRoot, '.sync-manifest.json');

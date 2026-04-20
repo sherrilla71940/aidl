@@ -58,3 +58,20 @@ export function findPersonalContentPaths(changedPaths: string[]): string[] {
     .filter(path => /^(sync|local)\//.test(path))
     .filter(path => !path.endsWith('.gitkeep'));
 }
+
+export function getCurrentBranch(repoRoot: string): string {
+  try {
+    return execFileSync('git', ['symbolic-ref', '--short', 'HEAD'], {
+      cwd: repoRoot,
+      encoding: 'utf-8',
+    }).trim();
+  } catch {
+    return '';
+  }
+}
+
+const TRUNK_BRANCHES = new Set(['master', 'main', 'develop', 'dev', 'trunk']);
+
+export function isTrunkBranch(branch: string): boolean {
+  return TRUNK_BRANCHES.has(branch.toLowerCase());
+}
