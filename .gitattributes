@@ -1,0 +1,3 @@
+# Keep sync/ and local/ contents from personal branch when merging master
+sync/** merge=ours
+local/** merge=ours
