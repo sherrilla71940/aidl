@@ -1,8 +1,11 @@
 import chalk from 'chalk';
+import { execFileSync } from 'node:child_process';
+import { chmodSync } from 'node:fs';
+import { join } from 'node:path';
 import { readConfig, writeConfig, isValidLang, isValidSyncMode } from './config.js';
 import type { SyncMode } from './config.js';
 import { t, resetLocaleCache } from './i18n/index.js';
-import { ask } from './util.js';
+import { ask, pathExists } from './util.js';
 
 export async function init(): Promise<void> {
   const config = readConfig();
@@ -44,6 +47,19 @@ export async function init(): Promise<void> {
   }
 
   writeConfig(config);
+
+  // Activate tracked git hooks
+  const hookScript = join('.github', 'hooks', 'pre-commit');
+  try {
+    execFileSync('git', ['config', 'core.hooksPath', '.github/hooks'], { stdio: 'ignore' });
+    if (pathExists(hookScript)) {
+      chmodSync(hookScript, 0o755);
+    }
+    console.log(chalk.green('  ✓ git hooks activated (.github/hooks)'));
+  } catch {
+    console.log(chalk.yellow('  ! Could not configure git hooks (not in a git repo?)'));
+  }
+
   console.log('');
   console.log(chalk.green(t().initComplete(config.lang, config.syncMode)));
 }

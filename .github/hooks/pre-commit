@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# pre-commit: block sync/ changes from being committed on master.
+# Activated by cam init via: git config core.hooksPath .github/hooks
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+if [ "$branch" = "master" ]; then
+  staged=$(git diff --cached --name-only | grep '^sync/')
+  if [ -n "$staged" ]; then
+    echo ""
+    echo "  pre-commit: sync/ files staged on master — blocked."
+    echo "  These belong on your personal branch (e.g. personal/aaron)."
+    echo "  Switch branches or unstage sync/ before committing."
+    echo "  To bypass: git commit --no-verify"
+    echo ""
+    exit 1
+  fi
+fi
+
+exit 0
