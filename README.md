@@ -87,7 +87,7 @@ Syntax:
 - `--cleanup <cleanup-mode>`: supported by `cam pull` and `cam push` only.
 - `--cleanup report`: report stale files without deleting them.
 - `--cleanup ask`: prompt one by one before deleting stale files.
-- `--cleanup delete`: delete stale files automatically.
+- `--cleanup delete`: delete all stale files automatically.
 - `cam clean` does not support `--yes` or `--cleanup`.
 
 ### Copilot Chat commands

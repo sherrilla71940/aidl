@@ -40,13 +40,13 @@ export async function pull(options: { yes: boolean; destination: PullDestination
   const branch = getCurrentBranch(repoRoot);
   if (isTrunkBranch(branch) && options.destination === 'sync') {
     console.log('');
-    console.log(chalk.yellow(`  ⚠  You are on '${branch}'. cam pull into sync/ on a trunk branch will leave personal files untracked.`));
-    console.log(chalk.yellow('     Run this on your personal branch instead (e.g. personal/aaron).'));
+    console.log(chalk.yellow(t().trunkBranchWarningPull(branch)));
+    console.log(chalk.yellow(t().trunkBranchHint));
     console.log('');
     if (!options.yes) {
-      const answer = await ask('  Continue anyway? [y/N]: ');
+      const answer = await ask(t().trunkBranchPrompt);
       if (answer.toLowerCase() !== 'y') {
-        console.log('  Aborted.');
+        console.log(t().trunkBranchAborted);
         return;
       }
     }

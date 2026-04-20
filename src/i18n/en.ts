@@ -66,11 +66,20 @@ export interface Locale {
   initLangCurrent: (lang: string) => string;
   initLangPrompt: string;
   initSyncModeOptions: string;
+  initSyncModeList: string;
   initSyncModeCurrent: (mode: string) => string;
   initSyncModePrompt: string;
   initComplete: (lang: string, mode: string) => string;
 
   syncModeDisabled: (command: string, mode: string) => string;
+
+  trunkBranchWarningPull: (branch: string) => string;
+  trunkBranchWarningPush: (branch: string) => string;
+  trunkBranchHint: string;
+  trunkBranchPrompt: string;
+  trunkBranchAborted: string;
+  initHooksActivated: string;
+  initHooksFailed: string;
 
   notInRepo: string;
 }
@@ -155,6 +164,7 @@ export const en: Locale = {
   initLangCurrent: (lang: string) => `Current language: ${lang}`,
   initLangPrompt: 'Language / 語言? (en / zh-TW) [press Enter to keep]: ',
   initSyncModeOptions: 'Sync mode:',
+  initSyncModeList: '  1. both       — push and pull enabled\n  2. push-only  — only push (repo → VS Code)\n  3. pull-only  — only pull (VS Code → repo)\n  4. none       — no sync (organize only)',
   initSyncModeCurrent: (mode: string) => `Current mode: ${mode}`,
   initSyncModePrompt: 'Choose sync mode (1–4) [press Enter to keep]: ',
   initComplete: (lang: string, mode: string) => `Config saved: lang=${lang}, syncMode=${mode}`,
@@ -162,6 +172,19 @@ export const en: Locale = {
   // sync mode gating
   syncModeDisabled: (command: string, mode: string) =>
     `${command} is disabled (syncMode: ${mode}). Run cam init to change it, or cam config show to inspect the current setting.`,
+
+  // trunk branch guards
+  trunkBranchWarningPull: (branch: string) =>
+    `  ⚠  You are on '${branch}'. cam pull into sync/ on a trunk branch will leave personal files untracked.`,
+  trunkBranchWarningPush: (branch: string) =>
+    `  ⚠  You are on '${branch}'. cam push from a trunk branch will push an empty sync/.`,
+  trunkBranchHint: '     Run this on your personal branch instead (e.g. personal/aaron).',
+  trunkBranchPrompt: '  Continue anyway? [y/N]: ',
+  trunkBranchAborted: '  Aborted.',
+
+  // init hooks
+  initHooksActivated: '  ✓ git hooks activated (.github/hooks)',
+  initHooksFailed: '  ! Could not configure git hooks (not in a git repo?)',
 
   // paths
   notInRepo: 'Not inside a copilot-asset-manager repo. Run cam from anywhere inside the repo.',
