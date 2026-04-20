@@ -82,13 +82,13 @@ export async function push(options: { yes: boolean; cleanup: CleanupMode }): Pro
   const branch = getCurrentBranch(repoRoot);
   if (isTrunkBranch(branch)) {
     console.log('');
-    console.log(chalk.yellow(`  ⚠  You are on '${branch}'. cam push from a trunk branch will push an empty sync/.`));
-    console.log(chalk.yellow('     Run this on your personal branch instead (e.g. personal/aaron).'));
+    console.log(chalk.yellow(t().trunkBranchWarningPush(branch)));
+    console.log(chalk.yellow(t().trunkBranchHint));
     console.log('');
     if (!options.yes) {
-      const answer = await ask('  Continue anyway? [y/N]: ');
+      const answer = await ask(t().trunkBranchPrompt);
       if (answer.toLowerCase() !== 'y') {
-        console.log('  Aborted.');
+        console.log(t().trunkBranchAborted);
         return;
       }
     }

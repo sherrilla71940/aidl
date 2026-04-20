@@ -78,12 +78,26 @@ export const zhTW: Locale = {
   initLangCurrent: (lang: string) => `目前語言：${lang}`,
   initLangPrompt: '語言 / Language? (en / zh-TW) [按 Enter 保留目前設定]：',
   initSyncModeOptions: '同步模式：',
+  initSyncModeList: '  1. both       — 推送與拉取皆啟用\n  2. push-only  — 僅推送（repo → VS Code）\n  3. pull-only  — 僅拉取（VS Code → repo）\n  4. none       — 不同步（僅整理）',
   initSyncModeCurrent: (mode: string) => `目前模式：${mode}`,
   initSyncModePrompt: '選擇同步模式 (1–4) [按 Enter 保留目前設定]：',
   initComplete: (lang: string, mode: string) => `設定已儲存：lang=${lang}, syncMode=${mode}`,
 
   // sync mode gating
   syncModeDisabled: (command: string, mode: string) => `${command} 已停用（syncMode: ${mode}）。執行 cam init 來變更，或執行 cam config show 檢查目前設定。`,
+
+  // trunk branch guards
+  trunkBranchWarningPull: (branch: string) =>
+    `  ⚠  您目前在 '${branch}' 分支。在主幹分支執行 cam pull 到 sync/ 會留下未追蹤的個人檔案。`,
+  trunkBranchWarningPush: (branch: string) =>
+    `  ⚠  您目前在 '${branch}' 分支。在主幹分支執行 cam push 將推送空的 sync/。`,
+  trunkBranchHint: '     請改在您的個人分支執行（例如 personal/aaron）。',
+  trunkBranchPrompt: '  仍要繼續嗎？[y/N]: ',
+  trunkBranchAborted: '  已取消。',
+
+  // init hooks
+  initHooksActivated: '  ✓ git hooks 已啟用（.github/hooks）',
+  initHooksFailed: '  ! 無法設定 git hooks（不在 git repo 內？）',
 
   // paths
   notInRepo: '不在 copilot-asset-manager repo 內。請在 repo 內任一位置執行 cam。',

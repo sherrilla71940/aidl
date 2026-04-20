@@ -26,10 +26,7 @@ export async function init(): Promise<void> {
   // Sync mode preference
   console.log('');
   console.log(t().initSyncModeOptions);
-  console.log('  1. both       — push and pull enabled');
-  console.log('  2. push-only  — only push (repo → VS Code)');
-  console.log('  3. pull-only  — only pull (VS Code → repo)');
-  console.log('  4. none       — no sync (organize only)');
+  console.log(t().initSyncModeList);
   console.log('');
   console.log(t().initSyncModeCurrent(config.syncMode));
   const modeAnswer = await ask(t().initSyncModePrompt);
@@ -55,9 +52,9 @@ export async function init(): Promise<void> {
     if (pathExists(hookScript)) {
       chmodSync(hookScript, 0o755);
     }
-    console.log(chalk.green('  ✓ git hooks activated (.github/hooks)'));
+    console.log(chalk.green(t().initHooksActivated));
   } catch {
-    console.log(chalk.yellow('  ! Could not configure git hooks (not in a git repo?)'));
+    console.log(chalk.yellow(t().initHooksFailed));
   }
 
   console.log('');
