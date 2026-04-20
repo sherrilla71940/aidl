@@ -7,6 +7,7 @@ import { walk, shouldSkip, pathExists, findAbsoluteMarkdownLinkTargets, ask } fr
 import { readConfig } from './config.js';
 import { t } from './i18n/index.js';
 import type { Manifest, SyncEntry } from './manifest.js';
+import { getCurrentBranch, isTrunkBranch } from './repo-checks.js';
 
 export type CleanupMode = 'report' | 'ask' | 'delete';
 
@@ -77,6 +78,22 @@ export async function push(options: { yes: boolean; cleanup: CleanupMode }): Pro
   }
 
   const repoRoot = findRepoRoot();
+
+  const branch = getCurrentBranch(repoRoot);
+  if (isTrunkBranch(branch)) {
+    console.log('');
+    console.log(chalk.yellow(`  ⚠  You are on '${branch}'. cam push from a trunk branch will push an empty sync/.`));
+    console.log(chalk.yellow('     Run this on your personal branch instead (e.g. personal/aaron).'));
+    console.log('');
+    if (!options.yes) {
+      const answer = await ask('  Continue anyway? [y/N]: ');
+      if (answer.toLowerCase() !== 'y') {
+        console.log('  Aborted.');
+        return;
+      }
+    }
+  }
+
   const syncDir = join(repoRoot, 'sync');
   const manifestPath = join(repoRoot, '.sync-manifest.json');
   const roots = getSyncRoots();
