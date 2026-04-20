@@ -24,8 +24,8 @@ Prerequisites: Node.js 18+ and npm. Run these in a terminal:
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-npm link                 # links `cam` on this machine
-cam init                 # set language + sync mode (Enter keeps defaults)
+npm link                 # once per machine — links `cam` globally
+cam init                 # once per machine — set language + sync mode
 cam pull                 # import existing VS Code assets into sync/
 git add . && git commit -m "add my ai config" && git push
 cam push                 # restore sync/ back into VS Code on this machine

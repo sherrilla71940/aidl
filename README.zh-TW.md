@@ -26,8 +26,8 @@
 git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
-npm link                 # 在這台機器上建立 `cam` 連結
-cam init                 # 設定語言與同步模式（直接按 Enter 可保留預設值）
+npm link                 # 每台機器執行一次 — 全域連結 `cam`
+cam init                 # 每台機器執行一次 — 設定語言與同步模式
 cam pull                 # 把現有的 VS Code 資源匯入 sync/
 git add . && git commit -m "add my ai config" && git push
 cam push                 # 把 sync/ 還原回這台機器的 VS Code
