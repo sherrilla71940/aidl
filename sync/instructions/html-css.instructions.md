@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.{html,css,scss,sass}"
+applyTo: "**/*.{html,cshtml,css,scss,sass}"
 ---
 
 # HTML / CSS / SCSS Standards
