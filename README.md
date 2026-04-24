@@ -16,6 +16,8 @@ Use this repo as the Git-tracked home for your personal Copilot workflow library
 
 Both `sync/` and `local/` are yours. `sync/` is for assets you want to move between this repo and VS Code; `local/` is for repo-only notes, drafts, and references. You can nest folders inside either one.
 
+> **Skills must stay flat.** Keep each skill as a direct subfolder of `sync/skills/` (e.g. `sync/skills/my-skill/SKILL.md`). VS Code discovers skills by scanning `~/.copilot/skills/<name>/SKILL.md` — it does not recurse into deeper subfolders, so a skill nested at `sync/skills/category/my-skill/SKILL.md` would not load. Instructions and agents support arbitrary nesting.
+
 ## Quick start
 
 Prerequisites: Node.js 18+ and npm. Run these in a terminal:
