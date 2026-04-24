@@ -18,7 +18,7 @@
 
 `sync/` 和 `local/` 都是你的。`sync/` 用來放你想在 repo 和 VS Code 之間來回同步的資源；`local/` 用來放只想留在 repo 的筆記、草稿和參考文件。兩邊都可以自由再分資料夾。
 
-> **Skills 必須保持平層結構。** 每個 skill 必須是 `sync/skills/` 的直接子資料夾（例如 `sync/skills/my-skill/SKILL.md`）。VS Code 在 runtime 探索 skill 的方式是掃描 `~/.copilot/skills/<name>/SKILL.md`，不會遞迴進入更深的子資料夾。因此若 skill 放在 `sync/skills/category/my-skill/SKILL.md` 這樣的巢狀路徑，VS Code 就無法載入它。Instructions 和 agents 則支援任意深度的巢狀結構。
+> **只有 Skills 必須保持平層結構，其他類型可以自由分資料夾。** 每個 skill 必須是 `sync/skills/` 的直接子資料夾（例如 `sync/skills/my-skill/SKILL.md`）。VS Code 在 runtime 探索 skill 的方式是掃描 `~/.copilot/skills/<name>/SKILL.md`，不會遞迴進入更深的子資料夾；因此若 skill 放在 `sync/skills/category/my-skill/SKILL.md` 這樣的巢狀路徑，可能無法被載入。Instructions、agents 和 prompts 則是以副檔名遞迴掃描方式探索，巢狀子資料夾完全沒問題。
 
 ## 快速開始
 
