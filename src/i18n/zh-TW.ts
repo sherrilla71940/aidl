@@ -56,7 +56,7 @@ export const zhTW: Locale = {
   statusRunClean: '執行 cam clean，將孤立項目從 VS Code 與 manifest 中移除。',
   statusAgentSection: (count: number) => `代理程式（${count}）— 已同步到使用者層級 .copilot/agents：`,
   statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
-  statusAgentHint: '若要直接從 repo 載入，可在 VS Code settings.json 的 "chat.agentFilesLocations" 下加入 "sync/agents": true',
+  statusAgentHint: '推送後 agents 會自動從使用者層級 .copilot/agents 被探索。請勿在使用 cam push 的同時設定 chat.agentFilesLocations 指向 sync/agents，這樣會在 agent 選擇器中造成重複。',
 
   // clean
   cleanHeading: '正在清理孤立項目...',

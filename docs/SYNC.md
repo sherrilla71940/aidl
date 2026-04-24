@@ -17,7 +17,7 @@ This document describes the internal logic of the `cam` CLI (`src/`). For usage,
 
 Repo workspace assets live under `.github/` and are not part of `pull` or `push`. `pull` imports into `sync/` by default, or `local/` when requested. `push` only syncs `sync/`. `local/` is never synced to VS Code.
 
-Note on agents: `sync/agents/` is normal user-level agent sync. `cam push` copies those files into user-level `.copilot/agents`. If you want VS Code to load agents directly from the repo folder while editing them in place, use `"chat.agentFilesLocations": { "sync/agents": true }` in `settings.json` and reload the window.
+Note on agents: `sync/agents/` is normal user-level agent sync. `cam push` copies those files into user-level `.copilot/agents`; VS Code discovers them from there automatically. Do not set `"chat.agentFilesLocations": { "sync/agents": true }` alongside `cam push` — it causes every agent to appear twice in the chat agent picker. That setting is only for loading agents directly from the repo folder instead of pushing them.
 
 If a copied agent exists in user-level storage but does not appear in VS Code, treat that as a discovery or parsing problem in VS Code rather than a `cam push` path-mapping issue.
 

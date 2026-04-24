@@ -42,13 +42,9 @@ cam push                 # restore sync/ back into VS Code on this machine
 
 With Settings Sync configured to include Prompts and Instructions, VS Code can roam those user-level prompt and instruction assets across devices. Agents, skills, and hooks are still managed as file-based user assets, so this repo remains the source of truth for full restore and review.
 
-`sync/agents/` is handled the same way as the other non-prompt asset types: `cam push` copies it into the user-level `.copilot/agents` directory. To have VS Code load agents directly from this repo while you edit them in place, set this in `settings.json` and reload the window:
+`sync/agents/` is handled the same way as the other non-prompt asset types: `cam push` copies it into the user-level `.copilot/agents` directory. After pushing, VS Code discovers agents from there automatically — no extra settings needed.
 
-```jsonc
-"chat.agentFilesLocations": {
-  "sync/agents": true
-}
-```
+Do not set `chat.agentFilesLocations` to point at `sync/agents` when using `cam push`. Doing so causes every agent to appear twice in the chat agent picker. That setting is only useful if you want VS Code to load agents directly from this repo folder in place of (not in addition to) pushing them.
 
 If a synced agent file exists under `.copilot/agents` but does not appear in VS Code, treat that as a VS Code discovery issue and use Chat Diagnostics to inspect loaded custom agents and any parse errors.
 

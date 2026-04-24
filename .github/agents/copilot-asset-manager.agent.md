@@ -70,6 +70,6 @@ git clone https://github.com/YOUR_USERNAME/copilot-asset-manager
 cd copilot-asset-manager
 npm install
 cam pull
-# Optional for live repo-backed agent discovery while editing in-place:
-# "chat.agentFilesLocations": { "sync/agents": true }
+# Do NOT set chat.agentFilesLocations to sync/agents when using cam push —
+# it causes every agent to appear twice in the chat agent picker.
 ```

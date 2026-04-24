@@ -44,13 +44,9 @@ cam push                 # 把 sync/ 還原回這台機器的 VS Code
 
 若 VS Code Settings Sync 已設定同步 Prompts and Instructions，VS Code 可以在裝置之間漫遊這些使用者層級的 prompt 與 instruction 資源。至於 agents、skills、hooks，仍建議以這個 repo 作為完整還原與審查的真實來源。
 
-`sync/agents/` 的處理方式和其他非 prompt 類型相同：`cam push` 會把它複製到使用者層級的 `.copilot/agents` 目錄。若你想在 repo 內直接編輯並讓 VS Code 直接從這裡載入 agent，請在 `settings.json` 設定以下內容，然後重新載入視窗：
+`sync/agents/` 的處理方式和其他非 prompt 類型相同：`cam push` 會把它複製到使用者層級的 `.copilot/agents` 目錄。推送後，VS Code 會自動從該位置探索 agents，不需要額外設定。
 
-```jsonc
-"chat.agentFilesLocations": {
-  "sync/agents": true
-}
-```
+推送時請勿在 `settings.json` 設定 `chat.agentFilesLocations` 指向 `sync/agents`。這樣做會讓每個 agent 在 Chat agent 選擇器中出現兩次。此設定僅適用於你想讓 VS Code 直接從 repo 資料夾載入 agents，而不透過推送的情況。
 
 如果同步後的 agent 檔案已經存在於 `.copilot/agents`，但仍未出現在 VS Code，請把它視為 VS Code 的 discovery 問題，並用 Chat Diagnostics 檢查已載入的 custom agents 與任何解析錯誤。
 
