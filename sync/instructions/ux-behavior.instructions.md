@@ -2,9 +2,7 @@
 applyTo: "**/*.{html,cshtml,css,scss,sass,ts,tsx,js,jsx,mts}"
 ---
 
-# UX Behavior Standards
-
-## UX behavior
+# UX Guidelines
 
 - When opening a modal dialog, move focus into it, trap focus within it while open, prevent interaction with background content, and restore focus to the triggering element on close.
 - When opening a non-modal drawer or interactive popover, manage focus intentionally and restore focus to the triggering element on close when it improves keyboard and screen-reader usability.

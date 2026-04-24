@@ -2,9 +2,7 @@
 applyTo: "**/*.{ts,tsx,mts}"
 ---
 
-# TypeScript Standards
-
-## TypeScript-specific
+# TypeScript Guidelines
 
 - For new TypeScript projects, default to `"strict": true` (including `strictNullChecks`). For legacy projects, keep existing settings unless asked to harden.
 - For non-exported local functions, omit explicit return types when TypeScript infers a simple and unambiguous type such as `string`, `number`, `boolean`, `void`, or a plainly inferred object or array shape.
