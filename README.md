@@ -14,9 +14,9 @@ Use this repo as the Git-tracked home for your personal Copilot workflow library
 | `sync/` | Your prompts, skills, agents, instructions, and hooks | Yes - push and pull |
 | `local/` | Private guides, notes, anything you want | No |
 
-Both `sync/` and `local/` are yours. `sync/` is for assets you want to move between this repo and VS Code; `local/` is for repo-only notes, drafts, and references. You can nest folders inside either one.
+Both `sync/` and `local/` are yours. `sync/` is for assets you want to move between this repo and VS Code; `local/` is for repo-only notes, drafts, and references.
 
-> **Skills must stay flat; everything else can be nested freely.** Keep each skill as a direct subfolder of `sync/skills/` (e.g. `sync/skills/my-skill/SKILL.md`). VS Code discovers skills by scanning `~/.copilot/skills/<name>/SKILL.md` — it does not recurse into deeper subfolders, so a skill nested at `sync/skills/category/my-skill/SKILL.md` may not load. Instructions, agents, and prompts are discovered by file extension recursively, so subfolders work fine for those.
+> **Keep `sync/` flat — do not create subfolders inside `sync/skills/`, `sync/agents/`, `sync/instructions/`, `sync/prompts/`, or `sync/hooks/`.** VS Code user-level discovery does not recurse subdirectories for any of these asset types. Files nested under a subfolder will be copied by `cam push` but will not be loaded by VS Code. `local/` has no such restriction and can be organized however you like.
 
 ## Quick start
 
