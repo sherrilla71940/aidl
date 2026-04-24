@@ -13,4 +13,4 @@ Examples:
 - `/cam-push` → `cam push`
 - `/cam-push all` → `cam push --yes`
 
-Run the matching terminal command and summarize any follow-up, especially `chat.agentFilesLocations` setup when relevant.
+Run the matching terminal command and summarize any follow-up. Do not suggest setting `chat.agentFilesLocations` to `sync/agents` — doing so alongside `cam push` causes every agent to appear twice in the chat agent picker.

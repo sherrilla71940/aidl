@@ -142,7 +142,8 @@ export const en: Locale = {
   statusRunClean: 'Run cam clean to remove orphaned entries from VS Code and the manifest.',
   statusAgentSection: (count: number) => `Agents (${count}) — synced to user-level .copilot/agents:`,
   statusAgentFile: (rel: string) => `  [AGENT] ${rel}`,
-  statusAgentHint: 'Optional for live repo loading: add "sync/agents": true under "chat.agentFilesLocations" in VS Code settings.json',
+  statusAgentHint: 'Agents are auto-discovered from user-level .copilot/agents after push. Do not set chat.agentFilesLocations to sync/agents alongside cam push — it causes duplicates in the agent picker.',
+  // pushAgentNotice and pushAgentSetting are retained for i18n parity but are not currently emitted by push.
 
   // clean
   cleanHeading: 'Cleaning orphaned entries...',

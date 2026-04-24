@@ -17,7 +17,7 @@
 
 Repo 的 workspace 資源放在 `.github/` 下，不屬於 `pull` 或 `push` 的範圍。`pull` 預設匯入到 `sync/`，需要時也可指定匯入到 `local/`。`push` 只同步 `sync/`。`local/` 永遠不會同步到 VS Code。
 
-關於 agents 的補充：`sync/agents/` 是標準的使用者層級 agent 同步。`cam push` 會把這些檔案複製到使用者層級 `.copilot/agents`。如果你想在 repo 裡直接編輯 agent，並讓 VS Code 直接從該資料夾載入，可在 `settings.json` 使用 `"chat.agentFilesLocations": { "sync/agents": true }`，然後重新載入視窗。
+關於 agents 的補充：`sync/agents/` 是標準的使用者層級 agent 同步。`cam push` 會把這些檔案複製到使用者層級 `.copilot/agents`；VS Code 會自動從該位置探索 agents。請勿在使用 `cam push` 的同時設定 `"chat.agentFilesLocations": { "sync/agents": true }`，這樣會讓每個 agent 在 Chat agent 選擇器中出現兩次。此設定僅適用於你想讓 VS Code 直接從 repo 資料夾載入 agents 而非透過推送的情況。
 
 如果某個已複製到使用者層級儲存位置的 agent 沒有出現在 VS Code，應把它視為 VS Code discovery 或解析問題，而不是 `cam push` 的路徑對應問題。
 
