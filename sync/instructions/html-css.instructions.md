@@ -6,12 +6,6 @@ applyTo: "**/*.{html,cshtml,css,scss,sass}"
 
 ## HTML / CSS / SCSS
 
-- Follow semantic HTML and accessibility guidance (WCAG 2.1 AA).
-- Consider ARIA roles, keyboard focus management, and semantic landmarks.
-- Ensure keyboard parity for custom interactive elements: they must be focusable and keyboard-operable (`Enter`/`Space`).
-- Avoid positive `tabindex` values (`tabindex > 0`).
-- Never remove focus indicators; prefer styling with `:focus-visible`.
-- Use explicit form labeling by default (`<label for>` with a unique control `id`).
 - Use the project's established styling approach consistently. If no clear local convention exists, default to BEM-style (`block__element--modifier-value`), class-based selectors. Do not mix naming systems arbitrarily within the same feature.
 - Use BEM-style classes for component structure and styling when no stronger local convention exists.
 - Prefer `data-*` attributes for JavaScript hooks and behavior targeting so styling and behavior concerns stay distinct.
