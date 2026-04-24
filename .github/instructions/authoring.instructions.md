@@ -17,7 +17,7 @@ Assets in `sync/` are synced to VS Code via the sync scripts. These repo-specifi
 | Instructions | `sync/instructions/` |
 | Hooks | `sync/hooks/` |
 
-Nested folders within these directories are supported and sync correctly.
+Do not create subfolders inside any of these directories. VS Code user-level discovery does not recurse subdirectories — nested files will be copied by `cam push` but will not be loaded by VS Code. Keep every asset as a direct child of its parent directory (e.g. `sync/skills/my-skill/SKILL.md`, not `sync/skills/category/my-skill/SKILL.md`).
 
 ## After creating or editing an asset
 
