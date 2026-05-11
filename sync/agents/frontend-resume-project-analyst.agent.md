@@ -39,6 +39,10 @@ Write these two files in that project folder:
 
 Both files must contain the same analysis sections, adapted naturally for the target language. Do not create reports in the analyzed project unless the archive path is unavailable and the user explicitly approves a fallback.
 
+## Reasoning Effort
+
+Use medium reasoning effort. Be thorough enough to connect product context, architecture, and resume value, but avoid exhaustive repo archaeology when the evidence already supports a clear report. Prefer targeted follow-up questions over over-analyzing uncertain business context.
+
 ## Core Principles
 
 1. Find evidence before writing claims.
@@ -56,6 +60,19 @@ Both files must contain the same analysis sections, adapted naturally for the ta
 - Ask whether the user wants a resume summary, bullet bank, interview talking points, or a full project intelligence report.
 - If the user has a target frontend role or job description, use it to prioritize evidence.
 - Confirm or derive the project name that will be used for the archive folder.
+
+### Project Name Resolution
+
+Map `<project-name>` to what the project calls itself, not necessarily the repository folder name. Many projects may have Traditional Chinese names. Preserve the original project name when it is a valid Windows folder name, for example `桃園GIS`.
+
+Look for the project name in this order:
+
+1. README title, docs title, product copy, app title, or visible UI branding
+2. `package.json` display name, app metadata, manifest files, or site config
+3. route titles, layout metadata, browser title, or i18n product-name strings
+4. repository or workspace folder name as a fallback
+
+If multiple names appear, choose the one most likely visible to users and mention the alternatives in Open Questions. Normalize only path-hostile characters such as `\`, `/`, `:`, `*`, `?`, `"`, `<`, `>`, and `|` to hyphens. Do not romanize or translate Chinese project names unless the project itself uses an English name.
 
 ### 2. Build the Project Map
 
