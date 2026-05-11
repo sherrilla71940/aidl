@@ -1,202 +1,156 @@
-# Frontend Resume Report: Taoyuan Sewer Cloud Smart Management System
+# Frontend Resume Report: 桃園市下水道雲端智慧管理系統
+
+Reviewed on: 2026-05-11
 
 ## 1. Project Snapshot
 
-- **Name / working title:** 桃園市下水道雲端智慧管理系統 / Taoyuan Sewer Cloud Smart Management System
-- **Product category:** Municipal public-works operations platform, GIS dashboard, and workflow management system
-- **One-sentence product description:** An ASP.NET MVC web application for managing Taoyuan sewer, rainwater, construction, inspection, monitoring, and fertilizer/slurry station operations through role-based dashboards, maps, forms, reports, and data visualizations.
-- **Confirmed users or likely audience:** Taoyuan municipal water/sewer staff, system administrators, contractors, supervisors, district offices, fertilizer/slurry companies, guild users, and inspection/maintenance vendors. This is inferred from role names and menu visibility checks in the MVC layout and controllers.
-- **Primary problem solved:** Centralizes sewer and rainwater asset management, field reporting, GIS inspection, construction progress, monitoring, reporting, and station operation workflows that would otherwise be spread across manual records, spreadsheets, GIS tools, and separate vendor systems.
+- Name or working title: 桃園市下水道雲端智慧管理系統
+- Product category: Municipal infrastructure GIS and sewer/water operations management web system
+- One-sentence product description: A role-based ASP.NET MVC web application for managing Taoyuan sewer, rainwater, inspection, construction, water-fee, permit, repair, and fertilizer-station workflows through GIS maps, dashboards, data imports, and operational forms.
+- Confirmed users or likely audience: Municipal staff, sewer/rainwater administrators, BOT/contractor users, supervisors, construction contractors, water plant/slurry administrators, inspection contractors, district office users, and public-facing applicants.
+- Primary problem solved: Centralizes geospatial infrastructure data and operational workflows that would otherwise require separate map tools, spreadsheets, paper/PDF forms, and manual status tracking.
 
 ## 2. Evidence Reviewed
 
-### Key Files And Folders Inspected
+- Key files and folders inspected: `TaoyuanSewer2/Views`, `TaoyuanSewer2/Scripts`, `TaoyuanSewer2/Content/Styles`, `TaoyuanSewer2/Controllers`, `TaoyuanSewer2/App_Start`, `TaoyuanSewer2/packages.config`, `TaoyuanSewer2/TaoyuanSewer2.csproj`, `TaoyuanSewer2/Web.config`, and root/project package metadata.
+- Representative files reviewed: shared layouts, `Views/Map/Index.cshtml`, `Views/Home/QuickNavigation.cshtml`, inspection manhole map/statistics scripts, water-fee management scripts, switching-valve document upload scripts, fertilizer-station scheduling scripts, route/API/auth configuration, and map/auth controllers.
+- Searches used: project metadata discovery, frontend stack search, GIS/map/chart/DataTable search, role/auth search, upload/download/Excel/PDF workflow search, TypeScript compiled-output search, and backend API/controller search.
+- Areas not deeply inspected: full controller implementation details, database schema/Entity Framework model internals, every generated JavaScript file under `Scripts/CompileTS`, every CSS rule, and production deployment behavior.
+- Security handling note: configuration files contained sensitive values; this report deliberately records only non-sensitive architecture facts and does not reproduce secrets, tokens, API keys, connection strings, or credentials.
 
-- `TaoyuanSewer2/Views/Shared/_Layout.cshtml` for product name, global frontend dependencies, role-based navigation, analytics, and `SitePath` setup.
-- `TaoyuanSewer2/tsconfig.json`, `TaoyuanSewer2/package.json`, root `package.json`, and `TaoyuanSewer2/gulpfile.js` for TypeScript and build configuration.
-- `TaoyuanSewer2/App_Start/BundleConfig.cs`, `TaoyuanSewer2/App_Code/HtmlHelpers.cs`, `.gitlab-ci.yml` for bundling, versioned asset loading, and IIS/MSBuild publish flow.
-- `TaoyuanSewer2/Scripts/Map/Map.ts` and `TaoyuanSewer2/Scripts/Map/Layer.ts` for the GIS map architecture, sewer layer controls, bounds filtering, coordinate conversion, and street-view integrations.
-- `TaoyuanSewer2/Scripts/App/APPUNDERCON.ts`, `APPFAC.ts`, and related search results for construction progress charts, plant monitoring, 3D model links, CCTV/video workflows, and realtime water-quality dashboards.
-- `TaoyuanSewer2/Scripts/FertilizerStation/ScheduledFertilizer.ts`, `Business_DailyFertilizerManagement.ts`, `Views/FertilizerStation/Business_DailyFertilizerManagement.cshtml`, and `Content/Styles/FertilizerStation/Business_DailyFertilizerManagement.css` for fertilizer/slurry scheduling and the newer business daily management UI.
-- `TaoyuanSewer2/Controllers/FertilizerStationController.cs` and `TaoyuanSewer2/Controllers/SlurryController.cs` for frontend/API workflow boundaries and role protection.
-- `TaoyuanSewer2/Scripts/Common.ts` for shared browser utilities, image preview/EXIF handling, Excel download helpers, WKT/GIS conversion usage, and cross-page UI helpers.
+## 3. Stack and Configuration
 
-### Searches And Commands Used
+- Frontend framework/model: ASP.NET MVC Razor server-rendered views with page-specific TypeScript/JavaScript modules and compiled JavaScript under `Scripts/CompileTS`.
+- Language and build tooling: TypeScript is present in root and project `package.json`; source TypeScript files live under `TaoyuanSewer2/Scripts/**` and compiled JavaScript is checked into `TaoyuanSewer2/Scripts/CompileTS/**`.
+- UI libraries and assets: jQuery 3.7.1, jQuery UI, Bootstrap, DataTables, FooTable, Select2, AlertifyJS, jsPanel, ViewerJS, Air Datepicker, Font Awesome, Chart.js, Google Charts, ExcelParser/xlsx, JSZip/FileSaver, Google Maps, GMapEX, ArcGIS link helpers, Turf, and custom CSS under `Content/Styles`.
+- Layout and design structure: shared Razor layouts define global asset loading, product branding, responsive viewport settings, common services, analytics, role-aware navigation, and `SitePath` for application-root-relative URLs.
+- State and data flow: mostly page-local state in TypeScript modules, jQuery event handlers, `fetch` calls to MVC/Web API endpoints, form posts, and global utility objects such as `Common`, `ExcelParser`, and map-layer helpers.
+- Routing and API boundaries: MVC default route points to `Map/Index`; Web API route template is `api/{controller}/{id}`; page scripts call both MVC controller routes and Web API endpoints using `SitePath`.
+- Backend context relevant to frontend work: .NET Framework 4.8, ASP.NET MVC 5/Web API, Razor, Entity Framework 6, ASP.NET Identity/Owin cookie auth, role-based authorization attributes, repository-style data access, IIS-oriented web configuration, static-content caching, Application Insights, custom security headers, Excel/PDF/document-generation libraries, and external integrations for maps, SMS/mail, LINE Bot, and municipal data services.
+- Deployment/runtime clues: IIS/IIS Express configuration, Web.Release/Web.Debug transforms, `.gitlab-ci.yml` at repo root, static content cache headers, CSP/security headers, Application Insights modules, and MSBuild-style `.csproj` project structure.
+- Tests and quality gates: no dedicated frontend test runner, E2E test suite, Storybook, or accessibility test setup was found in the sampled files.
 
-- File discovery through workspace file search for `package.json`, MVC config, views, scripts, styles, and solution/project files.
-- Workspace searches for product naming, GIS/map terms, charting, AJAX/fetch usage, fertilizer/slurry workflows, role checks, and accessibility attributes.
-- Shell footprint counts with `find` because `rg` was not available in the bash terminal:
-  - 253 TypeScript files under `TaoyuanSewer2/Scripts`
-  - 369 Razor views under `TaoyuanSewer2/Views`
-  - 24 CSS files under `TaoyuanSewer2/Content/Styles`
-  - 19 fertilizer-station TypeScript files
-  - 10 statistics views
+## 4. Frontend Architecture Summary
 
-### Areas Not Inspected Deeply
+The application uses a server-rendered MVC architecture. Razor views compose layout, navigation, partial panels, page markup, and server-side role checks, while TypeScript modules add client-side interactivity per workflow. This is not a React/Vue SPA; it is a large multi-page operational application with rich JavaScript behavior layered on top of MVC pages.
 
-- I did not run the application or perform browser testing.
-- I did not inspect every controller, every generated JavaScript file under `Scripts/CompileTS`, or all 369 views.
-- I did not validate production metrics, user counts, load times, or business outcomes; those should be confirmed by the user before using stronger resume claims.
+The default route opens the GIS map. `Views/Map/Index.cshtml` is the main map shell and loads many compiled modules for map layers, legends, toolbox controls, facility details, statistics panels, sewage/rain layers, building connection layers, reference layers, and cadastral/map services. The view also renders multiple statistics partials based on user roles, which makes the GIS page both a map and an operational dashboard.
 
-## 3. Stack And Configuration
+Data flows from page controls to TypeScript event handlers, then to backend endpoints through `fetch`, form posts, or helper utilities. Examples include inspection result queries, sewer-layer lookup, water-fee detail search/import/export, fertilizer booking mutations, and document uploads. UI state is typically held in page-level variables such as current search results, selected map layer state, booking lists, chart instances, and upload validation results.
 
-- **Frontend model:** ASP.NET MVC 5 Razor views with page-specific TypeScript compiled to JavaScript and loaded through MVC sections.
-- **Language:** TypeScript and JavaScript. The app-level TypeScript package is `5.8.2`; the repository root also has a TypeScript dependency at `^4.6.2`.
-- **Compilation target:** `tsconfig.json` targets ES5, uses DOM and ES2018 libraries, CommonJS modules, and emits compiled files to `Scripts/CompileTS`.
-- **UI libraries:** jQuery 3.7.1, jQuery UI, Bootstrap, Air Datepicker, AlertifyJS, jsPanel, Select2, DataTables, FooTable, ViewerJS, Font Awesome, Chart.js, Google Charts, JSZip, FileSaver, and an Excel parser/xlsx integration.
-- **GIS and maps:** Google Maps JavaScript API plus a local `GMapEX` abstraction, NLSC WMTS layers, ArcGIS REST service layers, WKT parsing, TWD97/WGS84 coordinate conversion, marker clustering, street-view pipe/manhole overlays, layer toggles, and map legend behavior.
-- **Data flow:** Page scripts use `fetch`, jQuery event handlers, `FormData`, local storage, query strings, and ASP.NET Web API endpoints under `SitePath`.
-- **Styling:** Razor-linked CSS files in `Content/Styles`, Bootstrap/vendor CSS, page-specific CSS, and responsive media queries.
-- **Quality and delivery:** GitLab CI restores NuGet packages and publishes the ASP.NET solution with MSBuild to IIS file-system targets for `develop`, `hotfix`, and a test branch. Gulp minifies compiled JavaScript and bundles map scripts.
-- **Monitoring/analytics:** The layout references Google Analytics and Application Insights is present in the project packages/configuration.
+The strongest architectural pattern is pragmatic modularization by domain: `Scripts/InspectionManhole`, `Scripts/WaterFeeMgt`, `Scripts/FertilizerStation`, `Scripts/SwitchingValve`, `Scripts/Map`, and many other domain folders mirror views/controllers. This makes feature ownership discoverable in a large legacy MVC codebase, although the architecture still carries typical trade-offs: global utilities, inline layout dependencies, and page-level state instead of a centralized typed client/data layer.
 
-## 4. Architecture Summary
+## 5. Backend Context Relevant to Frontend
 
-The frontend is organized as a server-rendered MVC application where Razor views define page structure, layout selection, role-aware navigation, and script/style entry points. TypeScript files under `Scripts` implement page behavior and compile into `Scripts/CompileTS`; views load the compiled page script through `@Url.VersionedContent(...)`, which appends a last-modified timestamp to reduce stale browser cache risk.
+- API and rendering boundaries: Razor views render initial pages and role-specific navigation; JavaScript calls MVC/Web API endpoints for dynamic data, imports, uploads, exports, and map-layer operations.
+- Auth and roles: ASP.NET Identity/Owin cookie authentication is configured; shared layouts and controllers use role checks such as `SystemAdmin`, `Sewage`, `RainWater`, `BOT`, `Supervisor`, `PCM`, `Constructors`, `SlurryAdmin`, `WaterPlantAdmin`, and others to conditionally show navigation or guard routes.
+- Permission behavior affecting UI: custom `AuthorizePlus` and `AuthorizePlusApi` attributes enforce login and required password-change behavior; API unauthorized responses return JSON messages that frontend flows can surface.
+- Data/integration constraints shaping UI: GIS layers depend on map APIs and geospatial helpers; inspection and water-fee pages rely on backend query endpoints; upload pages send `FormData`; Excel import/export uses client-side parsing plus server-side validation; PDF/document flows depend on server-generated files; fertilizer booking enforces backend-backed special dates, daily limits, license/plate eligibility, and ban windows.
+- Confirmed backend facts: .NET Framework 4.8, ASP.NET MVC/Web API packages, Entity Framework 6, ASP.NET Identity/Owin, Web API routing, MVC routing to `Map/Index`, and security header/static content configuration are present.
+- Inferred backend facts: SQL Server is likely the main persistence layer because Entity Framework SQL Server packages and connection string structure are present, but production database topology should not be claimed without confirmation.
+- Do not claim without confirmation: personal ownership of backend APIs, production deployment responsibility, database design responsibility, official user counts, availability/SLA, or security remediation ownership.
 
-The application uses a shared shell in `_Layout.cshtml` for global vendors, navigation, authenticated role checks, and global `SitePath`. Feature areas are split by route and domain, including Map, App, FertilizerStation, Statistics, InspectionManhole, RainMaintenance, WaterFeeMgt, SwitchingValve, SewerLayer, and many others.
+## 6. Product and User Story
 
-Data flows from page scripts to MVC/Web API endpoints with `fetch` and JSON payloads. Several workflows use browser state for cross-page navigation, such as storing selected construction or plant data in `localStorage` before moving to a detail, map, chart, or video page. The map subsystem is a major shared integration boundary: page scripts initialize Google Maps, then use `GMapEX` and layer modules to draw infrastructure assets, filter visible geometry, convert coordinate systems, and attach street-view behavior.
+This project appears to serve city sewer and water operations teams who need to inspect assets, manage construction and repair workflows, track sewer/rainwater infrastructure, review applications, handle water-fee records, upload official documents, and schedule fertilizer/slurry station operations.
 
-The newer `Business_DailyFertilizerManagement.ts` screen is more modular and typed than older jQuery-heavy scripts. It defines interfaces for API response models, centralizes page references in `PageRefs`, maintains `PageState`, uses an `AbortController` to cancel stale requests, renders a monthly calendar from API summaries, and includes keyboard/focus behavior for popovers and modals.
+The frontend matters because many workflows are high-friction operational tasks: map-based facility lookup, role-specific dashboards, large forms, file uploads, Excel validation, chart-based inspection summaries, and date/eligibility-based scheduling. A good frontend reduces the need for users to switch between GIS software, spreadsheets, paper documents, email, and manual status trackers.
 
-## 5. Product And User Story
+The project also has mobile/app-facing clues under `Views/App` and `Scripts/CompileTS/App`, plus responsive viewport settings and mobile-specific behavior in inspection map scripts. This suggests the system supports both office workflows and field/operational workflows, but actual mobile usage should be confirmed.
 
-This product supports municipal operations for sewer and rainwater infrastructure. The UI helps different user groups find asset locations, manage construction and inspection workflows, review facility status, submit or update records, check reports, export data, and monitor water-quality or station data.
+## 7. Impressive Frontend Evidence
 
-The frontend matters because much of the domain is spatial, operational, and time-sensitive. Users need map-based asset discovery, construction progress location, field photo handling, date-based scheduling, role-specific menus, dashboard summaries, and reliable forms that can prevent invalid or out-of-policy submissions. The fertilizer/slurry station area adds a high-stakes scheduling layer: vehicle/license validity, daily and monthly quota limits, special closure/makeup dates, company categories, and actual-versus-reserved amounts all need to be visible and enforceable in the UI.
+- GIS-first operational dashboard: `Views/Map/Index.cshtml` loads Google Maps, GMapEX, ArcGIS link helpers, SewerEX, map-layer modules, map legend/toolbox/facility detail modules, and role-specific statistics partials. This supports a resume claim around integrating geospatial infrastructure layers into an operational dashboard.
+- Layered map interactions: `Scripts/InspectionManhole/InspectionManholeMap.ts` manages sewer/BOT sewer layer toggles, catch-basin/connection-pipe layers, bounds-based BOT layers, marker/polyline drawing callbacks, facility search by pipe/manhole/connection-pipe/catch-basin number, mobile search-panel behavior, and inspection data overlays.
+- Inspection analytics: `Scripts/InspectionManhole/InspectionManholeStatistics.ts` loads Google Charts, queries filtered inspection results, splits internal/external manhole inspection records, computes normal/abnormal counts, renders chart/table/map views, and redraws visualizations when tabs/maps change.
+- Excel import/export and validation: `Scripts/WaterFeeMgt/WaterFeeChargeRecordManagement.ts` supports search filters, Excel export, batch import, file validation, error-list export, water-number checks, and create/edit flows. `Scripts/Home/index.ts` parses Excel sewer-layer imports and validates domain-specific columns before upload.
+- Document/PDF workflow integration: Switching-valve views and scripts show multi-file PDF uploads with `FormData`, generated application PDF instructions, case-list navigation, and server response handling.
+- Fertilizer-station scheduling rules: `Scripts/FertilizerStation/ScheduledFertilizer.ts` contains datepicker customization, special open/close date handling, booking windows, weekday restrictions, daily guild/personal quantity limits, license expiration checks, banned-plate warnings, booking edits/deletes, and report export flows.
+- Role-aware product navigation: shared layouts conditionally render navigation for many roles and domains, which is meaningful frontend work because UI visibility, routing, and user journeys differ by permission and operational responsibility.
+- Legacy modernization surface: TypeScript source files are used in a large ASP.NET MVC/jQuery application, giving evidence for incrementally adding typed frontend structure without replacing the server-rendered architecture.
+- Performance/security-adjacent frontend delivery: assets use versioned content helpers, static content caching is configured, CSP/security headers are present, and script nonces appear throughout layouts/views. These are useful supporting claims if the user can confirm contribution.
 
-## 6. Impressive Frontend Evidence
+## 8. Biggest Frontend Challenges
 
-### GIS-Heavy Infrastructure Map Experience
+- Coordinating many map layers, overlays, searches, and role-specific dashboard panels without a SPA framework.
+- Keeping UI behavior consistent across server-rendered Razor, compiled TypeScript, jQuery plugins, and global utility services.
+- Handling large operational forms and file workflows where users expect clear validation, visible errors, and reliable retry behavior.
+- Preserving correct application-relative URLs through `SitePath`, important for IIS virtual-directory deployments.
+- Maintaining role-specific UI behavior across a broad permission model.
+- Building user-friendly workflows for data-heavy government operations where Excel/PDF imports, exports, and official documents are core tasks.
+- Managing accessibility and maintainability risks typical of older jQuery/Razor codebases with heavy plugin usage and some inline/semantic limitations.
 
-Evidence: `Scripts/Map/Map.ts`, `Scripts/Map/Layer.ts`, map-related search results across App, Statistics, Inspection, Rain, SewerLayer, and maintenance scripts.
+## 9. Resume Bullet Bank
 
-- Initializes Google Maps with custom controls, street-view behavior, coordinate display, right-click coordinate copying, and map idle updates.
-- Integrates a custom `GMapEX` layer around Google Maps for sewer-layer graphics, NLSC WMTS basemaps, ArcGIS REST layers, WKT geometry, TWD97 conversion, and marker clustering.
-- Implements role-aware layer availability, showing or hiding foul/rainwater layers based on authenticated role groups.
-- Handles performance-sensitive map rendering by filtering sewer-layer graphics to visible bounds.
+### Conservative bullets based on confirmed evidence
 
-### Operational Dashboards And Data Visualization
+- Built and maintained TypeScript-backed Razor workflows for a municipal sewer management platform, adding client-side behavior for GIS maps, inspection analytics, water-fee management, document uploads, and fertilizer-station scheduling.
+- Integrated Google Maps/GMapEX-based infrastructure layers with role-specific dashboards, facility search, layer toggles, marker/polyline overlays, legends, and statistics panels for sewer and rainwater operations.
+- Implemented Excel-driven operational workflows, including client-side parsing, validation feedback, error-list export, batch import, and report export for sewer-layer and water-fee data management.
+- Developed data-heavy inspection UI flows that query backend APIs, filter by date/town/company/status, compute normal vs. abnormal inspection summaries, and render charts, tables, and map-based results.
+- Delivered permit/document frontend flows using Razor, TypeScript, `FormData`, PDF upload controls, and server response handling to support official application and review processes.
+- Built scheduling UI logic for fertilizer/slurry station workflows, including date restrictions, daily quantity limits, license eligibility checks, banned-vehicle warnings, and booking edit/delete flows.
+- Supported a large role-based MVC interface with conditional navigation and page access paths across sewer, rainwater, construction, contractor, inspection, water-fee, and public-facing workflows.
+- Used TypeScript in a legacy ASP.NET MVC/jQuery codebase to organize domain-specific client logic and reduce risk in complex operational pages.
 
-Evidence: `Scripts/App/APPUNDERCON.ts`, `Scripts/App/APPFAC.ts`, `Scripts/App/APPFAC_realtime.ts`, statistics views, and Google Charts/Chart.js search results.
+### Frontend-first bullets with backend context
 
-- Builds construction progress lists with FooTable and inline Chart.js pie charts for percentage completion.
-- Routes map-location actions to construction-area map pages using local storage and geometry payloads.
-- Integrates realtime or near-realtime sewage plant water-quality data, compares values to discharge standards, and marks out-of-range readings visually.
-- Supports plant detail workflows for charts, CCTV/video pages, and 3D model access.
+- Built frontend workflows on top of ASP.NET MVC/Web API endpoints, coordinating Razor-rendered pages, cookie-authenticated API calls, file uploads, and role-aware UI behavior across a municipal infrastructure system.
+- Integrated GIS, Excel, PDF, and charting features into server-rendered MVC pages, enabling field and office users to manage infrastructure records without leaving the web application.
+- Implemented application-root-aware URL handling through shared layout configuration and `SitePath` usage, supporting IIS/virtual-directory deployment constraints across client-side API calls and asset references.
 
-### Fertilizer/Slurry Scheduling And Quota Workflows
+### Stronger bullets that need user confirmation or metrics
 
-Evidence: `Scripts/FertilizerStation/ScheduledFertilizer.ts`, `Business_DailyFertilizerManagement.ts`, `FertilizerStationController.cs`, `SlurryController.cs`, and fertilizer-station views/styles.
+- Modernized [number] legacy MVC pages with TypeScript modules, reducing frontend regression risk and improving maintainability across [specific domains].
+- Improved GIS workflow performance by [metric] through bounds-based layer loading, marker clustering, or selective map-layer rendering.
+- Reduced manual spreadsheet processing time by [metric] by implementing Excel validation, batch import, and export workflows for water-fee or sewer-layer data.
+- Improved field inspection turnaround by [metric] by delivering map-based facility lookup and inspection result dashboards.
+- Supported [number] user roles or [number] municipal departments through role-aware navigation and workflow-specific UI paths.
 
-- Handles booking rules such as three-day/sixty-day reservation windows, 08:00 booking start, plant close days, makeup days, Wednesday/Sunday closure logic, license expiration checks, vehicle ban checks, and guild/non-guild quantity limits.
-- Supports specialized fertilizer/slurry feature areas for scheduled fertilizer, daily management, disposal records, ban management, contracts, and feedstock category management.
-- Uses backend APIs for category-aware data such as `GetFACMAll`, `GetFACMLDByFACMId`, `FACMSummary`, `FertilizerBookingSpecialDate`, and `ModifyFACMLD`.
+### Suggested metrics to collect
 
-### Modernized Business Daily Fertilizer Management Screen
+- Number of pages/features personally delivered or modernized.
+- Number of TypeScript modules or workflows owned.
+- Typical import/export file size, record count, or monthly transaction volume.
+- Before/after time saved for Excel, PDF, inspection, or scheduling workflows.
+- GIS layer count, map feature count, or records rendered per workflow.
+- User roles/departments served and whether the system is production-facing.
+- Any measured improvements in load time, error rate, task completion time, or support tickets.
 
-Evidence: `Views/FertilizerStation/Business_DailyFertilizerManagement.cshtml`, `Scripts/FertilizerStation/Business_DailyFertilizerManagement.ts`, and `Content/Styles/FertilizerStation/Business_DailyFertilizerManagement.css`.
+## 10. Interview Talking Points
 
-- Implements a monthly calendar UI that displays reserved and delivered fertilizer amounts per day.
-- Uses typed response interfaces, deterministic page-state management, and DOM references collected up front with initialization failure handling.
-- Fetches category, limit, monthly summary, and special-date data in parallel and cancels stale requests with `AbortController`.
-- Escapes rendered text with an `EscapeHtml` helper before inserting dynamic company names and amounts into table rows.
-- Includes accessibility-minded behavior: labeled controls, `aria-live` quota summary, `aria-controls`/`aria-expanded` on the quota popover, dialog role/`aria-modal`, Escape handling, focus trapping, and focus restoration.
-- Includes responsive CSS for compact layouts, horizontal calendar overflow, full-width mobile actions, and mobile modal sizing.
+- GIS dashboard story: The app’s default experience is a GIS map for sewer/rainwater operations. A strong interview story can cover how Razor renders the shell, how TypeScript modules load and toggle map layers, how search locates infrastructure by facility number, and how role-specific statistics panels make the map an operational workspace rather than a passive viewer.
+- Excel validation story: Explain how users bring operational data in spreadsheets, why client-side validation matters before committing backend changes, how errors are surfaced/exported, and how this reduced back-and-forth for non-technical users.
+- Inspection analytics story: Walk through querying inspection results, splitting internal/external inspection types, computing abnormal categories, rendering charts/tables/maps, and handling empty/error states.
+- Scheduling rules story: Describe the fertilizer-station scheduling UI as a rules-heavy workflow where date restrictions, capacity limits, company/vehicle eligibility, license expiration, and banned-plate conditions all have to be reflected clearly before submission.
+- Legacy TypeScript story: Discuss adding or maintaining typed frontend modules within an ASP.NET MVC/jQuery environment, including how to keep changes scoped by domain folder and avoid breaking server-rendered views.
 
-### Shared Browser Utilities And Asset Delivery
+Likely interviewer follow-up questions:
 
-Evidence: `Scripts/Common.ts`, `App_Code/HtmlHelpers.cs`, `_Layout.cshtml`, and `gulpfile.js`.
+- How did you manage map performance with many layers and markers?
+- How did frontend validation differ from backend validation?
+- What parts were server-rendered versus dynamically fetched?
+- How did you test or verify role-specific UI behavior?
+- What accessibility issues did you have to handle in a legacy jQuery/MVC app?
+- How were TypeScript files compiled and deployed?
 
-- Provides reusable datepickers, loading states, Excel download helpers, image preview, EXIF extraction, viewer initialization, and GIS-related WKT conversion support.
-- Uses server-side versioned asset URLs to bust cache when static files change.
-- Uses a dedicated TypeScript output folder and Gulp minification/bundling for compiled JavaScript assets.
+## 11. Open Questions
 
-## 7. Biggest Frontend Challenges
+- Which frontend features did you personally build, refactor, or maintain?
+- Was the project used in production by Taoyuan municipal users, contractors, or public applicants?
+- What is the official English project name, if any, or should the Chinese name be used on the resume?
+- Did you own the GIS map, inspection analytics, fertilizer-station scheduling, water-fee workflows, or switching-valve document flows?
+- Were there measurable improvements in task completion time, upload error rates, report generation time, map load time, or support volume?
+- How many roles, departments, contractors, or monthly transactions did the system support?
+- Was TypeScript introduced by you or already present before your work?
+- Did you contribute to security headers, CSP nonces, static caching, analytics, or deployment configuration?
+- Was there manual/automated QA, UAT, accessibility testing, or browser/device testing outside the repo?
+- Should exposed sensitive config values be rotated/remediated before any portfolio screenshots or code sharing?
 
-- **Complex role matrix:** Navigation and route access vary by many roles such as SystemAdmin, Sewage, RainWater, BOT, Supervisor, PCM, Constructors, SlurryAdmin, FertilizerGuild, FertilizerCompany, DistrictOffice, CableContractor, and more.
-- **Spatial UX complexity:** The GIS frontend must combine map layers, government basemaps, sewer/rainwater geometries, inspection markers, WKT geometry, coordinate conversion, street view, and marker clustering.
-- **Operational correctness:** Fertilizer/slurry workflows are constrained by dates, capacities, license validity, company categories, actual deliveries, and special closure/makeup calendars.
-- **Legacy-to-modern frontend mix:** The codebase contains older jQuery-heavy scripts alongside newer typed TypeScript modules. Maintaining consistent behavior while improving structure is a meaningful challenge.
-- **Large surface area:** The app has hundreds of views and scripts, meaning frontend changes can affect many operational workflows.
-- **Security and privacy constraints:** The app handles authenticated government/vendor workflows, file uploads, location data, and operational records. Resume claims should avoid exposing sensitive endpoints, credentials, or private operational details.
+## 12. Next Actions
 
-## 8. Resume Bullet Bank
-
-### Conservative Bullets Based On Confirmed Evidence
-
-- Built and maintained TypeScript/jQuery frontend modules for a municipal sewer management platform with 250+ TypeScript files and 360+ Razor views across GIS, inspection, construction, statistics, and station-operation workflows.
-- Implemented GIS-heavy user workflows using Google Maps, custom map-layer utilities, NLSC basemaps, ArcGIS service layers, WKT geometry, coordinate conversion, marker clustering, and street-view sewer asset overlays.
-- Developed role-aware operational interfaces for sewer, rainwater, construction, inspection, and fertilizer/slurry station users, aligning visible navigation and page behavior with authenticated MVC role checks.
-- Built fertilizer/slurry scheduling interfaces that validate booking windows, plant closure/makeup dates, license status, vehicle bans, and quota limits before users submit reservations.
-- Delivered a monthly business fertilizer management calendar with TypeScript interfaces, parallel API loading, abortable requests, quota editing, responsive layout, and accessible modal/popover interactions.
-- Integrated Chart.js, Google Charts, FooTable, DataTables, and map visualizations to present construction progress, inspection status, water-quality readings, and statistics dashboards.
-- Improved frontend asset freshness by loading scripts and styles through MVC versioned content URLs based on file modification timestamps.
-
-### Stronger Bullets Requiring User Confirmation Or Metrics
-
-- Modernized the fertilizer-station frontend from legacy jQuery patterns toward typed, state-driven TypeScript modules, reducing maintenance effort by `[metric]` or improving change confidence across `[number]` workflows.
-- Optimized GIS layer rendering by filtering visible sewer graphics and clustering markers, improving map responsiveness for `[asset count]` infrastructure records.
-- Reduced booking errors or manual corrections by implementing frontend validation for capacity limits, license expiration, banned vehicles, and special-date scheduling rules.
-- Improved accessibility of operational modals and quota controls by adding keyboard support, focus restoration, ARIA state, and responsive layouts, supporting WCAG-aligned internal UI standards.
-- Supported deployment reliability by aligning TypeScript compilation, Gulp minification/bundling, versioned assets, and GitLab/MSBuild IIS publish workflows.
-
-### Suggested Metric Placeholders To Fill In
-
-- Number of active municipal/vendor user roles supported.
-- Number of GIS layers or infrastructure records displayed in production.
-- Before/after load or interaction time for map layer toggles.
-- Reduction in booking mistakes, support tickets, or manual corrections after the fertilizer calendar/quota improvements.
-- Number of fertilizer/slurry categories, companies, license plates, bookings, or daily records managed.
-- Number of pages/screens personally owned or refactored.
-
-## 9. Interview Talking Points
-
-### Story 1: GIS Operations At Municipal Scale
-
-- **Situation:** Field and office users needed to inspect sewer/rainwater assets and related construction or inspection records spatially.
-- **Technical challenge:** The UI had to combine Google Maps, government basemaps, custom sewer layers, coordinate systems, WKT geometry, street view, and role-specific layer access.
-- **Action:** Implemented and maintained TypeScript map modules that initialize map behavior, draw layers/markers, filter visible geometry, support TWD97 coordinate copying, and connect map selections to detail workflows.
-- **Result to confirm:** Faster asset lookup, clearer field context, or fewer manual GIS handoffs.
-
-### Story 2: Fertilizer/Slurry Booking Rules In The Browser
-
-- **Situation:** Fertilizer station reservations depend on policy rules, capacity limits, vehicle/license status, company type, and special operating dates.
-- **Technical challenge:** Users needed immediate feedback before submitting invalid reservations, while backend APIs still enforced the real rules.
-- **Action:** Built client-side validation and calendar-driven UI flows that check booking windows, license expiration, ban status, quota totals, closure/makeup dates, and category-specific limits.
-- **Result to confirm:** Fewer invalid submissions, clearer station scheduling, or reduced administrative correction work.
-
-### Story 3: Modernizing A Legacy MVC Frontend Incrementally
-
-- **Situation:** The application has many existing Razor/jQuery pages, but newer screens need stronger maintainability and accessibility.
-- **Technical challenge:** A full rewrite would be risky, so improvements must fit existing MVC routing, shared layouts, compiled TypeScript output, and vendor dependencies.
-- **Action:** Built the business daily fertilizer management screen with typed models, explicit page refs, centralized page state, abortable fetches, safe rendering, accessible modal/popover behavior, and responsive CSS.
-- **Result to confirm:** Easier feature changes, fewer race-condition bugs, or better keyboard/mobile usability.
-
-### Follow-Up Questions Interviewers May Ask
-
-- How did you keep map rendering performant with many infrastructure assets?
-- What validation belongs in the frontend versus the backend for booking workflows?
-- How did you prevent stale API responses from overwriting newer UI state?
-- How did you approach accessibility in a legacy MVC/jQuery application?
-- How were TypeScript files compiled and loaded into Razor views?
-- What trade-offs did you make when using local storage for cross-page workflows?
-
-## 10. Open Questions
-
-- Which parts of the frontend did the user personally build versus maintain or refactor?
-- Was the current branch primarily about the business daily fertilizer management screen, scheduled fertilizer mapping documentation, or a broader fertilizer-station frontend fix?
-- What production scale can be stated safely: users, roles, records, map layers, daily bookings, or managed facilities?
-- Were any measurable improvements recorded for performance, accessibility, booking accuracy, support tickets, or operational turnaround?
-- Is the official English project name available, or should English resumes use the descriptive translation `Taoyuan Sewer Cloud Smart Management System`?
-- Are there screenshots or before/after UI captures for the fertilizer calendar, GIS map, construction progress dashboard, or plant monitoring views?
-
-## 11. Next Actions
-
-- Confirm ownership: identify which modules/screens were personally implemented, modified, or led.
-- Add metrics where possible, especially for GIS layer scale, booking/error reduction, and screen count.
-- Capture screenshots of the GIS map, fertilizer calendar, construction progress list, and plant monitoring dashboard for portfolio/interview use.
-- Verify whether the business daily fertilizer screen is merged, deployed, or still in progress before using deployment-impact language.
-- Ready-to-use conservative bullets: GIS workflows, TypeScript/MVC frontend modules, fertilizer booking validation, monthly business fertilizer calendar, chart/dashboard integrations, and versioned asset delivery.
-- Needs confirmation before use: modernization impact, production scale, performance improvements, error reduction, and accessibility compliance level.
+- Ready now: use conservative bullets about TypeScript-backed Razor workflows, GIS maps, Excel validation/export, inspection analytics, file upload flows, fertilizer-station scheduling, and role-aware navigation.
+- Needs confirmation: ownership, production impact, user scale, performance improvements, business metrics, and whether backend/API/deployment work can be claimed as personal contribution.
+- Strengthen the resume story by collecting screenshots of the GIS dashboard, inspection statistics, Excel validation error flow, fertilizer-station booking screen, and role-specific navigation.
+- Fill in at least two metrics before applying: one scope metric (pages/modules/roles/records) and one impact metric (time saved, errors reduced, records processed, load time improved, or users supported).
+- Keep backend language as integration context unless you can confirm personal backend ownership.
