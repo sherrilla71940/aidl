@@ -19,7 +19,7 @@ from pathlib import Path
 
 import defusedxml.minidom
 
-from validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator
+from local.skills.docx.scripts.office.validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator
 
 def pack(
     input_directory: str,

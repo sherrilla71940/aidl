@@ -9,7 +9,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from office.soffice import get_soffice_env
+from local.skills.docx.scripts.office.soffice import get_soffice_env
 
 logger = logging.getLogger(__name__)
 
