@@ -44,6 +44,16 @@ Apply these rules per the [CommonMark spec 0.31.2](https://spec.commonmark.org/0
 - **Hard line breaks**: Two+ trailing spaces or `\` before a line ending. Not recognized in code spans or HTML tags. Does not work at end of a block.
 - **Soft line breaks**: A line ending not preceded by two+ spaces or `\`. Rendered as a space in browsers.
 
+## Accessibility
+
+- Use descriptive link text that makes sense out of context; avoid generic text such as "click here," "here," "this," "read more," or "link."
+- Convert bare URLs in prose to descriptive links when practical.
+- Give informative images useful alt text. Avoid empty alt text unless the image is decorative, and avoid filename-like or generic alt text such as "screenshot" or "image."
+- Keep one clear H1 per document unless the publishing system generates it from frontmatter, and do not skip heading levels.
+- Use real markdown lists for sequential or grouped items instead of plain-text lines, emoji bullets, or decorative symbols.
+- Use emoji sparingly and never as the only way to communicate meaning.
+- Prefer plain language, short paragraphs, active voice, and stable UI labels when documenting workflows.
+
 ## Validation Checklist
 
 - [ ] ATX headings use 1–6 `#` followed by a space.
@@ -53,6 +63,9 @@ Apply these rules per the [CommonMark spec 0.31.2](https://spec.commonmark.org/0
 - [ ] Emphasis uses `*` for intraword; `_` only at word boundaries.
 - [ ] Links use `[text](url)` or reference syntax with no whitespace before `(` or `[`.
 - [ ] Images include non-empty alt text.
+- [ ] Link text is descriptive and unique enough for screen reader link lists.
+- [ ] Heading hierarchy is logical and does not skip levels.
+- [ ] Lists use proper markdown list syntax instead of visual-only markers.
 - [ ] Autolinks use angle brackets (`<URL>`); bare URLs are not CommonMark autolinks.
 - [ ] No unbalanced parentheses in bare link destinations (use `<…>` or escape).
 - [ ] HTML block type 7 (custom/inline-level tags) is preceded by a blank line when following a paragraph.

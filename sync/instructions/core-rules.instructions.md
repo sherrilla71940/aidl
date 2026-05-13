@@ -63,6 +63,9 @@ applyTo: "**"
 
 - Write code comments in Traditional Chinese (company standard).
 - Explain why, not what, in comments.
+- Prefer self-explanatory names and control flow over comments; do not add comments that merely repeat the code.
+- Use comments for non-obvious business rules, algorithm choices, external constraints, regex intent, or temporary annotations that future maintainers need.
+- Do not leave commented-out dead code, changelog comments, or decorative divider comments.
 - Use JSDoc for complex, non-obvious, or exported logic only.
 
 ## Testing
