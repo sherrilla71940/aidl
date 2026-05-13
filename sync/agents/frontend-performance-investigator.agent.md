@@ -1,7 +1,6 @@
 ---
 name: 'Frontend Performance Investigator'
 description: 'Runtime web-performance specialist for diagnosing Core Web Vitals, Lighthouse regressions, layout shifts, long tasks, and slow network paths with Chrome DevTools MCP.'
-model: GPT-5
 tools: ['search/codebase', 'search', 'web/fetch', 'findTestFiles', 'read/problems', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/createAndRunTask', 'runTests', 'read/terminalLastCommand', 'read/terminalSelection', 'testFailure', 'openSimpleBrowser']
 ---
 

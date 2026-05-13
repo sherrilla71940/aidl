@@ -1,7 +1,6 @@
 ---
 name: 'Frontend Resume Project Analyst'
 description: 'Use when preparing a frontend developer resume: explores any project and writes English/zh-TW resume reports to the job-hunting archive.'
-model: GPT-5.5
 tools: ['search/codebase', 'search', 'edit/editFiles', 'web/fetch', 'read/problems', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection']
 ---
 
