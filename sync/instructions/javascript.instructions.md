@@ -23,7 +23,7 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 - Use boolean shortcuts for booleans, but compare strings, numbers, and collection lengths explicitly.
 - Prefer immutable updates and avoid mutating function parameters; allow local mutation only when safe, clear, or improves performance/API alignment.
 - Prefer rest parameters over `arguments`; use default parameters instead of reassigning parameters, and place default parameters last.
-- Use a typed options object when a function takes 3+ parameters, has multiple optional/boolean parameters, or the argument order is easy to mix up; destructure directly in the signature and provide defaults when relevant.
+- Use a typed options object when a shared/exported function takes 3+ parameters, has multiple optional/boolean parameters, or the argument order is easy to mix up; destructure directly in the signature and provide defaults when relevant. For small local helpers, keep positional parameters when the call sites remain clearer and the argument meaning is obvious from local context.
 - Prefer ES6+ and declarative array methods for synchronous data transformations when feasible. Use loops when control flow requires it, such as `await` in sequential work.
 - Return values from array transformation/filtering callbacks; use `forEach` only for intentional side effects.
 - Prefer returning objects for multiple outputs when named fields improve readability; use tuples when positional semantics are intentional and clear.
