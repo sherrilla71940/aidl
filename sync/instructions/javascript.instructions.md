@@ -4,52 +4,51 @@ applyTo: "**/*.{js,jsx,mjs,cjs,ts,tsx,mts}"
 
 # JavaScript Standards
 
-## JavaScript
+## General
 
+Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, see `typescript.instructions.md`. For React-specific guidelines, see `react.instructions.md`.
+
+## Naming
 - Prefer `const`; use `let` only when reassignment is required; never use `var`.
+- Use `camelCase` for most variables and constants.
+- Use `UPPER_SNAKE_CASE` only for true constants whose value is fixed, shared, and configuration-like, such as module-level limits, event names, storage keys, breakpoints, or environment-derived constants.
+
+## General
 - Prefer object/array literals (`{}` / `[]`) over constructors (`new Object()` / `new Array()`).
 - Use strict equality (`===`, `!==`) except intentional `== null` checks.
-- Prefer `async/await`; do not use `await` inside `forEach`/`filter`/`some`/`every`/`reduce` callbacks because these methods do not await async callbacks as intended. Use `for...of` for sequential async flows, or `Promise.all`/`Promise.allSettled` over an array of promises (typically from `map`) for parallel async work.
-- For user-triggered async flows such as submit, filter, search, or tab changes, cancel prior in-flight work when a newer action supersedes it; do not rely only on ignoring stale responses.
-- Replace repeated literals with named constants when the constant improves readability or helps prevent drift.
-- Use named constants for literals that are reused, domain-significant, or likely to change.
-- Use `UPPER_SNAKE_CASE` for true module-level constants; use `camelCase` for narrow-scope local constants.
-- Prefer immutable updates and avoid mutating function parameters, React state, or props; allow local mutation only when safe, clear, or improves performance/API alignment.
-- Prefer a typed options object when parameter lists are hard to read, easy to mix up, or likely to grow; destructure directly in the signature and provide defaults when relevant.
-- Prefer ES6+ and declarative array methods for synchronous data transformations when feasible.
+- Prefer immutable updates and avoid mutating function parameters; allow local mutation only when safe, clear, or improves performance/API alignment.
+- Use a typed options object when a function takes 3+ parameters, has multiple optional/boolean parameters, or the argument order is easy to mix up; destructure directly in the signature and provide defaults when relevant.
+- Prefer ES6+ and declarative array methods for synchronous data transformations when feasible. A case where not feasible might be when need `await` inside a loop.
 - Prefer returning objects for multiple outputs when named fields improve readability; use tuples when positional semantics are intentional and clear.
-- Prefer template literals over string concatenation.
+- Use template literals over string concatenation.
 - Use braces for `if`/`else`/loop bodies, even for single-line blocks.
-- Use descriptive variable names.
-- Prefer optional chaining for one-off optional DOM actions (e.g., `document.querySelector('.my-btn')?.click()`).
-- Prefer ESM `import`/`export` over `require`/`module.exports` in modern JavaScript/TypeScript code.
+- Use descriptive variable names. Descriptive names are 90% of documentation.
+- Use optional chaining only when a missing DOM element is acceptable for an optional one-off action. For required elements, validate once near initialization and throw a clear error if missing. Store the element in a variable when it is used multiple times or the action is complex.
+- Prefer ESM `import`/`export` over `require`/`module.exports` in modern JavaScript/TypeScript code if the project supports it.
 - Avoid dynamic code execution (`eval`, `new Function`, and string-based `setTimeout`/`setInterval`); prefer callbacks, JSON parsing, and safe property access.
-- Prefer `addEventListener` over inline `on*` handlers, and use listener options (`once`, `passive`, `signal`) intentionally.
-- Use `AbortController` to cancel in-flight `fetch` requests and abortable listeners during teardown.
-- Use PascalCase for VanillaJS/VanillaTS function names and globals (company standard), and for React component names only; use camelCase for all other identifiers.
+- Prefer `addEventListener` over inline `on*` handlers (for vanilla JavaScript), and use listener options (`once`, `passive`, `signal`) intentionally.
 - Avoid creating standalone functions for trivial one-liners by default; inline the logic where it's used unless naming it improves readability, testability, or reuse.
-- In legacy non-module scripts, wrap runtime code in an IIFE to avoid global pollution.
-- Expose symbols on `window` only when required by external callers (views/other scripts).
-- Keep `DOMContentLoaded` handlers for bootstrapping only; do not nest all business logic inside them.
-- In large legacy single-file scripts, use `#region` / `#endregion` only when they materially improve navigation, for example large groups of types.
-- Prefer a small number of substantial regions over many tiny regions.
-- Use short Traditional Chinese region names that describe the block's role, such as `API 讀取`, `資料解析`, `畫面渲染`, or `事件綁定`.
-- Do not use regions for tiny sections, single trivial helpers, or sections whose purpose is already obvious from the code layout.
-- Do not add both a redundant section comment and a region title that say the same thing.
-- Do not use regions as a substitute for proper file/module extraction when splitting is practical.
+- In legacy non-module scripts, wrap private runtime code in an IIFE. When external callers need access, attach a small, explicit API to one existing project global or `window`; avoid leaking unrelated globals.
+- Keep `DOMContentLoaded` handlers thin: call initialization functions from them, but keep business logic, rendering, data parsing, and event handlers in named functions outside the callback.
+- Prefer `data-*` attributes for JavaScript DOM targeting. Use `id` only for unique document-level targets, accessibility relationships, browser-native linking, testing constraints, or legacy integration. Keep class names reserved for styling hooks, and avoid encoding element types in attribute values (for example: `data-action="submit"` instead of `data-type="button"`).
+- Prefer existing project patterns, shared components, and established copy for UI states and feedback before introducing new variants.
+
+## Asynchronous code and promises
+- Prefer `async/await`
+- Do not use `await` inside `forEach`/`filter`/`some`/`every`/`reduce` callbacks because these methods do not await async callbacks as intended.
+- Use `for...of` for sequential async flows, or `Promise.all`/`Promise.allSettled` over an array of promises (typically from `map`) for parallel async work.
+- For user-triggered async flows such as submit, filter, search, or tab changes, cancel prior in-flight work when a newer action supersedes it; do not rely only on ignoring stale responses.
+- Run independent async work in parallel with `Promise.all`/`Promise.allSettled` when task order does not matter. If the work comes from a large or user-controlled list, process items in small batches or use a concurrency limit instead of one unbounded `Promise.all(items.map(...))`.
+- Use `AbortController` when async work or event listeners can outlive their initiating UI state, component, request, or page section; cancel on teardown or when a newer user action supersedes older work.
 
 ## Performance and lifecycle
 
-- When task order does not matter, run independent async work in parallel with `Promise.all`/`Promise.allSettled`.
-- Use bounded concurrency instead of unbounded fan-out when the number of parallel async operations can grow beyond a small fixed set.
-- Ensure repeatable initialization is idempotent, and clean up listeners/requests with remove/abort on teardown.
-- Prefer feature detection over browser sniffing (`"feature" in obj`, `CSS.supports`, `@supports`).
-- Lazy-load non-critical resources (e.g., `loading="lazy"` for off-screen images/iframes) and defer/split non-critical JavaScript (`type="module"`, dynamic `import()`).
-- Use loading indicators intentionally; prefer skeletons when the layout is known and the wait is noticeable, and avoid unnecessary layout shift between loading and loaded states.
-- Prevent avoidable cumulative layout shift (CLS): reserve space for async content, media, and dynamically inserted UI when their final dimensions are reasonably predictable, and when dialogs or overlays lock background scroll, preserve scrollbar space with `scrollbar-gutter: stable` or an equivalent fallback so the page width does not jump.
-- Use debouncing/throttling for high-frequency events.
-- For interactive screens, make loading, empty, success, and error states explicit in the UI.
-- Prefer existing project patterns, shared components, and established copy for UI states and feedback before introducing new variants.
+- When initialization can run more than once, keep it idempotent so setup does not duplicate event listeners, timers, DOM nodes, or requests.
+- Lazy-load non-critical resources (e.g., `loading="lazy"` for off-screen images/iframes)
+- Defer/split non-critical JavaScript (`type="module"`, dynamic `import()`).
+- Use `requestAnimationFrame` for visual updates in scroll/resize handlers and complex animations.
+- Use debounce for high-frequency events where only the final value matters, such as search input, filtering, or resize recalculation
+- Use throttle for continuous feedback that should update at a steady rate, such as scroll position, drag movement, or progress indicators.
 
 ## Validation and error handling
 
