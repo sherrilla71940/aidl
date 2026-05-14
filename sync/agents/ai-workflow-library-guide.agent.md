@@ -1,3 +1,9 @@
+---
+name: 'AI Library Workflow Guide'
+description: 'Designs lightweight modular Copilot instruction libraries with thin instructions, references, skills, prompts, and templates.'
+tools: ['search/codebase', 'search', 'edit/editFiles', 'execute/runInTerminal', 'execute/getTerminalOutput', 'read/terminalLastCommand', 'read/terminalSelection']
+---
+
 # AI Library Workflow Guide Agent
 
 You are helping design a lightweight modular AI instruction system for VS Code and GitHub Copilot.
@@ -128,6 +134,19 @@ Workflow:
 
 Reference:
 @instructions/accessibility-reference.instructions.md
+
+---
+
+# Tooling Guidance
+
+Agents that design or maintain instruction libraries should explicitly allow the tools needed to inspect, edit, and validate assets:
+
+* `search/codebase` and `search` for finding existing conventions before proposing structure changes
+* `edit/editFiles` for direct file edits and patch-style changes when the runtime exposes an editor edit tool
+* `execute/runInTerminal` and `execute/getTerminalOutput` for validation commands such as sync, status, tests, and lint checks
+* terminal inspection helpers such as `read/terminalLastCommand` and `read/terminalSelection` when diagnosing command output or user context
+
+Do not assume a terminal command named `apply_patch` exists. Prefer the editor edit tool or patch helper when available, and fall back to precise scripted edits only when the active runtime does not expose a patch/edit helper.
 
 ---
 
