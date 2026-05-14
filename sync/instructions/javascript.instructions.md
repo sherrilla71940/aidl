@@ -76,3 +76,7 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 - Catch errors at external boundaries only; do not blanket-wrap all functions.
 - Handle edge cases and potential failure points explicitly; do not swallow errors silently.
 - Console logging is diagnostic only; when an operation affects the visible page, provide an appropriate user-facing error or fallback state.
+
+## Large legacy files
+
+- In long legacy JavaScript files that cannot be safely split yet, use `//#region` / `//#endregion` sparingly to group related code such as types, constants, DOM references, UI event wiring, business logic, and initialization. Do not use regions as a substitute for extracting cohesive modules when refactoring is safe.
