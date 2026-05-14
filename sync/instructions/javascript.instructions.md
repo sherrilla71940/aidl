@@ -17,15 +17,24 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 ## General JavaScript
 
 - Prefer object/array literals (`{}` / `[]`) over constructors (`new Object()` / `new Array()`).
+- Prefer object and array spread/rest for shallow copies, merging, and omission instead of mutating with `Object.assign`, `delete`, or index assignment.
+- Use `Object.hasOwn` or `Object.prototype.hasOwnProperty.call(...)` instead of calling `hasOwnProperty` directly on an object.
 - Use strict equality (`===`, `!==`) except intentional `== null` checks.
+- Use boolean shortcuts for booleans, but compare strings, numbers, and collection lengths explicitly.
 - Prefer immutable updates and avoid mutating function parameters; allow local mutation only when safe, clear, or improves performance/API alignment.
+- Prefer rest parameters over `arguments`; use default parameters instead of reassigning parameters, and place default parameters last.
 - Use a typed options object when a function takes 3+ parameters, has multiple optional/boolean parameters, or the argument order is easy to mix up; destructure directly in the signature and provide defaults when relevant.
 - Prefer ES6+ and declarative array methods for synchronous data transformations when feasible. Use loops when control flow requires it, such as `await` in sequential work.
+- Return values from array transformation/filtering callbacks; use `forEach` only for intentional side effects.
 - Prefer returning objects for multiple outputs when named fields improve readability; use tuples when positional semantics are intentional and clear.
 - Use template literals over string concatenation.
 - Use braces for `if`/`else`/loop bodies, even for single-line blocks.
+- Use braces around `case` and `default` clauses that declare `let`, `const`, `function`, or `class` bindings.
+- Avoid nested ternaries and selection operators used as control flow; use clear `if` statements when logic branches or causes side effects.
+- Parenthesize mixed logical, comparison, and arithmetic operators when precedence is not immediately obvious.
 - Use descriptive variable names. Descriptive names are 90% of documentation.
 - Prefer ESM `import`/`export` over `require`/`module.exports` in modern JavaScript/TypeScript code if the project supports it.
+- Keep imports at the top of the module, avoid duplicate imports from the same path, and avoid exporting mutable bindings.
 - Avoid dynamic code execution (`eval`, `new Function`, and string-based `setTimeout`/`setInterval`); prefer callbacks, JSON parsing, and safe property access.
 - Avoid creating standalone functions for trivial one-liners by default; inline the logic where it is used unless naming it improves readability, testability, or reuse.
 - Prefer existing project patterns, shared components, and established copy for UI states and feedback before introducing new variants.
@@ -57,6 +66,8 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 
 ## Validation and error handling
 
+- Use explicit type conversion at the boundary. Prefer `Number(value)` for numeric conversion and `parseInt(value, 10)` when parsing integers from strings.
+- Use `Number.isNaN` instead of global `isNaN` to avoid implicit coercion.
 - Use `Number.isFinite` for numeric validation to avoid coercion pitfalls (`isFinite('123') === true`), accidental acceptance of `NaN`/`Infinity`, and non-number inputs passing checks.
 - Catch errors at external boundaries only; do not blanket-wrap all functions.
 - Handle edge cases and potential failure points explicitly; do not swallow errors silently.
