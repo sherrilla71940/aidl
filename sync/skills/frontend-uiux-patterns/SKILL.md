@@ -1,5 +1,5 @@
 ---
-name: frontend-ux-patterns
+name: frontend-uiux-patterns
 description: 'Frontend UX pattern guidance for implementing or reviewing forms, data tables, modals, popovers, drawers, and loading states in web UI.'
 ---
 
