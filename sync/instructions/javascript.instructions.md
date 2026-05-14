@@ -36,6 +36,7 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 - Prefer ESM `import`/`export` over `require`/`module.exports` in modern JavaScript/TypeScript code if the project supports it.
 - Keep imports at the top of the module, avoid duplicate imports from the same path, and avoid exporting mutable bindings.
 - Avoid dynamic code execution (`eval`, `new Function`, and string-based `setTimeout`/`setInterval`); prefer callbacks, JSON parsing, and safe property access.
+- Do not invent APIs, classes, fields, or event names. Verify them from local types, callers, documentation, or existing implementations; leave an explicit `TODO:` only when a real integration detail is unavailable.
 - Avoid creating standalone functions for trivial one-liners by default; inline the logic where it is used unless naming it improves readability, testability, or reuse.
 - Prefer existing project patterns, shared components, and established copy for UI states and feedback before introducing new variants.
 
@@ -49,10 +50,12 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 
 ## Asynchronous code and promises
 - Prefer `async/await`.
-- Do not use `await` inside `forEach`/`filter`/`some`/`every`/`reduce` callbacks because these methods do not await async callbacks as intended.
-- Use `for...of` for sequential async flows, or `Promise.all`/`Promise.allSettled` over an array of promises (typically from `map`) for parallel async work.
+- Remember that `await` pauses only the current async function; synchronous array methods such as `forEach`, `filter`, `some`, `every`, and `reduce` do not wait for async callbacks.
+- Use `for...of` with `await` for sequential async flows where order, dependencies, rate limits, or step-by-step error handling matter.
+- Use `Promise.all` or `Promise.allSettled` with promises created from `map` for parallel async work when task order does not matter and concurrency is safe.
+- For async filtering or validation, resolve promises first, then run synchronous `filter`, `some`, or `every` logic on the resolved results.
 - For user-triggered async flows such as submit, filter, search, or tab changes, cancel prior in-flight work when a newer action supersedes it; do not rely only on ignoring stale responses.
-- Run independent async work in parallel with `Promise.all`/`Promise.allSettled` when task order does not matter. If the work comes from a large or user-controlled list, process items in small batches or use a concurrency limit instead of one unbounded `Promise.all(items.map(...))`.
+- If parallel async work comes from a large or user-controlled list, process items in small batches or use a concurrency limit instead of one unbounded `Promise.all(items.map(...))`.
 - Use `AbortController` when async work or event listeners can outlive their initiating UI state, component, request, or page section; cancel on teardown or when a newer user action supersedes older work.
 
 ## Performance and lifecycle
@@ -69,6 +72,7 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 - Use explicit type conversion at the boundary. Prefer `Number(value)` for numeric conversion and `parseInt(value, 10)` when parsing integers from strings.
 - Use `Number.isNaN` instead of global `isNaN` to avoid implicit coercion.
 - Use `Number.isFinite` for numeric validation to avoid coercion pitfalls (`isFinite('123') === true`), accidental acceptance of `NaN`/`Infinity`, and non-number inputs passing checks.
+- For user-facing API requests or async operations, provide loading, empty, success, and failure states that match the existing UI patterns.
 - Catch errors at external boundaries only; do not blanket-wrap all functions.
 - Handle edge cases and potential failure points explicitly; do not swallow errors silently.
 - Console logging is diagnostic only; when an operation affects the visible page, provide an appropriate user-facing error or fallback state.
