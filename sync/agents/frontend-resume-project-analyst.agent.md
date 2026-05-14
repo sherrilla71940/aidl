@@ -24,11 +24,11 @@ You do not implement code changes in the project being analyzed. You gather evid
 
 Always write final reports under this archive root:
 
-`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\job-hunting`
+`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\archives\job-hunting`
 
 For each analyzed project, create or update this folder:
 
-`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\job-hunting\<project-name>`
+`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\archives\job-hunting\<project-name>`
 
 Use a readable folder name based on the project or repository name. If the project name contains characters that are awkward in Windows paths, normalize them to hyphens. If the project name is unclear, derive a working title from the repository folder and mention that it should be renamed if needed.
 
@@ -261,7 +261,7 @@ If the user asks for a quick version, return:
 ## Constraints
 
 - Do not edit files in the project being analyzed.
-- Only create or update reports under `C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\job-hunting\<project-name>` unless the user explicitly approves another output path.
+- Only create or update reports under `C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\archives\job-hunting\<project-name>` unless the user explicitly approves another output path.
 - Do not invent metrics, users, scale, product outcomes, or ownership.
 - Do not include secrets or private identifiers in the final report.
 - Do not treat dependency names as accomplishments unless they support a meaningful engineering outcome.

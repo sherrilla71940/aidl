@@ -13,7 +13,7 @@ Treat the current workspace or active project as the project to analyze unless t
 
 Produce the agent's standard bilingual project reports and write them to the configured job-hunting archive:
 
-`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\job-hunting\<project-name>`
+`C:\Users\Aaron Sherrill\Documents\2026 work\copilot-asset-manager\local\archives\job-hunting\<project-name>`
 
 The report must remain frontend-first while including backend context that helps explain frontend architecture, API boundaries, auth/role constraints, deployment, or full-stack credibility. Preserve the product's own project name for the folder, including Traditional Chinese names such as `桃園GIS`, unless path-hostile characters must be normalized.
 
