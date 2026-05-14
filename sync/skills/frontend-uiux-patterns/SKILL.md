@@ -1,6 +1,6 @@
 ---
 name: frontend-uiux-patterns
-description: 'Frontend UX pattern guidance for implementing or reviewing forms, data tables, modals, popovers, drawers, and loading states in web UI.'
+description: 'Frontend UI/UX pattern guidance for implementing or reviewing forms, validation feedback, data tables, sticky headers, responsive overflow, modals, popovers, drawers, destructive actions, empty states, error states, loading states, and async UI behavior in web UI.'
 ---
 
 # Frontend UI/UX Patterns
@@ -37,10 +37,10 @@ Use this skill for detailed guidance on how to build:
 - For informational popovers, prefer `Escape` and outside-click close unless there is a clear reason to require explicit dismissal.
 - For non-modal drawers and interactive popovers, manage focus intentionally and restore focus to the triggering element on close when it improves keyboard and screen-reader usability.
 - For dialogs or overlays with scrollable content, reset scroll position on reopen unless preserving prior position is intentionally part of the workflow.
-- when dialogs or overlays lock background scroll, preserve scrollbar space with `scrollbar-gutter: stable` or an equivalent fallback to avoid layout shifts.
+- When dialogs or overlays lock background scroll, preserve scrollbar space with `scrollbar-gutter: stable` or an equivalent fallback to avoid layout shifts.
 
 ## Async UI States
-- As long as there are network requests, background processing, or other async work that affects the visible page, render loading indicator, and stop indicator only once all work completes or fails.
+- When async work affects visible page state, show a loading state and clear it only after the relevant work completes or fails.
 - Prefer existing project patterns, shared components, and established copy before introducing new loading-state variants.
 - If none exist, use skeletons when the final layout is known and the wait is noticeable.
 - Avoid layout shift between loading and loaded states.

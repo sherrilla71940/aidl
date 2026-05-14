@@ -16,14 +16,14 @@ Create one safe Conventional Commit from the current logical diff, or draft the 
 
 ## Arguments
 
-Parse trailing slash-command text as optional flags and hints. Defaults are `commit` mode and `en` language.
+Parse trailing slash-command text as optional flags and hints. Defaults are `draft` mode and `en` language.
 
 - Mode flags:
   - `draft`: return the proposed commit message in chat without staging or committing. This is the default.
   - `commit`: create the commit.
 - Language flags:
   - `en`: write the generated commit description or body in English. This is the default.
-  - `zhtw`,: write the generated commit description or body in Traditional Chinese. Keep type and trailers in English, scope can be in English or Chinese depending on what fits better.
+  - `zhtw`: write the generated commit description or body in Traditional Chinese. Keep type and trailers in English, scope can be in English or Chinese depending on what fits better.
   - Keep Conventional Commit type/scope tokens and trailers such as `feat`, `fix`, and `BREAKING CHANGE:` in English.
 - Treat all remaining arguments as hints for type, scope, description, file selection, or commit grouping.
 
@@ -66,7 +66,7 @@ Parse trailing slash-command text as optional flags and hints. Defaults are `com
 - Never use `--no-verify` unless the user explicitly asks.
 - Never force push to `main` or `master`.
 - Never commit obvious secrets. Stop and explain what needs review if a secret-like file is staged.
-- Never stage files or create commits in `draft` mode.
+- Never stage files or create commits in `draft` or `paste` mode.
 - If hooks fail, fix the reported issue and create a normal commit. Do not amend unless the user asks.
 
 ## Message Examples
