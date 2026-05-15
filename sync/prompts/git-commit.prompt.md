@@ -1,9 +1,9 @@
 ---
 description: 'Create a Conventional Commit from the current git diff with safe staging and message selection.'
 name: 'Git Commit'
-argument-hint: '[draft|commit] [en|zhtw] [recent] optional type, scope, description, or files'
+argument-hint: '[draft|commit] [en|zhtw] [last-chat-edit|all-chat-edits|recent-last|recent-all] optional type, scope, description, or files'
 agent: 'agent'
-tools: ['search/changes', 'execute', 'read/terminalLastCommand', 'read/terminalSelection']
+tools: ['execute']
 ---
 
 # Git Commit
@@ -25,18 +25,26 @@ Parse trailing slash-command text as optional flags and hints. Defaults are `dra
   - `en`: write the generated commit description or body in English. This is the default.
   - `zhtw`: write the generated commit description or body in Traditional Chinese. Keep type and trailers in English, scope can be in English or Chinese depending on what fits better.
   - Keep Conventional Commit type/scope tokens and trailers such as `feat`, `fix`, and `BREAKING CHANGE:` in English.
-- Context flags:
-  - `recent`: use the assistant changes from the current conversation as the primary commit scope hint. Still verify the repository state before drafting or committing.
-  - Infer `recent` when the user says "that change", "your change", "the change you just made", or similar.
+- Scope flags:
+  - `last-chat-edit`: fastest scope. Use the latest assistant edit batch from this conversation as the primary commit scope. Assume the user staged it. Inspect staged file names/stat first and avoid full patch reads unless needed.
+  - `all-chat-edits`: fast scope. Use all assistant-made edits from this conversation as the primary commit scope. Assume the user staged them. Inspect staged file names/stat first and avoid full patch reads unless needed.
+  - `recent-last`: alias for `last-chat-edit`.
+  - `recent-all`: alias for `all-chat-edits`.
+  - Do not use plain `recent`; it is ambiguous. Ask the user whether they mean `recent-last` or `recent-all`.
 - Treat all remaining arguments as hints for type, scope, description, file selection, or commit grouping.
 
 ## Workflow
 
-1. Parse arguments to determine mode, language, context flags, and any commit hints.
+1. Parse arguments to determine mode, language, scope flags, and any commit hints.
 2. Inspect repository state with `git status --porcelain`.
-3. When `recent` is explicit or inferred, prefer files the assistant edited in the current conversation as the logical commit scope. For one or two known recent files, do not run broad `git diff` commands first; use direct targeted commands such as `git diff --cached --stat -- <files>`, `git diff --cached -- <files>`, `git diff --stat -- <files>`, and `git diff -- <files>` as needed. Inspect broader diffs only when `git status --porcelain` shows unexpected files or the recent scope is ambiguous.
-4. In `draft` mode without `recent`, inspect staged changes with `git diff --cached --stat` and `git diff --cached`; if nothing is staged, inspect `git diff --stat` and `git diff`. Do not stage files, run commit checks, or create a commit.
-5. In `commit` mode, inspect `git diff --cached --stat` and `git diff --cached` when files are staged. If nothing is staged, inspect `git diff --stat` and `git diff`, then stage the files that belong to one logical change. In `recent` mode, stage only files that match the recent-change scope unless the user explicitly expands the scope.
+3. When `last-chat-edit`, `recent-last`, `all-chat-edits`, or `recent-all` is provided, use the fast chat-context path:
+   - For `last-chat-edit` or `recent-last`, use only the latest assistant edit batch as the logical commit scope.
+   - For `all-chat-edits` or `recent-all`, use all assistant-made edits in the current conversation as the logical commit scope.
+   - Assume the user staged that scope. Run `git diff --cached --name-status` and `git diff --cached --stat` before drafting.
+   - Do not inspect full patches unless staged files are missing, ambiguous, secret-like, unexpected, or the user requests a detailed commit body.
+   - If staged files do not match the expected chat-edited scope, inspect only targeted diffs for the expected files before deciding whether to draft, ask, stage, or stop.
+4. In `draft` mode without a fast scope flag, inspect staged changes with `git diff --cached --name-status` and `git diff --cached --stat`. If staged changes exist, draft from those summaries and inspect full staged patches only when filenames/stat are insufficient for an accurate message. If nothing is staged, inspect unstaged changes with `git diff --name-status` and `git diff --stat`, then inspect full unstaged patches only when needed. Do not stage files, run commit checks, or create a commit.
+5. In `commit` mode without a fast scope flag, inspect staged changes with `git diff --cached --name-status` and `git diff --cached --stat`. If staged changes exist, draft from those summaries and inspect full staged patches only when needed. If nothing is staged, inspect unstaged changes with `git diff --name-status` and `git diff --stat`, inspect full unstaged patches only when needed, then stage the files that belong to one logical change. In fast scope mode, stage only files that match the selected chat-edited scope unless the user explicitly expands the scope.
 6. Check relevant filenames for obvious secrets or private credentials, including `.env`, private keys, credential JSON, tokens, and generated secret dumps.
 7. Choose a Conventional Commit message using the rules below:
    - `feat`: new feature
