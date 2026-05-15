@@ -25,9 +25,9 @@ Use this skill for detailed guidance on how to build:
 
 ## Data Tables
 
-- Make tables responsive and usable on small screens by allowing horizontal scrolling, collapsing less critical columns, or reflowing into a more readable format.
-- For tall tables, wrap table content in a vertical scroll container when needed and keep headers visible while users scroll so row data remains understandable.
-- When using sticky table headers, keep the header and scroll container in the same scrolling context, and give sticky headers an explicit background and stacking order so content does not bleed through while scrolling.
+- Make tables responsive and usable on small screens by wrapping the table in a scroll container with `overflow: auto`.
+- For horizontal overflow, collapse less critical columns or reflow into a more readable format when scrolling alone is not enough.
+- For vertical overflow, keep headers visible with `position: sticky`; give them an explicit background and stacking order so content does not bleed through while scrolling.
 - When sticky table headers need reliable borders, shadows, or layered backgrounds, prefer `border-collapse: separate` with `border-spacing: 0`; collapsed borders can render inconsistently with sticky positioning.
 
 ## Modals, Dialogs, And Overlays
