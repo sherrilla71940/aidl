@@ -1,4 +1,4 @@
-# Frontend Resume Report: 桃園市下水道雲端智慧管理系統
+# Frontend Project Profile Report: 桃園市下水道雲端智慧管理系統
 
 Reviewed on: 2026-05-11
 
@@ -60,7 +60,7 @@ The project also has mobile/app-facing clues under `Views/App` and `Scripts/Comp
 
 ## 7. Impressive Frontend Evidence
 
-- GIS-first operational dashboard: `Views/Map/Index.cshtml` loads Google Maps, GMapEX, ArcGIS link helpers, SewerEX, map-layer modules, map legend/toolbox/facility detail modules, and role-specific statistics partials. This supports a resume claim around integrating geospatial infrastructure layers into an operational dashboard.
+- GIS-first operational dashboard: `Views/Map/Index.cshtml` loads Google Maps, GMapEX, ArcGIS link helpers, SewerEX, map-layer modules, map legend/toolbox/facility detail modules, and role-specific statistics partials. This supports a profile claim around integrating geospatial infrastructure layers into an operational dashboard.
 - Layered map interactions: `Scripts/InspectionManhole/InspectionManholeMap.ts` manages sewer/BOT sewer layer toggles, catch-basin/connection-pipe layers, bounds-based BOT layers, marker/polyline drawing callbacks, facility search by pipe/manhole/connection-pipe/catch-basin number, mobile search-panel behavior, and inspection data overlays.
 - Inspection analytics: `Scripts/InspectionManhole/InspectionManholeStatistics.ts` loads Google Charts, queries filtered inspection results, splits internal/external manhole inspection records, computes normal/abnormal counts, renders chart/table/map views, and redraws visualizations when tabs/maps change.
 - Excel import/export and validation: `Scripts/WaterFeeMgt/WaterFeeChargeRecordManagement.ts` supports search filters, Excel export, batch import, file validation, error-list export, water-number checks, and create/edit flows. `Scripts/Home/index.ts` parses Excel sewer-layer imports and validates domain-specific columns before upload.
@@ -80,7 +80,7 @@ The project also has mobile/app-facing clues under `Views/App` and `Scripts/Comp
 - Building user-friendly workflows for data-heavy government operations where Excel/PDF imports, exports, and official documents are core tasks.
 - Managing accessibility and maintainability risks typical of older jQuery/Razor codebases with heavy plugin usage and some inline/semantic limitations.
 
-## 9. Resume Bullet Bank
+## 9. Profile Bullet Bank
 
 ### Conservative bullets based on confirmed evidence
 
@@ -117,15 +117,15 @@ The project also has mobile/app-facing clues under `Views/App` and `Scripts/Comp
 - User roles/departments served and whether the system is production-facing.
 - Any measured improvements in load time, error rate, task completion time, or support tickets.
 
-## 10. Interview Talking Points
+## 10. Technical Discussion Talking Points
 
-- GIS dashboard story: The app’s default experience is a GIS map for sewer/rainwater operations. A strong interview story can cover how Razor renders the shell, how TypeScript modules load and toggle map layers, how search locates infrastructure by facility number, and how role-specific statistics panels make the map an operational workspace rather than a passive viewer.
+- GIS dashboard story: The app’s default experience is a GIS map for sewer/rainwater operations. A strong technical discussion story can cover how Razor renders the shell, how TypeScript modules load and toggle map layers, how search locates infrastructure by facility number, and how role-specific statistics panels make the map an operational workspace rather than a passive viewer.
 - Excel validation story: Explain how users bring operational data in spreadsheets, why client-side validation matters before committing backend changes, how errors are surfaced/exported, and how this reduced back-and-forth for non-technical users.
 - Inspection analytics story: Walk through querying inspection results, splitting internal/external inspection types, computing abnormal categories, rendering charts/tables/maps, and handling empty/error states.
 - Scheduling rules story: Describe the fertilizer-station scheduling UI as a rules-heavy workflow where date restrictions, capacity limits, company/vehicle eligibility, license expiration, and banned-plate conditions all have to be reflected clearly before submission.
 - Legacy TypeScript story: Discuss adding or maintaining typed frontend modules within an ASP.NET MVC/jQuery environment, including how to keep changes scoped by domain folder and avoid breaking server-rendered views.
 
-Likely interviewer follow-up questions:
+Likely technical discussioner follow-up questions:
 
 - How did you manage map performance with many layers and markers?
 - How did frontend validation differ from backend validation?
@@ -138,7 +138,7 @@ Likely interviewer follow-up questions:
 
 - Which frontend features did you personally build, refactor, or maintain?
 - Was the project used in production by Taoyuan municipal users, contractors, or public applicants?
-- What is the official English project name, if any, or should the Chinese name be used on the resume?
+- What is the official English project name, if any, or should the Chinese name be used on the profile?
 - Did you own the GIS map, inspection analytics, fertilizer-station scheduling, water-fee workflows, or switching-valve document flows?
 - Were there measurable improvements in task completion time, upload error rates, report generation time, map load time, or support volume?
 - How many roles, departments, contractors, or monthly transactions did the system support?
@@ -151,6 +151,6 @@ Likely interviewer follow-up questions:
 
 - Ready now: use conservative bullets about TypeScript-backed Razor workflows, GIS maps, Excel validation/export, inspection analytics, file upload flows, fertilizer-station scheduling, and role-aware navigation.
 - Needs confirmation: ownership, production impact, user scale, performance improvements, business metrics, and whether backend/API/deployment work can be claimed as personal contribution.
-- Strengthen the resume story by collecting screenshots of the GIS dashboard, inspection statistics, Excel validation error flow, fertilizer-station booking screen, and role-specific navigation.
+- Strengthen the profile story by collecting screenshots of the GIS dashboard, inspection statistics, Excel validation error flow, fertilizer-station booking screen, and role-specific navigation.
 - Fill in at least two metrics before applying: one scope metric (pages/modules/roles/records) and one impact metric (time saved, errors reduced, records processed, load time improved, or users supported).
 - Keep backend language as integration context unless you can confirm personal backend ownership.
