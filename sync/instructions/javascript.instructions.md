@@ -33,7 +33,9 @@ Applies to JavaScript and TypeScript files. For TypeScript-specific guidelines, 
 - Avoid nested ternaries and selection operators used as control flow; use clear `if` statements when logic branches or causes side effects.
 - Parenthesize mixed logical, comparison, and arithmetic operators when precedence is not immediately obvious.
 - Use descriptive variable names. Descriptive names are 90% of documentation.
-- Use JSDoc for exported/public functions, types, interfaces, and non-obvious APIs so editor hover help stays useful. Use one-line JSDoc (`/** ... */`) for short single-sentence API docs, multi-line JSDoc for longer docs, and `//` for local implementation notes. Do not use malformed triple-star comments like `/*** ... */`.
+- Use JSDoc directly above exported/public functions, types, interfaces, shared helpers, and functions whose purpose, contract, side effects, or usage constraints are not obvious from the name/signature, so editor hover help stays useful.
+- Use inline `//` comments for local implementation notes when a block, condition, workaround, ordering requirement, performance tradeoff, or domain rule is not obvious from the surrounding code.
+- Use block comments (`/* ... */`) sparingly for multi-line implementation notes when a whole section depends on non-obvious context, ordering, browser behavior, performance constraints, or domain rules. Do not use block comments as API docs; use JSDoc for that.
 - Prefer ESM `import`/`export` over `require`/`module.exports` in modern JavaScript/TypeScript code if the project supports it.
 - Keep imports at the top of the module, avoid duplicate imports from the same path, and avoid exporting mutable bindings.
 - Avoid dynamic code execution (`eval`, `new Function`, and string-based `setTimeout`/`setInterval`); prefer callbacks, JSON parsing, and safe property access.
