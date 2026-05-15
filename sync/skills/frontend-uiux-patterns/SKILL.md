@@ -3,10 +3,6 @@ name: frontend-uiux-patterns
 description: 'Frontend UI/UX pattern guidance for implementing or reviewing forms, validation feedback, data tables, sticky headers, responsive overflow, modals, popovers, drawers, destructive actions, empty states, error states, loading states, and async UI behavior in web UI.'
 ---
 
-# Frontend UI/UX Patterns
-
-Use this skill when a task needs detailed interaction guidance beyond the always-on UI and accessibility guardrails. Prefer existing project components, design-system behavior, and established copy before introducing new patterns.
-
 ## When to Use This Skill
 
 Use this skill for detailed guidance on how to build:
