@@ -171,6 +171,9 @@
 - Use flexbox for one-dimensional content-driven flow; use grid for two-dimensional layout-driven structure. Combine grid for outer structure with flexbox for inner alignment when both concerns exist.
 - For responsive grids, prefer `repeat(auto-fit, minmax(min(MINW, 100%), 1fr))` over hard-coded column counts when column count should vary with available space. The inner `min(MINW, 100%)` clamp is required to prevent overflow below `MINW`. Use `auto-fill` to preserve empty slots; `auto-fit` otherwise. Pair with fluid gaps via `clamp()`.
 - For images that must fill a container without distorting, use `width: 100%` + `aspect-ratio` + `object-fit: cover`, with `object-position` set explicitly when the subject isn't centered.
+- Prefer CSS Container Queries (`@container`) over media queries when styling sub-components (e.g. cards) that live inside dynamic grid/flex slots.
+- Avoid generating vendor prefixes (`-webkit-`, `-moz-`) unless legacy browser support is explicitly required.
+- Avoid setting fixed `height`, especially on text-containing elements — prefer `min-height`, and let the layout system (`align-items`, grid row sizing, etc.) handle alignment instead of a hardcoded value.
 
 ## Accessibility Guidelines
 
