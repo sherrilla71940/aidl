@@ -33,6 +33,7 @@
   - Favor SRP, DRY, low coupling, and high cohesion.
   - Prefer intentional duplication over premature abstraction when it keeps the code easier to read and change.
 - Reuse existing utilities, services, and shared modules before creating new ones.
+- When git hooks report issues, fix the reported issues instead of bypassing the hooks.
 
 ### Security
 
@@ -48,10 +49,6 @@
 - Favor descriptive names and straightforward control flow over explanatory comments and clever abstractions.
 - Use JSDoc for exported/public APIs and non-obvious functions: explain purpose, usage constraints, parameters, and return values.
 - Use standard comments sparingly, for implementation notes that explain *why* a non-obvious decision or workaround was used.
-
-### Git hooks
-
-- When git hooks report issues, fix the reported issues instead of bypassing the hooks.
 
 ---
 
@@ -73,13 +70,11 @@
 ### General JavaScript
 
 - Prefer object/array spread and rest for shallow copies, merging, and omission instead of mutating with `Object.assign`, `delete`, or index assignment.
-- Use `Object.hasOwn` (or `Object.prototype.hasOwnProperty.call(...)`) instead of calling `hasOwnProperty` directly on an object.
 - Use boolean shortcuts for booleans, but compare strings, numbers, and collection lengths explicitly.
 - Prefer immutable updates and avoid mutating function parameters; local mutation is fine when it's safe, clear, or improves performance/API alignment.
 - Use a typed options object when a shared/exported function takes 3+ parameters, has multiple optional/boolean parameters, or the argument order is easy to mix up — destructure in the signature and provide defaults. For small local helpers, positional parameters are fine when call sites stay clear.
 - Return values from array transformation/filtering callbacks; use `forEach` only for intentional side effects.
 - Prefer returning objects for multiple outputs when named fields improve readability; use tuples when positional semantics are intentional and clear.
-- Avoid nested ternaries and selection operators as control flow; use clear `if` statements when logic branches or causes side effects.
 - Parenthesize mixed logical, comparison, and arithmetic operators when precedence isn't immediately obvious.
 - Do not invent APIs, classes, fields, or event names. Verify them from local types, callers, docs, or existing implementations; leave an explicit `TODO:` only when a real integration detail is unavailable.
 - Avoid creating standalone functions for trivial one-liners by default; inline the logic unless naming it improves readability, testability, or reuse.
@@ -96,9 +91,15 @@
 - If parallel async work comes from a large or user-controlled list, batch it or use a concurrency limit instead of one unbounded `Promise.all(items.map(...))`.
 - Use `AbortController` when async work or event listeners can outlive their initiating UI state, component, request, or page section; cancel on teardown or when newer work supersedes it.
 
-### Performance and lifecycle
+### Performance
 
-- When initialization can run more than once, keep it idempotent — setup should not duplicate event listeners, timers, DOM nodes, or requests.
+- Code-split by route by default; lazy-load heavy or below-the-fold components (rich editors, charts, modals, admin panels, large third-party widgets).
+- Pair lazy-loaded components with a fallback sized close to final content dimensions to avoid layout shift on resolution.
+- Lazy-load offscreen images (`loading="lazy"`); never lazy-load the largest above-the-fold image — load it eagerly, with `fetchpriority="high"` if it's the LCP candidate.
+- Use `srcset`/`sizes` so the browser fetches an appropriately sized image per viewport.
+- Reserve layout space up front for anything async (images, embeds, ads) via explicit `width`/`height` or `aspect-ratio`, to avoid CLS.
+- When initialization can run more than once, keep it idempotent — no duplicated listeners, timers, or requests.
+- Prefetch only what's likely needed next (hovered route, next page); avoid speculative prefetching of large or rarely-used chunks.
 
 ### Validation and error handling
 
@@ -168,3 +169,20 @@
 - Avoid `!important` unless there is no safe alternative.
 - Use `@layer` to control override order when integrating third-party/framework CSS.
 - Use flexbox for one-dimensional content-driven flow; use grid for two-dimensional layout-driven structure. Combine grid for outer structure with flexbox for inner alignment when both concerns exist.
+- For responsive grids, prefer `repeat(auto-fit, minmax(min(MINW, 100%), 1fr))` over hard-coded column counts when column count should vary with available space. The inner `min(MINW, 100%)` clamp is required to prevent overflow below `MINW`. Use `auto-fill` to preserve empty slots; `auto-fit` otherwise. Pair with fluid gaps via `clamp()`.
+- For images that must fill a container without distorting, use `width: 100%` + `aspect-ratio` + `object-fit: cover`, with `object-position` set explicitly when the subject isn't centered.
+
+## Accessibility Guidelines
+
+- Prefer native semantic HTML before ARIA. Use buttons, links, labels, headings, landmarks, lists, tables, and form controls for their intended purpose.
+- Every interactive control needs a clear accessible name, visible focus, keyboard access, and a predictable disabled/loading/error state.
+- Do not put click handlers on non-interactive elements. If a custom widget is unavoidable, provide role, state, `tabindex`, Enter/Space behavior, and documented focus management.
+- Dialogs and blocking overlays must move focus inside, keep focus contained, close with Escape unless unsafe, prevent background interaction, and restore focus to the trigger.
+- Forms need visible labels, helpful instructions, `autocomplete` where relevant, linked error text, and preserved user input after recoverable failures.
+- Announce important async updates with an appropriate live region when the change is not otherwise obvious.
+- Do not rely on color, shape, position, hover, drag, or gesture alone to communicate or operate important functionality.
+- Provide useful alt text for informative images and empty alt text for decorative images.
+- Keep text, UI controls, focus indicators, and meaningful graphics above WCAG AA contrast expectations.
+- Respect reduced-motion preferences and avoid autoplaying media with sound.
+
+Use the @/skills/accessibility-review skill for WCAG mapping, accessibility audits, keyboard walkthroughs, screen reader checks, axe/pa11y/Lighthouse guidance, framework-specific remediation, a formal review comment, or any time you feel it would be helpful to go beyond these always-on guardrails.
