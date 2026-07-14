@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.{html,cshtml,css,scss,js,jsx,ts,tsx}"
+---
+
 ## Accessibility Guidelines
 
 - Prefer native semantic HTML before ARIA. Use buttons, links, labels, headings, landmarks, lists, tables, and form controls for their intended purpose.

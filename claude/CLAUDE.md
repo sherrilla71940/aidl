@@ -56,11 +56,3 @@
 
 - Use PascalCase for VanillaJS/VanillaTS function names and globals (company standard), and for React component names only. Use camelCase for all other identifiers.
 - All code comments should be in zh-tw.
-
----
-
-@rules/javascript.md
-@rules/typescript.md
-@rules/react.md
-@rules/css.md
-@rules/accessibility.md

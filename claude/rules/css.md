@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.{html,cshtml,css,scss,js,jsx,ts,tsx}"
+---
+
 ## HTML / CSS / SCSS Guidelines
 
 - Default to BEM-style naming (`block__element--modifier-value`).

@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.{ts,tsx}"
+---
+
 ## TypeScript Guidelines
 
 - Default to `"strict": true` (including `strictNullChecks`) for new projects. Keep existing settings in legacy projects unless asked to harden them.
